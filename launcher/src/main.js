@@ -47,6 +47,9 @@ function bundledGamePath() {
     ? path.join(process.resourcesPath, 'game', 'UnblockedTDM.exe')
     : path.resolve(__dirname, '../../dist-game/UnblockedTDM.exe');
 }
+function devGameDir() {
+  return path.resolve(__dirname, '../../game');
+}
 
 async function ensureDirectories() {
   await Promise.all([
@@ -77,12 +80,14 @@ async function getSettings() {
 async function ensureBootstrapGame() {
   await ensureDirectories();
   const target = currentGamePath();
+
   if (!fs.existsSync(target)) {
     const source = bundledGamePath();
-    if (!fs.existsSync(source)) {
+    if (fs.existsSync(source)) {
+      await fsp.copyFile(source, target);
+    } else if (app.isPackaged) {
       throw new Error(`Bundled game executable was not found at ${source}`);
     }
-    await fsp.copyFile(source, target);
   }
 
   const existing = await readJson(installedManifestPath(), null);
@@ -218,6 +223,10 @@ async function remoteEntryForInstalled(installed) {
 }
 
 async function repairCurrentGame() {
+  if (!app.isPackaged && !fs.existsSync(currentGamePath())) {
+    return { repaired: false, message: 'Development mode uses the game source directly; no packaged executable needs repair.' };
+  }
+
   const installed = await getInstalled();
   const remote = await remoteEntryForInstalled(installed);
   if (!remote) throw new Error(`No immutable archive entry exists for ${installed.tag}.`);
@@ -239,9 +248,31 @@ function spawnGame(executable) {
   child.unref();
 }
 
+function spawnDevelopmentGame() {
+  const sourceDir = devGameDir();
+  if (!fs.existsSync(path.join(sourceDir, 'package.json'))) {
+    throw new Error(`Development game source was not found at ${sourceDir}`);
+  }
+
+  const env = { ...process.env };
+  delete env.ELECTRON_RUN_AS_NODE;
+  const child = spawn(process.execPath, [sourceDir], {
+    detached: true,
+    stdio: 'ignore',
+    env
+  });
+  child.unref();
+}
+
 async function playCurrent() {
   await ensureBootstrapGame();
-  spawnGame(currentGamePath());
+
+  if (!app.isPackaged && !fs.existsSync(currentGamePath())) {
+    spawnDevelopmentGame();
+  } else {
+    spawnGame(currentGamePath());
+  }
+
   const settings = await getSettings();
   if (settings.closeAfterPlay) app.quit();
   else if (settings.minimizeOnPlay && mainWindow) mainWindow.minimize();
@@ -308,7 +339,7 @@ ipcMain.handle('launcher:get-state', async () => ({
   buildInfo,
   installed: await getInstalled(),
   settings: await getSettings(),
-  gamePath: currentGamePath(),
+  gamePath: !app.isPackaged && !fs.existsSync(currentGamePath()) ? devGameDir() : currentGamePath(),
   dataPath: launcherDataDir()
 }));
 
