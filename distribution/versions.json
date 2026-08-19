@@ -1,4 +1,19 @@
 {
   "product": "UnblockedTDM",
-  "versions": []
+  "versions": [
+    {
+      "product": "UnblockedTDM",
+      "gameVersion": "1.00",
+      "build": 1,
+      "sequence": 1,
+      "phase": "Pre-Development",
+      "tag": "build-1.00-v1",
+      "title": "UnblockedTDM Build 1.00 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.00-v1/UnblockedTDM-1.00-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.00-v1/UnblockedTDM-Setup-1.00-v1.exe",
+      "sha256": "8a04165db11d0bad73463f49c03950cc795424be1bdfda1cb4a52fe74757687c",
+      "installerSha256": "263de8d05665ebcc31f0799e11aac895672a33fad5415cfdea28915b1a321b55",
+      "publishedAt": "2026-08-19T22:23:39.841Z"
+    }
+  ]
 }
