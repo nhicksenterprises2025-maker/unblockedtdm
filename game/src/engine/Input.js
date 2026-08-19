@@ -1,7 +1,8 @@
 const BLOCKED_KEYS = new Set([
   'KeyW', 'KeyA', 'KeyS', 'KeyD',
   'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-  'ShiftLeft', 'ShiftRight', 'Space', 'Tab', 'F1'
+  'ShiftLeft', 'ShiftRight', 'Space', 'Tab',
+  'F1', 'F2', 'F3', 'F4'
 ]);
 
 export class Input {
