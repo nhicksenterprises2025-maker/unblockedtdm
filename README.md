@@ -6,12 +6,10 @@ The game name and technical versioning are **UnblockedTDM**. "Beta" describes th
 
 ## Current development build
 
-**Build 1.00 — Version 2**  
-Phase: **World / Engine**
+**Build 1.1 — Version 1**  
+Phase: **Character / Movement**
 
-Version 2 replaces the pre-development runtime verification screen with the first real game-world implementation: a 64px tile engine, the 32×22 Training Complex map, world collision, smooth camera following, cover rendering, pause/fullscreen support, and engine diagnostics.
-
-The Version 2 World Explorer probe is a deliberate collision/camera diagnostic control. The final hybrid-view player character begins in the following character build.
+Build 1.1 Version 1 replaces the World Explorer probe with the first real player body and completes the base locomotion layer: independent mouse aiming, 5 tiles/second movement, sprint/stamina, locomotion animation states, team readability, aim-direction camera lead, and player-aware tall-cover fading.
 
 ## Architecture
 
@@ -36,17 +34,21 @@ The NSIS installer is configured as a per-user installation. Player/launcher dat
 - Open Game Folder diagnostics action.
 - Separate current, staging, backup, and archive storage areas.
 
-## Version 2 engine features
+## Build 1.1 Version 1 features
 
-- Canvas 2D production game loop with delta-time movement.
-- 64×64 tile world measurement.
-- 32×22 symmetrical Training Complex map.
-- Concrete, asphalt, grass, spawn pads, walls, low cover, crates, barriers, and tall structures.
-- Collision against all blocking geometry.
-- Smooth camera follow with map-boundary clamping.
-- Tall-cover transparency when it obstructs the controlled world probe.
+- Full stylized player body with visible head, torso, arms, legs, shadow, and blue-team floor ring.
+- Hybrid top-down rendering designed to keep the character readable.
+- Independent mouse aim for the upper body while movement remains WASD-driven.
+- 5 tiles/second base movement.
+- Sprint on Shift at +35% speed.
+- 100 sprint stamina: 5 seconds continuous use, 2.8-second regen delay, 3.2-second full refill.
+- Idle, walk, and sprint locomotion animation states.
+- Sprint body lean, faster leg animation, and faint speed trail.
+- Smooth camera lead toward aim direction.
+- Existing collision/map rules applied to the actual player body.
+- Tall structures render above the player and fade when they overlap the local character.
+- Live stamina, speed, movement-state, position, and camera diagnostics.
 - Escape pause, F11 fullscreen, and F1 collision visualization.
-- FPS/tile/camera build diagnostics.
 
 ## Release system
 

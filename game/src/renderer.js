@@ -1,11 +1,12 @@
+import { Player } from './actors/Player.js';
 import { GameLoop } from './engine/GameLoop.js';
 import { Input } from './engine/Input.js';
-import { PROBE_RADIUS_TILES, PROBE_SPEED_TILES, TILE_SIZE, WORLD_HEIGHT, WORLD_WIDTH } from './engine/constants.js';
+import { AIM_CAMERA_LEAD_TILES, TILE_SIZE } from './engine/constants.js';
+import { PlayerRenderer } from './render/PlayerRenderer.js';
+import { WorldRenderer } from './render/WorldRenderer.js';
 import { Camera } from './world/Camera.js';
-import { moveCircle } from './world/Collision.js';
 import { MAP_01 } from './world/map01.js';
 import { TileMap } from './world/TileMap.js';
-import { WorldRenderer } from './render/WorldRenderer.js';
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
@@ -13,8 +14,9 @@ const input = new Input(window);
 const map = new TileMap(MAP_01);
 const camera = new Camera();
 const worldRenderer = new WorldRenderer(ctx, map);
-const probeSpawn = MAP_01.spawns.blue[1];
-const probe = { x: probeSpawn.x, y: probeSpawn.y, radius: PROBE_RADIUS_TILES * TILE_SIZE };
+const playerRenderer = new PlayerRenderer(ctx);
+const player = new Player(MAP_01.spawns.blue[1], 'blue');
+
 let debug = false;
 let paused = false;
 let fps = 0;
@@ -34,22 +36,27 @@ function resizeCanvas() {
 
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
-camera.x = probe.x;
-camera.y = probe.y;
+camera.x = player.x;
+camera.y = player.y;
 camera.clamp();
 
 function update(dt) {
   if (input.wasPressed('F1')) debug = !debug;
   if (input.wasPressed('F11')) window.gameAPI.toggleFullscreen();
-  const axis = input.axis();
-  const speed = PROBE_SPEED_TILES * TILE_SIZE;
-  moveCircle(probe, axis.x * speed * dt, axis.y * speed * dt, map.blockers, { w: WORLD_WIDTH, h: WORLD_HEIGHT });
-  camera.follow(probe.x, probe.y, dt);
+
+  player.update(dt, input, map, camera);
+
+  const lead = AIM_CAMERA_LEAD_TILES * TILE_SIZE;
+  const cameraTargetX = player.x + Math.cos(player.aimAngle) * lead;
+  const cameraTargetY = player.y + Math.sin(player.aimAngle) * lead;
+  camera.follow(cameraTargetX, cameraTargetY, dt);
+
   statusClock += dt;
-  if (statusClock >= 0.1) {
+  if (statusClock >= 0.075) {
     statusClock = 0;
     updateDiagnostics();
   }
+
   input.endFrame();
 }
 
@@ -62,12 +69,18 @@ function render(dt, now, isPaused) {
     fpsClock = 0;
     document.getElementById('fps').textContent = `${fps} FPS`;
   }
+
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.fillStyle = '#142b36';
   ctx.fillRect(0, 0, innerWidth, innerHeight);
+
   camera.begin(ctx);
-  worldRenderer.draw(camera, probe, debug);
+  worldRenderer.drawBase(camera, debug);
+  playerRenderer.draw(player);
+  worldRenderer.drawForeground(player, debug);
+  if (debug) playerRenderer.drawDebug(player);
   camera.end(ctx);
+
   if (isPaused) {
     ctx.fillStyle = 'rgba(5, 13, 19, .38)';
     ctx.fillRect(0, 0, innerWidth, innerHeight);
@@ -75,18 +88,26 @@ function render(dt, now, isPaused) {
 }
 
 function updateDiagnostics() {
-  const tile = map.tileAtWorld(probe.x, probe.y);
+  const tile = map.tileAtWorld(player.x, player.y);
   document.getElementById('coords').textContent = `Tile ${tile.col}, ${tile.row}`;
   document.getElementById('camera').textContent = `${(camera.x / TILE_SIZE).toFixed(1)}, ${(camera.y / TILE_SIZE).toFixed(1)}`;
   document.getElementById('debugState').textContent = debug ? 'COLLISION ON' : 'COLLISION OFF';
+  document.getElementById('moveState').textContent = player.state.toUpperCase();
+  document.getElementById('speed').textContent = `${player.speedTilesPerSecond().toFixed(1)} T/S`;
+  document.getElementById('staminaValue').textContent = `${Math.round(player.stamina)}`;
+  document.getElementById('staminaFill').style.width = `${Math.round(player.staminaPercent() * 100)}%`;
+  document.getElementById('staminaRoot').classList.toggle('sprinting', player.sprinting);
+  document.getElementById('staminaRoot').classList.toggle('recovering', !player.sprinting && player.staminaRegenDelay > 0);
 }
 
 const loop = new GameLoop(update, render);
+
 window.addEventListener('keydown', (event) => {
   if (event.code === 'Escape') {
     paused = !paused;
     loop.setPaused(paused);
     document.getElementById('pausePanel').classList.toggle('visible', paused);
+    input.endFrame();
   }
 });
 

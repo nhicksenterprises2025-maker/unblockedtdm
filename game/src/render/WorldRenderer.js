@@ -14,12 +14,15 @@ export class WorldRenderer {
     this.map = map;
   }
 
-  draw(camera, probe, debug) {
+  drawBase(camera, debug) {
     const visible = camera.visibleBounds(TILE_SIZE * 2);
     this.drawGround(visible);
     this.drawDecals();
-    this.drawStructures(probe, debug);
-    this.drawProbe(probe);
+    this.drawStructures(['wall', 'low'], null, debug);
+  }
+
+  drawForeground(player, debug) {
+    this.drawStructures(['tall'], player, debug);
     if (debug) this.drawDebugCollision();
   }
 
@@ -83,26 +86,41 @@ export class WorldRenderer {
     }
   }
 
-  drawStructures(probe, debug) {
-    for (const item of this.map.structures) this.drawStructure(item, probe, debug);
+  drawStructures(kinds, player, debug) {
+    for (const item of this.map.structures) {
+      if (kinds.includes(item.kind)) this.drawStructure(item, player, debug);
+    }
   }
 
-  drawStructure(item, probe, debug) {
+  drawStructure(item, player, debug) {
     const ctx = this.ctx;
     const p = PALETTES[item.palette] || PALETTES.steel;
     const depth = item.kind === 'tall' ? 20 : item.kind === 'wall' ? 12 : 7;
-    const obstructsProbe = item.kind === 'tall' && probe.x > item.x - probe.radius && probe.x < item.x + item.w + probe.radius && probe.y > item.y + item.h - 8 && probe.y < item.y + item.h + 32;
+    const obstructsPlayer = Boolean(
+      player &&
+      item.kind === 'tall' &&
+      player.x > item.x - player.radius &&
+      player.x < item.x + item.w + player.radius &&
+      player.y > item.y - player.radius &&
+      player.y < item.y + item.h + player.radius
+    );
+
     ctx.save();
-    if (obstructsProbe) ctx.globalAlpha = 0.42;
+    if (obstructsPlayer) ctx.globalAlpha = 0.36;
+
     ctx.fillStyle = 'rgba(3, 15, 22, .25)';
     ctx.fillRect(item.x + 7, item.y + depth + 8, item.w, item.h);
+
     ctx.fillStyle = p.side;
     ctx.fillRect(item.x, item.y + depth, item.w, Math.max(0, item.h - depth));
+
     ctx.fillStyle = p.top;
     ctx.fillRect(item.x, item.y, item.w, Math.max(8, item.h - depth));
+
     ctx.strokeStyle = p.edge;
     ctx.lineWidth = 3;
     ctx.strokeRect(item.x + 1.5, item.y + 1.5, item.w - 3, item.h - 3);
+
     if (item.kind === 'low' && item.palette === 'crate') {
       ctx.strokeStyle = 'rgba(88, 55, 28, .45)';
       ctx.lineWidth = 3;
@@ -113,38 +131,21 @@ export class WorldRenderer {
       ctx.lineTo(item.x + 12, item.y + item.h - 12);
       ctx.stroke();
     }
+
     if (item.kind === 'tall') {
       ctx.fillStyle = 'rgba(198, 227, 238, .18)';
       const panels = Math.max(1, Math.floor(item.w / 70));
-      for (let i = 0; i < panels; i++) ctx.fillRect(item.x + 18 + i * 70, item.y + 14, 38, 18);
+      for (let i = 0; i < panels; i++) {
+        ctx.fillRect(item.x + 18 + i * 70, item.y + 14, 38, 18);
+      }
     }
+
     if (debug) {
       ctx.fillStyle = 'rgba(255,255,255,.65)';
       ctx.font = '11px ui-monospace, monospace';
       ctx.fillText(item.kind, item.x + 7, item.y + 15);
     }
-    ctx.restore();
-  }
 
-  drawProbe(probe) {
-    const ctx = this.ctx;
-    ctx.save();
-    ctx.translate(probe.x, probe.y);
-    ctx.fillStyle = 'rgba(0,0,0,.25)';
-    ctx.beginPath();
-    ctx.ellipse(5, 12, probe.radius * 1.05, probe.radius * .58, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#54cfff';
-    ctx.strokeStyle = '#1c7198';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(0, 0, probe.radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.fillStyle = '#dff8ff';
-    ctx.beginPath();
-    ctx.arc(0, 0, probe.radius * .34, 0, Math.PI * 2);
-    ctx.fill();
     ctx.restore();
   }
 
