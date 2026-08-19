@@ -1,0 +1,17 @@
+{
+  "name": "unblockedtdm-build-system",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Build and release tooling for UnblockedTDM",
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "scripts": {
+    "sync:build": "node scripts/sync-build-info.mjs",
+    "build:game": "electron-builder --projectDir game --config electron-builder.yml --win portable --x64 --publish never",
+    "build:launcher": "electron-builder --projectDir launcher --config electron-builder.yml --win nsis --x64 --publish never",
+    "build:windows": "npm run sync:build && npm run build:game && npm run build:launcher",
+    "check": "node --check launcher/src/main.js && node --check launcher/src/preload.js && node --check launcher/src/renderer.js && node --check game/src/main.js && node --check game/src/preload.js && node --check game/src/renderer.js && node --check scripts/sync-build-info.mjs && node --check scripts/finalize-release.mjs"
+  }
+}

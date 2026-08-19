@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnblockedTDM Launcher</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">UT</div>
+        <div><strong>UNBLOCKED</strong><span>TDM</span></div>
+      </div>
+      <nav>
+        <button class="nav-button active" data-view="home">Home</button>
+        <button class="nav-button" data-view="archive">Version Archive</button>
+        <button class="nav-button" data-view="settings">Settings</button>
+        <button class="nav-button" data-view="diagnostics">Diagnostics</button>
+      </nav>
+      <div class="sidebar-footer">
+        <span id="phaseLabel">PRE-DEVELOPMENT</span>
+        <small id="launcherBuild">Build 1.00 · Version 1</small>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">UNBLOCKEDTDM</p>
+          <h1 id="viewTitle">Launcher</h1>
+        </div>
+        <div id="connectionBadge" class="badge">GitHub distribution</div>
+      </header>
+
+      <section id="home" class="view active">
+        <div class="hero panel">
+          <div>
+            <p class="eyebrow">CURRENT INSTALL</p>
+            <h2 id="currentTitle">UnblockedTDM</h2>
+            <p id="currentMeta" class="muted">Loading installed build…</p>
+          </div>
+          <div class="hero-actions">
+            <button id="playButton" class="primary large">PLAY</button>
+            <button id="updateButton" class="secondary">CHECK FOR UPDATES</button>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <article class="panel stat-card">
+            <span class="label">Update status</span>
+            <strong id="updateStatus">Checking…</strong>
+            <p id="updateDetail" class="muted">Connecting to the GitHub release channel.</p>
+          </article>
+          <article class="panel stat-card">
+            <span class="label">Version archive</span>
+            <strong>Every published build stays available</strong>
+            <p class="muted">Archived builds install separately and never downgrade your current build.</p>
+          </article>
+        </div>
+
+        <div id="progressPanel" class="panel progress-panel hidden">
+          <div class="progress-row"><span id="progressText">Working…</span><span id="progressPercent"></span></div>
+          <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+        </div>
+      </section>
+
+      <section id="archive" class="view">
+        <div class="section-heading">
+          <div><h2>Version Archive</h2><p class="muted">Download and launch any immutable UnblockedTDM build.</p></div>
+          <button id="refreshArchive" class="secondary">REFRESH</button>
+        </div>
+        <div id="archiveList" class="archive-list"></div>
+      </section>
+
+      <section id="settings" class="view">
+        <div class="panel settings-list">
+          <label class="setting-row">
+            <div><strong>Automatic update checks</strong><span>Check GitHub when the launcher opens.</span></div>
+            <input id="autoCheckUpdates" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <div><strong>Minimize launcher when playing</strong><span>Keep the launcher running in the taskbar.</span></div>
+            <input id="minimizeOnPlay" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <div><strong>Close launcher after Play</strong><span>Exit the launcher once UnblockedTDM starts.</span></div>
+            <input id="closeAfterPlay" type="checkbox" />
+          </label>
+          <div class="save-row"><button id="saveSettings" class="primary">SAVE SETTINGS</button><span id="settingsStatus" class="muted"></span></div>
+        </div>
+      </section>
+
+      <section id="diagnostics" class="view">
+        <div class="grid two">
+          <article class="panel">
+            <span class="label">Current game executable</span>
+            <code id="gamePath">Loading…</code>
+            <button id="openGameFolder" class="secondary full">OPEN GAME FOLDER</button>
+          </article>
+          <article class="panel">
+            <span class="label">File integrity</span>
+            <strong>SHA-256 verified distribution</strong>
+            <p class="muted">Repair compares your installed executable with the immutable GitHub archive and restores it if needed.</p>
+            <button id="repairButton" class="secondary full">VERIFY / REPAIR GAME</button>
+          </article>
+        </div>
+        <div id="diagnosticStatus" class="panel muted">Diagnostics ready.</div>
+      </section>
+    </main>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>

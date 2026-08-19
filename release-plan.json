@@ -1,0 +1,10 @@
+{
+  "product": "UnblockedTDM",
+  "gameVersion": "1.00",
+  "build": 1,
+  "phase": "Pre-Development",
+  "tag": "build-1.00-v1",
+  "title": "UnblockedTDM Build 1.00 — Version 1",
+  "notesFile": "docs/releases/build-1.00-v1.md",
+  "sequence": 1
+}

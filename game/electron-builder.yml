@@ -1,0 +1,13 @@
+appId: com.unblockedtdm.game
+productName: UnblockedTDM
+electronVersion: 38.0.0
+asar: true
+files:
+  - src/**/*
+win:
+  target:
+    - portable
+  executableName: UnblockedTDM
+artifactName: UnblockedTDM.exe
+directories:
+  output: ../dist-game
