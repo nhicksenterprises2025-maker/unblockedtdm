@@ -1,11 +1,14 @@
 import { Player } from './actors/Player.js';
+import { DamageSystem } from './combat/DamageSystem.js';
 import { GameLoop } from './engine/GameLoop.js';
 import { Input } from './engine/Input.js';
 import { AIM_CAMERA_LEAD_TILES, DASH_CHARGES_MAX, TILE_SIZE } from './engine/constants.js';
+import { DamageFeedbackRenderer } from './render/DamageFeedbackRenderer.js';
 import { PlayerRenderer } from './render/PlayerRenderer.js';
 import { WorldRenderer } from './render/WorldRenderer.js';
 import { Camera } from './world/Camera.js';
 import { MAP_01 } from './world/map01.js';
+import { SpawnSystem } from './world/SpawnSystem.js';
 import { TileMap } from './world/TileMap.js';
 
 const canvas = document.getElementById('gameCanvas');
@@ -15,7 +18,10 @@ const map = new TileMap(MAP_01);
 const camera = new Camera();
 const worldRenderer = new WorldRenderer(ctx, map);
 const playerRenderer = new PlayerRenderer(ctx);
-const player = new Player(MAP_01.spawns.blue[1], 'blue');
+const damageFeedback = new DamageFeedbackRenderer(ctx);
+const damageSystem = new DamageSystem();
+const spawnSystem = new SpawnSystem(map);
+const player = new Player(MAP_01.spawns.blue[1], 'blue', 'local-blue');
 
 let debug = false;
 let paused = false;
@@ -24,6 +30,8 @@ let frames = 0;
 let fpsClock = 0;
 let statusClock = 0;
 let dpr = 1;
+let devMessage = 'READY';
+let devMessageTimer = 0;
 
 function resizeCanvas() {
   dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -40,19 +48,91 @@ camera.x = player.x;
 camera.y = player.y;
 camera.clamp();
 
+function sourceAtPointer() {
+  const pointer = input.pointerPosition();
+  return camera.screenToWorld(pointer.x, pointer.y);
+}
+
+function setDevMessage(message, seconds = 1.3) {
+  devMessage = message;
+  devMessageTimer = seconds;
+}
+
+function applyDevDamage(amount, sourceTeam = 'red') {
+  const result = damageSystem.applyDamage({
+    target: player,
+    amount,
+    sourceId: sourceTeam === 'blue' ? 'friendly-test' : 'enemy-test',
+    sourceTeam,
+    sourcePosition: sourceAtPointer(),
+    sourceType: 'development-test'
+  });
+
+  if (result.applied) {
+    setDevMessage(result.killed ? `LETHAL ${Math.round(result.amount)}` : `-${Math.round(result.amount)} HP`);
+    if (result.killed) {
+      player.onDeath();
+      damageFeedback.spawnDeathBurst(player);
+    }
+  } else {
+    const labels = {
+      'friendly-fire': 'FRIENDLY FIRE BLOCKED',
+      'spawn-protection': 'SPAWN PROTECTED',
+      'dash-invulnerability': 'DASH INVULNERABLE',
+      dead: 'PLAYER DEAD'
+    };
+    setDevMessage(labels[result.reason] || result.reason.toUpperCase());
+  }
+}
+
+function resetRoundForTest() {
+  const spawn = MAP_01.spawns.blue[1];
+  player.resetForRound(spawn);
+  camera.x = player.x;
+  camera.y = player.y;
+  camera.clamp();
+  setDevMessage('ROUND RESET');
+}
+
+function handleDevelopmentInputs() {
+  if (input.wasPressed('F2')) applyDevDamage(25);
+  if (input.wasPressed('F3')) applyDevDamage(75);
+  if (input.wasPressed('F4')) applyDevDamage(999);
+  if (input.wasPressed('KeyG')) applyDevDamage(50, 'blue');
+  if (input.wasPressed('KeyR')) resetRoundForTest();
+}
+
+function respawnIfReady() {
+  if (!player.health.readyToRespawn()) return;
+  const spawn = spawnSystem.chooseSpawn(player.team);
+  player.respawn(spawn);
+  camera.x = player.x;
+  camera.y = player.y;
+  camera.clamp();
+  setDevMessage(`RESPAWNED · SPAWN ${spawn.index + 1}`);
+}
+
 function update(dt) {
   if (input.wasPressed('F1')) debug = !debug;
   if (input.wasPressed('F11')) window.gameAPI.toggleFullscreen();
 
   player.update(dt, input, map, camera);
+  handleDevelopmentInputs();
+  respawnIfReady();
+  damageFeedback.update(dt);
 
-  const lead = AIM_CAMERA_LEAD_TILES * TILE_SIZE;
-  const cameraTargetX = player.x + Math.cos(player.aimAngle) * lead;
-  const cameraTargetY = player.y + Math.sin(player.aimAngle) * lead;
-  camera.follow(cameraTargetX, cameraTargetY, dt);
+  if (player.health.alive) {
+    const lead = AIM_CAMERA_LEAD_TILES * TILE_SIZE;
+    const cameraTargetX = player.x + Math.cos(player.aimAngle) * lead;
+    const cameraTargetY = player.y + Math.sin(player.aimAngle) * lead;
+    camera.follow(cameraTargetX, cameraTargetY, dt);
+  }
+
+  devMessageTimer = Math.max(0, devMessageTimer - dt);
+  if (devMessageTimer <= 0) devMessage = 'READY';
 
   statusClock += dt;
-  if (statusClock >= 0.06) {
+  if (statusClock >= 0.05) {
     statusClock = 0;
     updateDiagnostics();
   }
@@ -76,10 +156,18 @@ function render(dt, now, isPaused) {
 
   camera.begin(ctx);
   worldRenderer.drawBase(camera, debug);
-  playerRenderer.draw(player);
-  worldRenderer.drawForeground(player, debug);
-  if (debug) playerRenderer.drawDebug(player);
+  damageFeedback.drawWorld();
+
+  if (player.health.alive) {
+    playerRenderer.draw(player);
+    damageFeedback.drawPlayerFeedback(player);
+    if (debug) playerRenderer.drawDebug(player);
+  }
+
+  worldRenderer.drawForeground(player.health.alive ? player : null, debug);
   camera.end(ctx);
+
+  damageFeedback.drawScreen(player, innerWidth, innerHeight);
 
   if (isPaused) {
     ctx.fillStyle = 'rgba(5, 13, 19, .38)';
@@ -101,6 +189,26 @@ function updateDashHud() {
   document.getElementById('dashCount').textContent = `${player.dashCharges}/${DASH_CHARGES_MAX}`;
 }
 
+function updateHealthHud() {
+  const health = player.health;
+  const root = document.getElementById('healthRoot');
+  root.classList.toggle('dead', !health.alive);
+  root.classList.toggle('protected', health.isSpawnProtected());
+  document.getElementById('healthValue').textContent = health.alive ? `${Math.ceil(health.health)}` : '0';
+  document.getElementById('healthFill').style.width = `${Math.round(health.healthPercent() * 100)}%`;
+  document.getElementById('healthStatus').textContent = health.isSpawnProtected()
+    ? `PROTECTED ${health.spawnProtectionTimer.toFixed(1)}S`
+    : health.alive && health.timeSinceDamage < 7
+      ? `REGEN IN ${Math.max(0, 7 - health.timeSinceDamage).toFixed(1)}S`
+      : health.alive && health.health < 75
+        ? 'REGENERATING'
+        : '150 MAX · REGEN CAP 75';
+
+  const respawn = document.getElementById('respawnRoot');
+  respawn.classList.toggle('visible', !health.alive);
+  document.getElementById('respawnValue').textContent = `${Math.max(0, health.respawnTimer).toFixed(1)}`;
+}
+
 function updateDiagnostics() {
   const tile = map.tileAtWorld(player.x, player.y);
   document.getElementById('coords').textContent = `Tile ${tile.col}, ${tile.row}`;
@@ -113,8 +221,14 @@ function updateDiagnostics() {
   document.getElementById('staminaRoot').classList.toggle('sprinting', player.sprinting);
   document.getElementById('staminaRoot').classList.toggle('recovering', !player.sprinting && player.staminaRegenDelay > 0);
   document.getElementById('dashState').textContent = player.dashing ? 'DASHING' : player.dashCooldown > 0 ? `${player.dashCooldown.toFixed(2)}S` : 'READY';
-  document.getElementById('invulnState').textContent = player.isInvulnerable() ? `${player.invulnerabilityTimer.toFixed(2)}S` : 'OFF';
+  document.getElementById('invulnState').textContent = player.isInvulnerable()
+    ? player.health.isSpawnProtected()
+      ? `SPAWN ${player.health.spawnProtectionTimer.toFixed(2)}S`
+      : `DASH ${player.invulnerabilityTimer.toFixed(2)}S`
+    : 'OFF';
+  document.getElementById('damageTestState').textContent = devMessage;
   updateDashHud();
+  updateHealthHud();
 }
 
 const loop = new GameLoop(update, render);

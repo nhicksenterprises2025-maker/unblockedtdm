@@ -14,12 +14,12 @@
       <span class="mark">UT</span>
       <div>
         <strong>UNBLOCKEDTDM</strong>
-        <small id="buildLabel">BUILD 1.11 · VERSION 1</small>
+        <small id="buildLabel">BUILD 1.12 · VERSION 1</small>
       </div>
     </div>
     <div class="map-meta">
       <strong id="mapLabel">TRAINING COMPLEX</strong>
-      <small id="phaseLabel">Dash / Movement Polish</small>
+      <small id="phaseLabel">Health / Damage / Respawn</small>
     </div>
   </header>
 
@@ -31,11 +31,20 @@
     <div><span>SPEED</span><strong id="speed">0.0 T/S</strong></div>
     <div><span>DASH STATE</span><strong id="dashState">READY</strong></div>
     <div><span>INVULN</span><strong id="invulnState">OFF</strong></div>
+    <div><span>DAMAGE TEST</span><strong id="damageTestState">READY</strong></div>
     <div><span>POSITION</span><strong id="coords">Tile —, —</strong></div>
     <div><span>CAMERA</span><strong id="camera">—</strong></div>
     <div><span>F1</span><strong id="debugState">COLLISION OFF</strong></div>
     <div><span>F11</span><strong>FULLSCREEN</strong></div>
   </aside>
+
+  <section id="healthRoot" class="health-hud">
+    <div class="health-copy">
+      <div><span>HEALTH</span><small id="healthStatus">150 MAX · REGEN CAP 75</small></div>
+      <strong id="healthValue">150</strong>
+    </div>
+    <div class="health-track"><div id="healthFill" class="health-fill"></div></div>
+  </section>
 
   <section id="staminaRoot" class="stamina-hud">
     <div class="stamina-copy">
@@ -53,12 +62,21 @@
   </section>
 
   <div class="aim-note">MOUSE AIM · SHIFT SPRINT · SPACE DASH</div>
+  <div class="dev-note">DEV DAMAGE: F2 -25 · F3 -75 · F4 LETHAL · G FRIENDLY-FIRE TEST · R ROUND RESET</div>
 
   <footer class="engine-footer">
     <span id="fps">— FPS</span>
     <span>64PX TILE GRID</span>
     <span>CANVAS 2D</span>
   </footer>
+
+  <section id="respawnRoot" class="respawn-panel">
+    <div>
+      <span>RESPAWNING</span>
+      <strong id="respawnValue">3.0</strong>
+      <small>Dash charges persist through death</small>
+    </div>
+  </section>
 
   <section id="pausePanel" class="pause-panel">
     <div>

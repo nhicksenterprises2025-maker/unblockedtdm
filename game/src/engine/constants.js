@@ -28,4 +28,18 @@ export const DASH_DURATION = 0.18;
 export const DASH_SPEED_TILES = DASH_DISTANCE_TILES / DASH_DURATION;
 export const DASH_SWEEP_STEP_PIXELS = 6;
 
+export const PLAYER_MAX_HEALTH = 150;
+export const HEALTH_REGEN_DELAY = 7;
+export const HEALTH_REGEN_CAP = 75;
+export const HEALTH_REGEN_PER_SECOND = 15;
+export const HEALTH_BAR_HOLD_TIME = 2.5;
+export const HEALTH_BAR_FADE_TIME = 0.5;
+export const HIT_FLASH_DURATION = 0.12;
+export const DAMAGE_VIGNETTE_DURATION = 0.45;
+export const DAMAGE_INDICATOR_DURATION = 0.75;
+export const RESPAWN_DELAY = 3;
+export const SPAWN_PROTECTION_DURATION = 1;
+export const DAMAGE_HISTORY_TTL = 10;
+export const DEATH_PARTICLE_COUNT = 24;
+
 export const MAX_DT = 1 / 15;
