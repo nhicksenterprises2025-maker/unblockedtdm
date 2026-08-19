@@ -1,14 +1,14 @@
 {
   "product": "UnblockedTDM",
-  "gameVersion": "1.00",
-  "build": 2,
-  "sequence": 2,
-  "phase": "World / Engine",
-  "tag": "build-1.00-v2",
-  "title": "UnblockedTDM Build 1.00 — Version 2",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.00-v2/UnblockedTDM-1.00-v2.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.00-v2/UnblockedTDM-Setup-1.00-v2.exe",
-  "sha256": "7c2fa078a8a7f398f214ff62ceb8e08983677f81a45bce984871d6871a8bf7bb",
-  "installerSha256": "768f3c2dd4e3e0ad8b8be9e671a38898eded2b9d2016b38628b82c3e4f21bb73",
-  "publishedAt": "2026-08-19T22:41:14.918Z"
+  "gameVersion": "1.1",
+  "build": 1,
+  "sequence": 3,
+  "phase": "Character / Movement",
+  "tag": "build-1.1-v1",
+  "title": "UnblockedTDM Build 1.1 — Version 1",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.1-v1/UnblockedTDM-1.1-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.1-v1/UnblockedTDM-Setup-1.1-v1.exe",
+  "sha256": "73784a232b6ed481028de44e51f9977003b2c0581031e6c3670df293feee7a7c",
+  "installerSha256": "a12a2d545284c3d64db26a43faf453c4c03664114a719cc7049b2f797cd432b9",
+  "publishedAt": "2026-08-19T22:59:41.798Z"
 }
