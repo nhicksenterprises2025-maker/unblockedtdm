@@ -40,6 +40,13 @@ export class Camera {
     ctx.restore();
   }
 
+  screenToWorld(screenX, screenY) {
+    return {
+      x: this.x + (screenX - this.width / 2) / this.zoom,
+      y: this.y + (screenY - this.height / 2) / this.zoom
+    };
+  }
+
   visibleBounds(padding = 64) {
     const halfW = this.width / (2 * this.zoom);
     const halfH = this.height / (2 * this.zoom);
