@@ -14,20 +14,23 @@
       <span class="mark">UT</span>
       <div>
         <strong>UNBLOCKEDTDM</strong>
-        <small id="buildLabel">BUILD 1.1 · VERSION 1</small>
+        <small id="buildLabel">BUILD 1.11 · VERSION 1</small>
       </div>
     </div>
     <div class="map-meta">
       <strong id="mapLabel">TRAINING COMPLEX</strong>
-      <small id="phaseLabel">Character / Movement</small>
+      <small id="phaseLabel">Dash / Movement Polish</small>
     </div>
   </header>
 
   <aside class="diagnostics">
     <div><span>MOVEMENT</span><strong>WASD / ARROWS</strong></div>
     <div><span>SPRINT</span><strong>SHIFT</strong></div>
+    <div><span>DASH</span><strong>SPACE</strong></div>
     <div><span>STATE</span><strong id="moveState">IDLE</strong></div>
     <div><span>SPEED</span><strong id="speed">0.0 T/S</strong></div>
+    <div><span>DASH STATE</span><strong id="dashState">READY</strong></div>
+    <div><span>INVULN</span><strong id="invulnState">OFF</strong></div>
     <div><span>POSITION</span><strong id="coords">Tile —, —</strong></div>
     <div><span>CAMERA</span><strong id="camera">—</strong></div>
     <div><span>F1</span><strong id="debugState">COLLISION OFF</strong></div>
@@ -36,13 +39,20 @@
 
   <section id="staminaRoot" class="stamina-hud">
     <div class="stamina-copy">
-      <span>SPRINT</span>
+      <span>STAMINA</span>
       <strong id="staminaValue">100</strong>
     </div>
     <div class="stamina-track"><div id="staminaFill" class="stamina-fill"></div></div>
   </section>
 
-  <div class="aim-note">MOUSE AIM · LOWER BODY MOVES INDEPENDENTLY</div>
+  <section id="dashRoot" class="dash-hud">
+    <div class="dash-copy"><span>DASH</span><strong id="dashCount">4/4</strong></div>
+    <div class="dash-pips">
+      <i id="dashPip0"></i><i id="dashPip1"></i><i id="dashPip2"></i><i id="dashPip3"></i>
+    </div>
+  </section>
+
+  <div class="aim-note">MOUSE AIM · SHIFT SPRINT · SPACE DASH</div>
 
   <footer class="engine-footer">
     <span id="fps">— FPS</span>
