@@ -17,6 +17,7 @@ import {
   WORLD_HEIGHT,
   WORLD_WIDTH
 } from '../engine/constants.js';
+import { HealthState } from '../combat/HealthState.js';
 import { moveCircle, moveCircleSwept } from '../world/Collision.js';
 
 const WALK_CYCLE_RATE = 3.2;
@@ -45,11 +46,13 @@ function approach(current, target, rate, dt) {
 }
 
 export class Player {
-  constructor(spawn, team = 'blue') {
+  constructor(spawn, team = 'blue', id = 'local-player') {
+    this.id = id;
     this.x = spawn.x;
     this.y = spawn.y;
     this.radius = PLAYER_RADIUS_TILES * TILE_SIZE;
     this.team = team;
+    this.health = new HealthState();
 
     this.aimAngle = 0;
     this.moveAngle = 0;
@@ -85,23 +88,30 @@ export class Player {
   }
 
   update(dt, input, map, camera) {
+    this.health.update(dt);
     this.dashStartedThisFrame = false;
     this.dashEndedThisFrame = false;
     this.dashDeniedTimer = Math.max(0, this.dashDeniedTimer - dt);
     this.invulnerabilityTimer = Math.max(0, this.invulnerabilityTimer - dt);
     if (!this.dashing) this.dashCooldown = Math.max(0, this.dashCooldown - dt);
 
+    if (!this.health.alive) {
+      this.sprinting = false;
+      this.dashing = false;
+      this.state = 'dead';
+      this.velocityX = 0;
+      this.velocityY = 0;
+      this.updateVisualMotion(dt);
+      this.updateTrail(dt);
+      return;
+    }
+
     this.updateAim(input, camera);
 
-    if (input.dashPressed() && !this.dashing) {
-      this.tryStartDash();
-    }
+    if (input.dashPressed() && !this.dashing) this.tryStartDash();
 
-    if (this.dashing) {
-      this.updateDash(dt, map);
-    } else {
-      this.updateLocomotion(dt, input, map);
-    }
+    if (this.dashing) this.updateDash(dt, map);
+    else this.updateLocomotion(dt, input, map);
 
     this.updateVisualMotion(dt);
     this.updateTrail(dt);
@@ -112,9 +122,7 @@ export class Player {
     const worldPointer = camera.screenToWorld(pointer.x, pointer.y);
     const dx = worldPointer.x - this.x;
     const dy = worldPointer.y - this.y;
-    if (Math.abs(dx) + Math.abs(dy) > 0.001) {
-      this.aimAngle = Math.atan2(dy, dx);
-    }
+    if (Math.abs(dx) + Math.abs(dy) > 0.001) this.aimAngle = Math.atan2(dy, dx);
   }
 
   updateLocomotion(dt, input, map) {
@@ -143,23 +151,17 @@ export class Player {
     this.velocityY = dt > 0 ? (this.y - beforeY) / dt : 0;
 
     const actuallyMoving = Math.hypot(this.velocityX, this.velocityY) > 0.01;
-    if (actuallyMoving) {
-      this.moveAngle = Math.atan2(this.velocityY, this.velocityX);
-    }
-
+    if (actuallyMoving) this.moveAngle = Math.atan2(this.velocityY, this.velocityX);
     this.state = actuallyMoving ? (this.sprinting ? 'sprint' : 'walk') : 'idle';
   }
 
   updateStaminaRegen(dt) {
-    if (this.staminaRegenDelay > 0) {
-      this.staminaRegenDelay = Math.max(0, this.staminaRegenDelay - dt);
-    } else {
-      this.stamina = Math.min(SPRINT_STAMINA_MAX, this.stamina + SPRINT_REGEN_PER_SECOND * dt);
-    }
+    if (this.staminaRegenDelay > 0) this.staminaRegenDelay = Math.max(0, this.staminaRegenDelay - dt);
+    else this.stamina = Math.min(SPRINT_STAMINA_MAX, this.stamina + SPRINT_REGEN_PER_SECOND * dt);
   }
 
   tryStartDash() {
-    if (this.dashCooldown > 0 || this.dashCharges <= 0 || this.stamina < DASH_STAMINA_COST) {
+    if (!this.health.alive || this.dashCooldown > 0 || this.dashCharges <= 0 || this.stamina < DASH_STAMINA_COST) {
       this.dashDeniedTimer = 0.18;
       return false;
     }
@@ -185,23 +187,14 @@ export class Player {
     const beforeX = this.x;
     const beforeY = this.y;
 
-    const result = moveCircleSwept(
-      this,
-      dx,
-      dy,
-      map.blockers,
-      { w: WORLD_WIDTH, h: WORLD_HEIGHT },
-      DASH_SWEEP_STEP_PIXELS
-    );
+    const result = moveCircleSwept(this, dx, dy, map.blockers, { w: WORLD_WIDTH, h: WORLD_HEIGHT }, DASH_SWEEP_STEP_PIXELS);
 
     this.velocityX = dt > 0 ? (this.x - beforeX) / dt : 0;
     this.velocityY = dt > 0 ? (this.y - beforeY) / dt : 0;
     this.moveAngle = this.dashDirection;
     this.dashDistanceRemaining = Math.max(0, this.dashDistanceRemaining - result.distance);
 
-    if (result.blocked || result.distance + 0.01 < desiredDistance || this.dashDistanceRemaining <= 0.5) {
-      this.endDash();
-    }
+    if (result.blocked || result.distance + 0.01 < desiredDistance || this.dashDistanceRemaining <= 0.5) this.endDash();
   }
 
   endDash() {
@@ -215,9 +208,10 @@ export class Player {
 
   updateVisualMotion(dt) {
     const speedTiles = this.speedTilesPerSecond();
-    const movingTarget = speedTiles > 0.05 ? 1 : 0;
-    const sprintTarget = this.sprinting ? 1 : 0;
-    const dashTarget = this.dashing ? 1 : 0;
+    const alive = this.health.alive;
+    const movingTarget = alive && speedTiles > 0.05 ? 1 : 0;
+    const sprintTarget = alive && this.sprinting ? 1 : 0;
+    const dashTarget = alive && this.dashing ? 1 : 0;
 
     this.motionBlend = approach(this.motionBlend, movingTarget, movingTarget ? 15 : 10, dt);
     this.sprintBlend = approach(this.sprintBlend, sprintTarget, 11, dt);
@@ -230,14 +224,7 @@ export class Player {
     const leanTarget = this.dashing ? 1 : this.sprinting ? 0.55 : speedTiles > 0.08 ? 0.16 : 0;
     this.bodyLean = approach(this.bodyLean, leanTarget, 12, dt);
 
-    const rate = this.dashing
-      ? 2.1
-      : this.sprinting
-        ? SPRINT_CYCLE_RATE
-        : speedTiles > 0.08
-          ? WALK_CYCLE_RATE
-          : IDLE_CYCLE_RATE;
-
+    const rate = this.dashing ? 2.1 : this.sprinting ? SPRINT_CYCLE_RATE : speedTiles > 0.08 ? WALK_CYCLE_RATE : IDLE_CYCLE_RATE;
     this.animationTime += dt;
     this.animationPhase = (this.animationPhase + dt * rate) % 1;
   }
@@ -245,6 +232,8 @@ export class Player {
   updateTrail(dt) {
     for (const ghost of this.trail) ghost.life -= dt;
     this.trail = this.trail.filter((ghost) => ghost.life > 0);
+
+    if (!this.health.alive) return;
 
     if (this.dashing) {
       this.dashGhostTimer -= dt;
@@ -282,6 +271,34 @@ export class Player {
     if (this.trail.length > 9) this.trail.shift();
   }
 
+  onDeath() {
+    this.sprinting = false;
+    this.dashing = false;
+    this.dashDistanceRemaining = 0;
+    this.invulnerabilityTimer = 0;
+    this.velocityX = 0;
+    this.velocityY = 0;
+    this.state = 'dead';
+    this.trail.length = 0;
+  }
+
+  respawn(spawn) {
+    this.x = spawn.x;
+    this.y = spawn.y;
+    this.stamina = SPRINT_STAMINA_MAX;
+    this.staminaRegenDelay = 0;
+    this.sprinting = false;
+    this.dashing = false;
+    this.dashDistanceRemaining = 0;
+    this.dashCooldown = 0;
+    this.invulnerabilityTimer = 0;
+    this.velocityX = 0;
+    this.velocityY = 0;
+    this.state = 'idle';
+    this.trail.length = 0;
+    this.health.respawn();
+  }
+
   resetForRound(spawn = null) {
     if (spawn) {
       this.x = spawn.x;
@@ -294,7 +311,10 @@ export class Player {
     this.dashDistanceRemaining = 0;
     this.dashCooldown = 0;
     this.invulnerabilityTimer = 0;
+    this.velocityX = 0;
+    this.velocityY = 0;
     this.trail.length = 0;
+    this.health.resetForRound();
   }
 
   staminaPercent() {
@@ -310,14 +330,18 @@ export class Player {
   }
 
   isInvulnerable() {
-    return this.invulnerabilityTimer > 0;
+    return this.health.isSpawnProtected() || this.invulnerabilityTimer > 0;
   }
 
   canFire() {
-    return !this.dashing;
+    return this.health.alive && !this.dashing;
   }
 
   canSwitchWeapon() {
-    return !this.dashing;
+    return this.health.alive && !this.dashing;
+  }
+
+  notifyFired() {
+    this.health.endSpawnProtection();
   }
 }
