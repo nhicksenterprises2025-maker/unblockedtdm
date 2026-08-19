@@ -4,6 +4,20 @@
     {
       "product": "UnblockedTDM",
       "gameVersion": "1.00",
+      "build": 2,
+      "sequence": 2,
+      "phase": "World / Engine",
+      "tag": "build-1.00-v2",
+      "title": "UnblockedTDM Build 1.00 — Version 2",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.00-v2/UnblockedTDM-1.00-v2.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.00-v2/UnblockedTDM-Setup-1.00-v2.exe",
+      "sha256": "7c2fa078a8a7f398f214ff62ceb8e08983677f81a45bce984871d6871a8bf7bb",
+      "installerSha256": "768f3c2dd4e3e0ad8b8be9e671a38898eded2b9d2016b38628b82c3e4f21bb73",
+      "publishedAt": "2026-08-19T22:41:14.918Z"
+    },
+    {
+      "product": "UnblockedTDM",
+      "gameVersion": "1.00",
       "build": 1,
       "sequence": 1,
       "phase": "Pre-Development",
