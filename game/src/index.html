@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnblockedTDM</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="background"></canvas>
+  <main class="shell">
+    <section class="card">
+      <div class="logo">UT</div>
+      <p class="eyebrow">UNBLOCKEDTDM</p>
+      <h1>Game Runtime Installed</h1>
+      <p class="description">This executable is the permanent UnblockedTDM game runtime. Build 1.00 Version 1 establishes the launcher, installer, update, archive, and runtime boundary before gameplay development begins.</p>
+      <div class="build-strip">
+        <div><span>PHASE</span><strong id="phase">—</strong></div>
+        <div><span>BUILD</span><strong id="build">—</strong></div>
+        <div><span>VERSION</span><strong id="version">—</strong></div>
+        <div><span>RENDERER</span><strong>Canvas 2D</strong></div>
+      </div>
+      <div class="runtime-checks">
+        <div><i></i><span>Game executable launched independently from the launcher</span></div>
+        <div><i></i><span>Canvas renderer initialized</span></div>
+        <div><i></i><span>Future builds update this executable in place</span></div>
+      </div>
+      <button id="exit">EXIT UNBLOCKEDTDM</button>
+    </section>
+    <footer id="fps">Renderer starting…</footer>
+  </main>
+  <script src="renderer.js"></script>
+</body>
+</html>

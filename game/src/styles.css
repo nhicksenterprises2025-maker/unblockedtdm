@@ -1,0 +1,20 @@
+:root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #eef8ff; background:#07111c; }
+* { box-sizing: border-box; }
+body { margin:0; overflow:hidden; min-height:100vh; background:#07111c; }
+#background { position:fixed; inset:0; width:100%; height:100%; }
+.shell { position:relative; z-index:1; min-height:100vh; display:grid; place-items:center; padding:40px; }
+.card { width:min(820px, 90vw); padding:48px; border-radius:24px; background:linear-gradient(145deg,rgba(14,31,51,.92),rgba(8,20,34,.9)); border:1px solid rgba(104,195,255,.18); box-shadow:0 30px 80px rgba(0,0,0,.38); backdrop-filter:blur(16px); }
+.logo { width:68px; height:68px; display:grid; place-items:center; border-radius:20px; font-size:24px; font-weight:950; color:#04121f; background:linear-gradient(145deg,#4bd8ff,#6c7cff); box-shadow:0 16px 42px rgba(72,176,255,.28); margin-bottom:26px; }
+.eyebrow { color:#63d2ff; letter-spacing:.2em; font-size:11px; font-weight:900; margin-bottom:8px; }
+h1 { margin:0 0 14px; font-size:42px; letter-spacing:-.03em; }
+.description { margin:0; color:#91a9bd; line-height:1.65; max-width:710px; }
+.build-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:30px 0; }
+.build-strip div { padding:14px; border-radius:12px; background:rgba(83,151,207,.08); border:1px solid rgba(98,176,235,.12); }
+.build-strip span { display:block; font-size:10px; color:#68859e; letter-spacing:.15em; margin-bottom:6px; }
+.build-strip strong { font-size:13px; }
+.runtime-checks { display:grid; gap:10px; color:#9bb1c5; font-size:14px; }
+.runtime-checks div { display:flex; align-items:center; gap:10px; }
+.runtime-checks i { width:8px; height:8px; border-radius:50%; background:#5ce0a2; box-shadow:0 0 14px rgba(92,224,162,.55); }
+button { margin-top:32px; border:1px solid rgba(104,195,255,.22); background:rgba(70,156,218,.12); color:#dff5ff; border-radius:11px; padding:12px 16px; font:inherit; font-weight:800; cursor:pointer; }
+button:hover { background:rgba(70,156,218,.2); }
+footer { position:fixed; right:18px; bottom:14px; color:#59748d; font-size:11px; }

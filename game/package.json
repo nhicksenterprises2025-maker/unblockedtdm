@@ -1,0 +1,7 @@
+{
+  "name": "unblockedtdm-game",
+  "productName": "UnblockedTDM",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "private": true
+}

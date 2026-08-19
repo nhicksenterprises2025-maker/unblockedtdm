@@ -1,0 +1,25 @@
+appId: com.unblockedtdm.launcher
+productName: UnblockedTDM Launcher
+electronVersion: 38.0.0
+asar: true
+files:
+  - src/**/*
+extraResources:
+  - from: ../dist-game/UnblockedTDM.exe
+    to: game/UnblockedTDM.exe
+win:
+  target:
+    - nsis
+  executableName: UnblockedTDM Launcher
+artifactName: UnblockedTDM-Setup.exe
+directories:
+  output: ../dist-launcher
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: UnblockedTDM
+  uninstallDisplayName: UnblockedTDM
+  deleteAppDataOnUninstall: false
