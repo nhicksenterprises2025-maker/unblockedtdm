@@ -96,13 +96,14 @@ export class WorldRenderer {
     const ctx = this.ctx;
     const p = PALETTES[item.palette] || PALETTES.steel;
     const depth = item.kind === 'tall' ? 20 : item.kind === 'wall' ? 12 : 7;
+    const fadeDepth = player ? Math.max(40, player.radius * 2.2) : 0;
     const obstructsPlayer = Boolean(
       player &&
       item.kind === 'tall' &&
       player.x > item.x - player.radius &&
       player.x < item.x + item.w + player.radius &&
-      player.y > item.y - player.radius &&
-      player.y < item.y + item.h + player.radius
+      player.y > item.y + item.h - 10 &&
+      player.y < item.y + item.h + fadeDepth
     );
 
     ctx.save();
