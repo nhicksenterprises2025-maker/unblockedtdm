@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "UnblockedTDM",
+      "gameVersion": "1.12",
+      "build": 1,
+      "sequence": 5,
+      "phase": "Health / Damage / Respawn",
+      "tag": "build-1.12-v1",
+      "title": "UnblockedTDM Build 1.12 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.12-v1/UnblockedTDM-1.12-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.12-v1/UnblockedTDM-Setup-1.12-v1.exe",
+      "sha256": "f31aa5c327ae4e52915600cf8bbc45f42733a5c0beb6dae32b5803564a37ff3e",
+      "installerSha256": "d0c74fcd700fedcfa604693f7dc1cda1e2abc5cc2010fb837a15e50c64bd228c",
+      "publishedAt": "2026-08-19T23:29:45.113Z"
+    },
+    {
+      "product": "UnblockedTDM",
       "gameVersion": "1.11",
       "build": 1,
       "sequence": 4,
