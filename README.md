@@ -6,10 +6,10 @@ The game name and technical versioning are **UnblockedTDM**. "Beta" describes th
 
 ## Current development build
 
-**Build 1.11 — Version 1**  
-Phase: **Dash / Movement Polish**
+**Build 1.12 — Version 1**  
+Phase: **Health / Damage / Respawn**
 
-Build 1.11 Version 1 completes the core player movement kit with the 4-charge dash system and replaces the first-pass player body/locomotion with a more natural segmented character, smoother upper/lower-body rotation, believable gait timing, foot placement, body lean, and animation blending.
+Build 1.12 Version 1 adds the complete health, damage, death, respawn, spawn-protection, damage-feedback, and dynamic-spawn foundation while preserving the naturalized movement and dash systems from 1.11 v1.
 
 ## Architecture
 
@@ -34,22 +34,20 @@ The NSIS installer is configured as a per-user installation. Player/launcher dat
 - Open Game Folder diagnostics action.
 - Separate current, staging, backup, and archive storage areas.
 
-## Build 1.11 Version 1 features
+## Build 1.12 Version 1 features
 
-- Naturalized segmented player body: torso, neck, head, thighs, knees, lower legs, feet, upper arms, elbows, forearms, and hands.
-- Smooth independent mouse aim for the upper body and movement-facing lower body.
-- Visual turn smoothing without adding gameplay input latency.
-- Re-timed walk/sprint gait, stride, knee bend, foot placement, breathing, body bob, shoulder motion, and movement lean.
-- 5 tiles/second base movement and Shift sprint at +35% speed.
-- 100 sprint stamina: 5 seconds continuous use, 2.8-second regen delay, 3.2-second full refill.
-- Space dash with 4 charges.
-- 3-tile dash distance in current aim direction.
-- 15 stamina cost per dash.
-- 0.3-second dash cooldown and 0.5-second invulnerability window.
-- Swept dash collision prevents tunneling through walls and shortens dashes when blocked.
-- Dash afterimages, ground streak, ring feedback, invulnerability indicator, and four-pip HUD.
-- Combat-ready dash state hooks for later firing, switching, damage, and round systems.
-- Training Complex, 64px tile system, camera lead, cover fading, F1 debug, F11 fullscreen, and ESC pause preserved.
+- 150 maximum HP and no armor.
+- Common damage-processing layer with friendly-fire, self-damage, dash-invulnerability, and spawn-protection rules.
+- 7-second regeneration delay; health regenerates only below 75 HP and stops at 75.
+- Damage-only overhead health bar, hit flash, directional damage indicator, and red edge vignette.
+- Damage history foundation for later kills/assists/suicide credit.
+- Team-colored particle death burst and no corpse.
+- 3-second respawn.
+- Respawn restores HP and stamina but does not restore dash charges.
+- 1-second spawn protection.
+- Dynamic spawn scoring foundation using enemy LOS/distance, teammate proximity, and recent combat.
+- Development damage controls: F2 -25, F3 -75, F4 lethal, G friendly-fire test, R round reset.
+- Natural segmented character, independent aim, sprint, dash, swept collision, camera lead, cover fading, and Training Complex preserved.
 
 ## Release system
 
