@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "UnblockedTDM",
+      "gameVersion": "1.11",
+      "build": 1,
+      "sequence": 4,
+      "phase": "Dash / Movement Polish",
+      "tag": "build-1.11-v1",
+      "title": "UnblockedTDM Build 1.11 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.11-v1/UnblockedTDM-1.11-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.11-v1/UnblockedTDM-Setup-1.11-v1.exe",
+      "sha256": "540cdc6b57b47e0cf731092fa43ce5b17e6150e135299aaaca6b205c194e376b",
+      "installerSha256": "639d7fb980dfa2566868adb32605127cd9eb6231ed80cd2ba5d3e7c587bebcca",
+      "publishedAt": "2026-08-19T23:14:37.899Z"
+    },
+    {
+      "product": "UnblockedTDM",
       "gameVersion": "1.1",
       "build": 1,
       "sequence": 3,
