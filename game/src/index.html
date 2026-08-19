@@ -8,19 +8,56 @@
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
+
   <header class="build-hud">
-    <div class="brand"><span class="mark">UT</span><div><strong>UNBLOCKEDTDM</strong><small id="buildLabel">BUILD 1.00 · VERSION 2</small></div></div>
-    <div class="map-meta"><strong id="mapLabel">TRAINING COMPLEX</strong><small id="phaseLabel">World / Engine</small></div>
+    <div class="brand">
+      <span class="mark">UT</span>
+      <div>
+        <strong>UNBLOCKEDTDM</strong>
+        <small id="buildLabel">BUILD 1.1 · VERSION 1</small>
+      </div>
+    </div>
+    <div class="map-meta">
+      <strong id="mapLabel">TRAINING COMPLEX</strong>
+      <small id="phaseLabel">Character / Movement</small>
+    </div>
   </header>
+
   <aside class="diagnostics">
-    <div><span>WORLD EXPLORER</span><strong>WASD / ARROWS</strong></div>
+    <div><span>MOVEMENT</span><strong>WASD / ARROWS</strong></div>
+    <div><span>SPRINT</span><strong>SHIFT</strong></div>
+    <div><span>STATE</span><strong id="moveState">IDLE</strong></div>
+    <div><span>SPEED</span><strong id="speed">0.0 T/S</strong></div>
     <div><span>POSITION</span><strong id="coords">Tile —, —</strong></div>
     <div><span>CAMERA</span><strong id="camera">—</strong></div>
     <div><span>F1</span><strong id="debugState">COLLISION OFF</strong></div>
     <div><span>F11</span><strong>FULLSCREEN</strong></div>
   </aside>
-  <footer class="engine-footer"><span id="fps">— FPS</span><span>64PX TILE GRID</span><span>CANVAS 2D</span></footer>
-  <section id="pausePanel" class="pause-panel"><div><p>UNBLOCKEDTDM</p><h1>PAUSED</h1><span>Press ESC to return to the world</span></div></section>
+
+  <section id="staminaRoot" class="stamina-hud">
+    <div class="stamina-copy">
+      <span>SPRINT</span>
+      <strong id="staminaValue">100</strong>
+    </div>
+    <div class="stamina-track"><div id="staminaFill" class="stamina-fill"></div></div>
+  </section>
+
+  <div class="aim-note">MOUSE AIM · LOWER BODY MOVES INDEPENDENTLY</div>
+
+  <footer class="engine-footer">
+    <span id="fps">— FPS</span>
+    <span>64PX TILE GRID</span>
+    <span>CANVAS 2D</span>
+  </footer>
+
+  <section id="pausePanel" class="pause-panel">
+    <div>
+      <p>UNBLOCKEDTDM</p>
+      <h1>PAUSED</h1>
+      <span>Press ESC to return to the match space</span>
+    </div>
+  </section>
+
   <script type="module" src="renderer.js"></script>
 </body>
 </html>
