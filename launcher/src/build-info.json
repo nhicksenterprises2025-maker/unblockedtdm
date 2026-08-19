@@ -1,10 +1,10 @@
 {
   "product": "UnblockedTDM",
   "gameVersion": "1.00",
-  "build": 1,
-  "sequence": 1,
-  "phase": "Pre-Development",
-  "tag": "build-1.00-v1",
-  "title": "UnblockedTDM Build 1.00 — Version 1",
+  "build": 2,
+  "sequence": 2,
+  "phase": "World / Engine",
+  "tag": "build-1.00-v2",
+  "title": "UnblockedTDM Build 1.00 — Version 2",
   "repository": "nhicksenterprises2025-maker/unblockedtdm"
 }

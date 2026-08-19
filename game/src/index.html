@@ -7,28 +7,20 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <canvas id="background"></canvas>
-  <main class="shell">
-    <section class="card">
-      <div class="logo">UT</div>
-      <p class="eyebrow">UNBLOCKEDTDM</p>
-      <h1>Game Runtime Installed</h1>
-      <p class="description">This executable is the permanent UnblockedTDM game runtime. Build 1.00 Version 1 establishes the launcher, installer, update, archive, and runtime boundary before gameplay development begins.</p>
-      <div class="build-strip">
-        <div><span>PHASE</span><strong id="phase">—</strong></div>
-        <div><span>BUILD</span><strong id="build">—</strong></div>
-        <div><span>VERSION</span><strong id="version">—</strong></div>
-        <div><span>RENDERER</span><strong>Canvas 2D</strong></div>
-      </div>
-      <div class="runtime-checks">
-        <div><i></i><span>Game executable launched independently from the launcher</span></div>
-        <div><i></i><span>Canvas renderer initialized</span></div>
-        <div><i></i><span>Future builds update this executable in place</span></div>
-      </div>
-      <button id="exit">EXIT UNBLOCKEDTDM</button>
-    </section>
-    <footer id="fps">Renderer starting…</footer>
-  </main>
-  <script src="renderer.js"></script>
+  <canvas id="gameCanvas"></canvas>
+  <header class="build-hud">
+    <div class="brand"><span class="mark">UT</span><div><strong>UNBLOCKEDTDM</strong><small id="buildLabel">BUILD 1.00 · VERSION 2</small></div></div>
+    <div class="map-meta"><strong id="mapLabel">TRAINING COMPLEX</strong><small id="phaseLabel">World / Engine</small></div>
+  </header>
+  <aside class="diagnostics">
+    <div><span>WORLD EXPLORER</span><strong>WASD / ARROWS</strong></div>
+    <div><span>POSITION</span><strong id="coords">Tile —, —</strong></div>
+    <div><span>CAMERA</span><strong id="camera">—</strong></div>
+    <div><span>F1</span><strong id="debugState">COLLISION OFF</strong></div>
+    <div><span>F11</span><strong>FULLSCREEN</strong></div>
+  </aside>
+  <footer class="engine-footer"><span id="fps">— FPS</span><span>64PX TILE GRID</span><span>CANVAS 2D</span></footer>
+  <section id="pausePanel" class="pause-panel"><div><p>UNBLOCKEDTDM</p><h1>PAUSED</h1><span>Press ESC to return to the world</span></div></section>
+  <script type="module" src="renderer.js"></script>
 </body>
 </html>

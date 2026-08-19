@@ -1,0 +1,10 @@
+export const TILE_SIZE = 64;
+export const MAP_COLS = 32;
+export const MAP_ROWS = 22;
+export const WORLD_WIDTH = MAP_COLS * TILE_SIZE;
+export const WORLD_HEIGHT = MAP_ROWS * TILE_SIZE;
+export const CAMERA_LERP = 10;
+export const DEFAULT_ZOOM = 1.18;
+export const PROBE_SPEED_TILES = 5;
+export const PROBE_RADIUS_TILES = 0.34;
+export const MAX_DT = 1 / 15;
