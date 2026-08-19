@@ -6,10 +6,10 @@ The game name and technical versioning are **UnblockedTDM**. "Beta" describes th
 
 ## Current development build
 
-**Build 1.1 — Version 1**  
-Phase: **Character / Movement**
+**Build 1.11 — Version 1**  
+Phase: **Dash / Movement Polish**
 
-Build 1.1 Version 1 replaces the World Explorer probe with the first real player body and completes the base locomotion layer: independent mouse aiming, 5 tiles/second movement, sprint/stamina, locomotion animation states, team readability, aim-direction camera lead, and player-aware tall-cover fading.
+Build 1.11 Version 1 completes the core player movement kit with the 4-charge dash system and replaces the first-pass player body/locomotion with a more natural segmented character, smoother upper/lower-body rotation, believable gait timing, foot placement, body lean, and animation blending.
 
 ## Architecture
 
@@ -34,21 +34,22 @@ The NSIS installer is configured as a per-user installation. Player/launcher dat
 - Open Game Folder diagnostics action.
 - Separate current, staging, backup, and archive storage areas.
 
-## Build 1.1 Version 1 features
+## Build 1.11 Version 1 features
 
-- Full stylized player body with visible head, torso, arms, legs, shadow, and blue-team floor ring.
-- Hybrid top-down rendering designed to keep the character readable.
-- Independent mouse aim for the upper body while movement remains WASD-driven.
-- 5 tiles/second base movement.
-- Sprint on Shift at +35% speed.
+- Naturalized segmented player body: torso, neck, head, thighs, knees, lower legs, feet, upper arms, elbows, forearms, and hands.
+- Smooth independent mouse aim for the upper body and movement-facing lower body.
+- Visual turn smoothing without adding gameplay input latency.
+- Re-timed walk/sprint gait, stride, knee bend, foot placement, breathing, body bob, shoulder motion, and movement lean.
+- 5 tiles/second base movement and Shift sprint at +35% speed.
 - 100 sprint stamina: 5 seconds continuous use, 2.8-second regen delay, 3.2-second full refill.
-- Idle, walk, and sprint locomotion animation states.
-- Sprint body lean, faster leg animation, and faint speed trail.
-- Smooth camera lead toward aim direction.
-- Existing collision/map rules applied to the actual player body.
-- Tall structures render above the player and fade when they overlap the local character.
-- Live stamina, speed, movement-state, position, and camera diagnostics.
-- Escape pause, F11 fullscreen, and F1 collision visualization.
+- Space dash with 4 charges.
+- 3-tile dash distance in current aim direction.
+- 15 stamina cost per dash.
+- 0.3-second dash cooldown and 0.5-second invulnerability window.
+- Swept dash collision prevents tunneling through walls and shortens dashes when blocked.
+- Dash afterimages, ground streak, ring feedback, invulnerability indicator, and four-pip HUD.
+- Combat-ready dash state hooks for later firing, switching, damage, and round systems.
+- Training Complex, 64px tile system, camera lead, cover fading, F1 debug, F11 fullscreen, and ESC pause preserved.
 
 ## Release system
 
