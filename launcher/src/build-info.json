@@ -1,10 +1,10 @@
 {
   "product": "UnblockedTDM",
-  "gameVersion": "1.11",
+  "gameVersion": "1.12",
   "build": 1,
-  "sequence": 4,
-  "phase": "Dash / Movement Polish",
-  "tag": "build-1.11-v1",
-  "title": "UnblockedTDM Build 1.11 — Version 1",
+  "sequence": 5,
+  "phase": "Health / Damage / Respawn",
+  "tag": "build-1.12-v1",
+  "title": "UnblockedTDM Build 1.12 — Version 1",
   "repository": "nhicksenterprises2025-maker/unblockedtdm"
 }
