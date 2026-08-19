@@ -1,7 +1,7 @@
 const BLOCKED_KEYS = new Set([
   'KeyW', 'KeyA', 'KeyS', 'KeyD',
   'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-  'ShiftLeft', 'ShiftRight', 'Tab', 'F1'
+  'ShiftLeft', 'ShiftRight', 'Space', 'Tab', 'F1'
 ]);
 
 export class Input {
@@ -61,6 +61,10 @@ export class Input {
 
   sprintHeld() {
     return this.isDown('ShiftLeft', 'ShiftRight');
+  }
+
+  dashPressed() {
+    return this.wasPressed('Space');
   }
 
   pointerPosition() {
