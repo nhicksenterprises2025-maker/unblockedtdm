@@ -6,5 +6,6 @@
   "tag": "build-1.1-v1",
   "title": "UnblockedTDM Build 1.1 — Version 1",
   "notesFile": "docs/releases/build-1.1-v1.md",
-  "sequence": 3
+  "sequence": 3,
+  "releaseRevision": 2
 }
