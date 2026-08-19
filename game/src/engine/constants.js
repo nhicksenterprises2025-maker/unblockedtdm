@@ -19,4 +19,13 @@ export const SPRINT_REGEN_DELAY = 2.8;
 export const SPRINT_REGEN_FULL_TIME = 3.2;
 export const SPRINT_REGEN_PER_SECOND = SPRINT_STAMINA_MAX / SPRINT_REGEN_FULL_TIME;
 
+export const DASH_CHARGES_MAX = 4;
+export const DASH_DISTANCE_TILES = 3;
+export const DASH_STAMINA_COST = 15;
+export const DASH_COOLDOWN = 0.3;
+export const DASH_INVULNERABILITY = 0.5;
+export const DASH_DURATION = 0.18;
+export const DASH_SPEED_TILES = DASH_DISTANCE_TILES / DASH_DURATION;
+export const DASH_SWEEP_STEP_PIXELS = 6;
+
 export const MAX_DT = 1 / 15;
