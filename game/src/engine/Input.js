@@ -96,8 +96,6 @@ export class Input {
     const errorY = this.rawPointer.y - this.pointer.y;
     const errorDistance = Math.hypot(errorX, errorY);
 
-    // Small mouse corrections settle very quickly so the displayed crosshair
-    // remains faithful to the user's hand instead of floating behind it.
     const precisionRadius = 18 + sensitivity * 4;
     if (errorDistance <= precisionRadius) {
       const settle = 1 - Math.exp(-(46 + 18 * sensitivity) * dt);
@@ -113,8 +111,6 @@ export class Input {
         this.aimVelocity.y = 0;
       }
     } else {
-      // Larger turns keep a short acceleration curve for smoothness, but with
-      // substantially less latency than Build 1.4.
       const response = 24 + 18 * sensitivity;
       const maxSpeed = 1400 + 2200 * sensitivity;
       let desiredVX = errorX * response;
@@ -173,7 +169,6 @@ export class Input {
   adsHeld() { return this.mouseDown.has(2); }
 
   pointerPosition() {
-    this.updateAimPointer();
     return { ...this.pointer };
   }
 
