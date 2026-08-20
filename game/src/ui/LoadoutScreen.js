@@ -1,17 +1,37 @@
 import { PRIMARY_WEAPONS, SECONDARY_WEAPONS, formatWeaponStats } from '../data/weapons.js';
 
 export class LoadoutScreen {
-  constructor(root, store, onDeploy) {
+  constructor(root, store, onComplete) {
     this.root = root;
     this.store = store;
-    this.onDeploy = onDeploy;
+    this.onComplete = onComplete;
+    this.mode = 'play';
     const active = this.store.get();
     this.selectedIndex = active.index;
     this.selection = { primary: active.primary, secondary: active.secondary };
     this.activeSlot = 'primary';
     this.previewWeapon = this.selection.primary;
-    this.message = '25 loadout slots save automatically when you equip a weapon.';
+    this.message = 'Choose a saved slot, then click weapon cards to edit it.';
+    this.root.classList.add('hidden');
     this.render();
+  }
+
+  open(mode = 'play') {
+    this.mode = mode === 'manage' ? 'manage' : 'play';
+    const active = this.store.get();
+    this.selectedIndex = active.index;
+    this.selection = { primary: active.primary, secondary: active.secondary };
+    this.activeSlot = 'primary';
+    this.previewWeapon = this.selection.primary;
+    this.message = this.mode === 'play'
+      ? 'Choose your saved loadout, inspect weapon stats, then start the match.'
+      : 'Edit any of the 25 persistent loadout slots. Changes save immediately.';
+    this.root.classList.remove('hidden');
+    this.render();
+  }
+
+  close() {
+    this.root.classList.add('hidden');
   }
 
   weaponsFor(slot) { return slot === 'primary' ? PRIMARY_WEAPONS : SECONDARY_WEAPONS; }
@@ -29,11 +49,6 @@ export class LoadoutScreen {
     this.activeSlot = slot;
     this.previewWeapon = this.selection[slot] || this.weaponsFor(slot)[0];
     this.message = `${slot.toUpperCase()} slot active.`;
-    this.render();
-  }
-
-  preview(weapon) {
-    this.previewWeapon = weapon;
     this.render();
   }
 
@@ -75,15 +90,15 @@ export class LoadoutScreen {
     this.render();
   }
 
-  deploy() {
+  complete() {
     if (!this.selection.primary || !this.selection.secondary) {
       this.message = 'Choose both a PRIMARY and SECONDARY weapon first.';
       this.render();
       return;
     }
     const saved = this.persistSelection();
-    this.root.classList.add('hidden');
-    this.onDeploy?.({ primary: saved.primary, secondary: saved.secondary, slotIndex: saved.index, name: saved.name });
+    this.close();
+    this.onComplete?.({ mode: this.mode, primary: saved.primary, secondary: saved.secondary, slotIndex: saved.index, name: saved.name });
   }
 
   render() {
@@ -97,9 +112,9 @@ export class LoadoutScreen {
     const current = savedSlots[this.selectedIndex];
 
     this.root.innerHTML = `
-      <div class="loadout-shell loadout-shell-v15">
+      <div class="loadout-shell loadout-shell-v16" data-ui-surface>
         <div class="loadout-head">
-          <div><span class="eyebrow">UNBLOCKEDTDM · BUILD 1.5</span><h1>LOADOUTS</h1><p>Choose one of 25 persistent slots, edit its weapons, then deploy.</p></div>
+          <div><span class="eyebrow">UNBLOCKEDTDM · BUILD 1.6</span><h1>${this.mode === 'play' ? 'CHOOSE YOUR LOADOUT' : 'LOADOUTS'}</h1><p>${this.mode === 'play' ? 'Select one of your 25 saved setups before deployment.' : 'Persistent slots save across restarts and future launcher updates.'}</p></div>
           <div class="selected-summary"><span>PRIMARY <b>${this.selection.primary?.name || '—'}</b></span><span>SECONDARY <b>${this.selection.secondary?.name || '—'}</b></span></div>
         </div>
         <div class="loadout-presets" aria-label="Saved loadouts">
@@ -131,28 +146,22 @@ export class LoadoutScreen {
             <div class="loadout-message">${this.message}</div>
           </div>
         </div>
-        <div class="loadout-foot"><div><span>READY LOADOUT · SLOT ${String(this.selectedIndex + 1).padStart(2, '0')}</span><strong>${current.name} · ${this.selection.primary?.name || '—'} + ${this.selection.secondary?.name || '—'}</strong><small>During a round break you can switch instantly between any of these 25 saved slots.</small></div><button type="button" id="deployButton" class="deploy-button">START MATCH</button></div>
+        <div class="loadout-foot"><div><span>ACTIVE SAVED LOADOUT · SLOT ${String(this.selectedIndex + 1).padStart(2, '0')}</span><strong>${current.name} · ${this.selection.primary?.name || '—'} + ${this.selection.secondary?.name || '—'}</strong><small>During a round break you can switch instantly between any of these 25 saved slots.</small></div><button type="button" id="deployButton" class="deploy-button">${this.mode === 'play' ? 'START MATCH' : 'SAVE & BACK TO MENU'}</button></div>
       </div>`;
 
     for (const button of this.root.querySelectorAll('[data-loadout-index]')) button.addEventListener('click', () => this.loadSavedSlot(Number(button.dataset.loadoutIndex)));
     for (const button of this.root.querySelectorAll('[data-slot]')) button.addEventListener('click', () => this.setSlot(button.dataset.slot));
-    for (const button of this.root.querySelectorAll('[data-weapon]')) {
-      button.addEventListener('mouseenter', () => {
-        const item = list.find((entry) => entry.id === button.dataset.weapon);
-        if (item && item !== this.previewWeapon) this.previewWeapon = item;
-      });
-      button.addEventListener('click', () => {
-        const item = list.find((entry) => entry.id === button.dataset.weapon);
-        if (item) this.select(item);
-      });
-    }
+    for (const button of this.root.querySelectorAll('[data-weapon]')) button.addEventListener('click', () => {
+      const item = list.find((entry) => entry.id === button.dataset.weapon);
+      if (item) this.select(item);
+    });
     this.root.querySelector('#selectWeapon')?.addEventListener('click', () => this.select(weapon));
     this.root.querySelector('#saveLoadoutName')?.addEventListener('click', () => this.renameCurrent(this.root.querySelector('#loadoutName')?.value));
     this.root.querySelector('#loadoutName')?.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') this.renameCurrent(event.currentTarget.value);
     });
     this.root.querySelector('#resetLoadoutSlot')?.addEventListener('click', () => this.resetCurrent());
-    this.root.querySelector('#deployButton')?.addEventListener('click', () => this.deploy());
+    this.root.querySelector('#deployButton')?.addEventListener('click', () => this.complete());
   }
 
   description(weapon) {
