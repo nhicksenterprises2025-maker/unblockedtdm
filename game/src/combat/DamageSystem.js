@@ -1,4 +1,8 @@
 export class DamageSystem {
+  constructor({ onDamage = null } = {}) {
+    this.onDamage = onDamage;
+  }
+
   applyDamage({
     target,
     amount,
@@ -6,7 +10,8 @@ export class DamageSystem {
     sourceTeam = null,
     sourcePosition = null,
     sourceType = 'unknown',
-    selfDamage = false
+    selfDamage = false,
+    critical = false
   }) {
     if (!target?.health?.alive) {
       return { applied: false, reason: 'dead', killed: false, amount: 0 };
@@ -42,11 +47,26 @@ export class DamageSystem {
       directionAngle
     });
 
-    return {
+    const enriched = {
       ...result,
       reason: result.applied ? 'applied' : 'ignored',
       directionAngle,
+      critical: Boolean(critical),
       recentDamage: result.killed ? target.health.recentDamage() : null
     };
+
+    if (enriched.applied) {
+      this.onDamage?.({
+        sourceId,
+        sourceTeam,
+        sourceType,
+        target,
+        selfDamage: isSelf && selfDamage,
+        critical: Boolean(critical),
+        result: enriched
+      });
+    }
+
+    return enriched;
   }
 }
