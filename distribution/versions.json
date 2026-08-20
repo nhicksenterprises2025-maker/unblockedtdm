@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "UnblockedTDM",
+      "gameVersion": "1.13",
+      "build": 1,
+      "sequence": 6,
+      "phase": "Weapon Framework / Assault Rifle",
+      "tag": "build-1.13-v1",
+      "title": "UnblockedTDM Build 1.13 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.13-v1/UnblockedTDM-1.13-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.13-v1/UnblockedTDM-Setup-1.13-v1.exe",
+      "sha256": "39ef4849ab72d03c5f183d6292bb953cb2df60169eab23b547dd827f1d20321a",
+      "installerSha256": "52ce7efb6fb8a454378d5a9235059d7f4b5d90f7270134475c0674a9a96c05f9",
+      "publishedAt": "2026-08-20T02:16:41.767Z"
+    },
+    {
+      "product": "UnblockedTDM",
       "gameVersion": "1.12",
       "build": 1,
       "sequence": 5,
