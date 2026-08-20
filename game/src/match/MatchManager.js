@@ -7,6 +7,16 @@ const ROUND_BREAK_DURATION = 10;
 const SUICIDE_CREDIT_WINDOW = 5;
 const ASSIST_DAMAGE_THRESHOLD = 45;
 
+function freshStats() {
+  return { kills: 0, deaths: 0, assists: 0, damage: 0, criticals: 0, streak: 0, bestStreak: 0 };
+}
+
+function formatDuration(seconds) {
+  const total = Math.max(0, Math.round(seconds));
+  const minutes = Math.floor(total / 60);
+  return `${minutes}:${String(total % 60).padStart(2, '0')}`;
+}
+
 export class MatchManager {
   constructor({ players, spawnSystem, projectileSystem, onRoundReset = null, onKill = null, onRoundEnd = null, onMatchEnd = null }) {
     this.players = players;
@@ -27,7 +37,10 @@ export class MatchManager {
     this.matchWinner = null;
     this.recentCombat = [];
     this.goTimer = 0;
-    this.stats = new Map(players.map((player) => [player.id, { kills: 0, deaths: 0, assists: 0 }]));
+    this.matchElapsed = 0;
+    this.roundElapsed = 0;
+    this.roundHistory = [];
+    this.stats = new Map(players.map((player) => [player.id, freshStats()]));
   }
 
   startMatch() {
@@ -35,7 +48,10 @@ export class MatchManager {
     this.roundWins = { blue: 0, red: 0 };
     this.matchWinner = null;
     this.lastRoundWinner = null;
-    this.stats = new Map(this.players.map((player) => [player.id, { kills: 0, deaths: 0, assists: 0 }]));
+    this.matchElapsed = 0;
+    this.roundElapsed = 0;
+    this.roundHistory = [];
+    this.stats = new Map(this.players.map((player) => [player.id, freshStats()]));
     this.beginRound();
   }
 
@@ -43,6 +59,7 @@ export class MatchManager {
     this.state = 'countdown';
     this.stateTimer = COUNTDOWN_DURATION;
     this.roundTimer = ROUND_DURATION;
+    this.roundElapsed = 0;
     this.roundKills = { blue: 0, red: 0 };
     this.suddenDeath = false;
     this.lastRoundWinner = null;
@@ -71,6 +88,8 @@ export class MatchManager {
 
   update(dt) {
     this.goTimer = Math.max(0, this.goTimer - dt);
+    if (this.state !== 'waiting' && this.state !== 'match-over') this.matchElapsed += dt;
+    if (this.state === 'countdown' || this.state === 'active' || this.state === 'sudden-death') this.roundElapsed += dt;
     for (const event of this.recentCombat) event.age += dt;
     this.recentCombat = this.recentCombat.filter((event) => event.age <= 8);
     if (this.state === 'countdown') {
@@ -96,7 +115,18 @@ export class MatchManager {
     this.recentCombat.push({ x, y, age: 0 });
     if (this.recentCombat.length > 24) this.recentCombat.shift();
   }
+
   playerById(id) { return this.players.find((player) => player.id === id) || null; }
+
+  recordDamage({ sourceId, target, selfDamage = false, critical = false, result }) {
+    if (!sourceId || !target || !result?.applied || selfDamage || sourceId === target.id) return;
+    const source = this.playerById(sourceId);
+    if (!source || source.team === target.team) return;
+    const stats = this.stats.get(sourceId);
+    if (!stats) return;
+    stats.damage += result.amount;
+    if (critical) stats.criticals += 1;
+  }
 
   resolveCreditedKiller(attacker, victim, result) {
     if (attacker && attacker.id !== victim.id && attacker.team !== victim.team) return attacker;
@@ -118,20 +148,28 @@ export class MatchManager {
       if (!source || source.team === victim.team) continue;
       grouped.set(source.id, (grouped.get(source.id) || 0) + hit.amount);
     }
-    for (const [id, damage] of grouped) if (damage >= ASSIST_DAMAGE_THRESHOLD) this.stats.get(id).assists += 1;
+    for (const [id, damage] of grouped) {
+      if (damage >= ASSIST_DAMAGE_THRESHOLD) this.stats.get(id).assists += 1;
+    }
   }
 
   recordElimination(attacker, victim, result = {}) {
     if (!this.isLive() || !victim) return { counted: false };
     const victimStats = this.stats.get(victim.id);
-    if (victimStats) victimStats.deaths += 1;
+    if (victimStats) {
+      victimStats.deaths += 1;
+      victimStats.streak = 0;
+    }
     const creditedKiller = this.resolveCreditedKiller(attacker, victim, result);
     this.registerCombatPoint(victim.x, victim.y);
     if (!creditedKiller) {
       this.onKill?.({ attacker: null, victim, credited: false, suicide: true, snapshot: this.snapshot() });
       return { counted: false, suicide: true };
     }
-    this.stats.get(creditedKiller.id).kills += 1;
+    const killerStats = this.stats.get(creditedKiller.id);
+    killerStats.kills += 1;
+    killerStats.streak += 1;
+    killerStats.bestStreak = Math.max(killerStats.bestStreak, killerStats.streak);
     this.registerAssists(victim, creditedKiller, result);
     this.roundKills[creditedKiller.team] += 1;
     const event = { attacker: creditedKiller, victim, credited: true, suicide: creditedKiller.id === victim.id, snapshot: this.snapshot() };
@@ -143,6 +181,15 @@ export class MatchManager {
 
   finishRound(winner) {
     if (!winner || this.state === 'round-break' || this.state === 'match-over') return;
+    const wasSuddenDeath = this.suddenDeath;
+    this.roundHistory.push({
+      round: this.round,
+      winner,
+      kills: { ...this.roundKills },
+      suddenDeath: wasSuddenDeath,
+      duration: this.roundElapsed,
+      durationLabel: formatDuration(this.roundElapsed)
+    });
     this.roundWins[winner] += 1;
     this.lastRoundWinner = winner;
     this.suddenDeath = false;
@@ -152,7 +199,7 @@ export class MatchManager {
       this.matchWinner = winner;
       this.state = 'match-over';
       this.stateTimer = 0;
-      this.onMatchEnd?.({ winner, snapshot: this.snapshot() });
+      this.onMatchEnd?.({ winner, snapshot: this.postgameSnapshot() });
       return;
     }
     this.state = 'round-break';
@@ -183,6 +230,35 @@ export class MatchManager {
     if (this.state === 'match-over') return `${this.matchWinner?.toUpperCase()} TEAM WINS`;
     if (this.goTimer > 0) return 'GO';
     return '';
+  }
+
+  statsSnapshot() {
+    return this.players.map((player) => {
+      const stats = this.stats.get(player.id) || freshStats();
+      const kd = stats.deaths > 0 ? stats.kills / stats.deaths : stats.kills;
+      return {
+        id: player.id,
+        team: player.team,
+        isLocal: Boolean(player.isLocal),
+        kills: stats.kills,
+        deaths: stats.deaths,
+        assists: stats.assists,
+        damage: Math.round(stats.damage),
+        criticals: stats.criticals,
+        bestStreak: stats.bestStreak,
+        kd
+      };
+    });
+  }
+
+  postgameSnapshot() {
+    return {
+      ...this.snapshot(),
+      duration: this.matchElapsed,
+      durationLabel: formatDuration(this.matchElapsed),
+      stats: this.statsSnapshot(),
+      roundHistory: this.roundHistory.map((entry) => ({ ...entry, kills: { ...entry.kills } }))
+    };
   }
 
   snapshot() {
