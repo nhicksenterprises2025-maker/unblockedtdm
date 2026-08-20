@@ -10,28 +10,22 @@
   <canvas id="gameCanvas"></canvas>
 
   <header class="build-hud">
-    <div class="brand">
-      <span class="mark">UT</span>
-      <div>
-        <strong>UNBLOCKEDTDM</strong>
-        <small id="buildLabel">BUILD 1.12 · VERSION 1</small>
-      </div>
-    </div>
-    <div class="map-meta">
-      <strong id="mapLabel">TRAINING COMPLEX</strong>
-      <small id="phaseLabel">Health / Damage / Respawn</small>
-    </div>
+    <div class="brand"><span class="mark">UT</span><div><strong>UNBLOCKEDTDM</strong><small id="buildLabel">BUILD 1.13 · VERSION 1</small></div></div>
+    <div class="map-meta"><strong id="mapLabel">TRAINING COMPLEX</strong><small id="phaseLabel">Weapon Framework / Assault Rifle</small></div>
   </header>
 
   <aside class="diagnostics">
     <div><span>MOVEMENT</span><strong>WASD / ARROWS</strong></div>
     <div><span>SPRINT</span><strong>SHIFT</strong></div>
     <div><span>DASH</span><strong>SPACE</strong></div>
+    <div><span>FIRE / ADS</span><strong>LMB / RMB</strong></div>
+    <div><span>RELOAD</span><strong>R</strong></div>
     <div><span>STATE</span><strong id="moveState">IDLE</strong></div>
     <div><span>SPEED</span><strong id="speed">0.0 T/S</strong></div>
+    <div><span>SPREAD</span><strong id="spreadState">0.00°</strong></div>
     <div><span>DASH STATE</span><strong id="dashState">READY</strong></div>
     <div><span>INVULN</span><strong id="invulnState">OFF</strong></div>
-    <div><span>DAMAGE TEST</span><strong id="damageTestState">READY</strong></div>
+    <div><span>DEV STATUS</span><strong id="damageTestState">AR READY</strong></div>
     <div><span>POSITION</span><strong id="coords">Tile —, —</strong></div>
     <div><span>CAMERA</span><strong id="camera">—</strong></div>
     <div><span>F1</span><strong id="debugState">COLLISION OFF</strong></div>
@@ -39,53 +33,25 @@
   </aside>
 
   <section id="healthRoot" class="health-hud">
-    <div class="health-copy">
-      <div><span>HEALTH</span><small id="healthStatus">150 MAX · REGEN CAP 75</small></div>
-      <strong id="healthValue">150</strong>
-    </div>
+    <div class="health-copy"><div><span>HEALTH</span><small id="healthStatus">150 MAX · REGEN CAP 75</small></div><strong id="healthValue">150</strong></div>
     <div class="health-track"><div id="healthFill" class="health-fill"></div></div>
   </section>
 
-  <section id="staminaRoot" class="stamina-hud">
-    <div class="stamina-copy">
-      <span>STAMINA</span>
-      <strong id="staminaValue">100</strong>
-    </div>
-    <div class="stamina-track"><div id="staminaFill" class="stamina-fill"></div></div>
+  <section id="staminaRoot" class="stamina-hud"><div class="stamina-copy"><span>STAMINA</span><strong id="staminaValue">100</strong></div><div class="stamina-track"><div id="staminaFill" class="stamina-fill"></div></div></section>
+  <section id="dashRoot" class="dash-hud"><div class="dash-copy"><span>DASH</span><strong id="dashCount">4/4</strong></div><div class="dash-pips"><i id="dashPip0"></i><i id="dashPip1"></i><i id="dashPip2"></i><i id="dashPip3"></i></div></section>
+
+  <section id="weaponRoot" class="weapon-hud">
+    <div class="weapon-title"><div><span>PRIMARY</span><strong id="weaponName">ASSAULT RIFLE</strong></div><small id="weaponState">READY</small></div>
+    <div class="ammo-line"><strong id="ammoMagazine">32</strong><span>/</span><b id="ammoReserve">96</b></div>
+    <div class="weapon-controls">LMB FIRE · RMB ADS · R RELOAD · 1 PRIMARY</div>
   </section>
 
-  <section id="dashRoot" class="dash-hud">
-    <div class="dash-copy"><span>DASH</span><strong id="dashCount">4/4</strong></div>
-    <div class="dash-pips">
-      <i id="dashPip0"></i><i id="dashPip1"></i><i id="dashPip2"></i><i id="dashPip3"></i>
-    </div>
-  </section>
+  <div class="aim-note">MOUSE AIM · SHIFT SPRINT · SPACE DASH · AR HELD: -20% MOVE</div>
+  <div class="dev-note">RED PLAYER = LIVE COMBAT TEST TARGET · F2/F3/F4 DAMAGE SELF · G FRIENDLY-FIRE TEST · F6 ROUND RESET</div>
+  <footer class="engine-footer"><span id="fps">— FPS</span><span>64PX TILE GRID</span><span>CANVAS 2D</span></footer>
 
-  <div class="aim-note">MOUSE AIM · SHIFT SPRINT · SPACE DASH</div>
-  <div class="dev-note">DEV DAMAGE: F2 -25 · F3 -75 · F4 LETHAL · G FRIENDLY-FIRE TEST · R ROUND RESET</div>
-
-  <footer class="engine-footer">
-    <span id="fps">— FPS</span>
-    <span>64PX TILE GRID</span>
-    <span>CANVAS 2D</span>
-  </footer>
-
-  <section id="respawnRoot" class="respawn-panel">
-    <div>
-      <span>RESPAWNING</span>
-      <strong id="respawnValue">3.0</strong>
-      <small>Dash charges persist through death</small>
-    </div>
-  </section>
-
-  <section id="pausePanel" class="pause-panel">
-    <div>
-      <p>UNBLOCKEDTDM</p>
-      <h1>PAUSED</h1>
-      <span>Press ESC to return to the match space</span>
-    </div>
-  </section>
-
+  <section id="respawnRoot" class="respawn-panel"><div><span>RESPAWNING</span><strong id="respawnValue">3.0</strong><small>Ammo and stamina restore · dash charges persist</small></div></section>
+  <section id="pausePanel" class="pause-panel"><div><p>UNBLOCKEDTDM</p><h1>PAUSED</h1><span>Press ESC to return to the match space</span></div></section>
   <script type="module" src="renderer.js"></script>
 </body>
 </html>
