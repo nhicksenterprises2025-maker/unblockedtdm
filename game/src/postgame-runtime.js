@@ -54,6 +54,10 @@ window.addEventListener('unblockedtdm:match-complete', (event) => {
   screen.show(snapshot);
 });
 
+document.addEventListener('click', (event) => {
+  if (event.target.closest('#deployButton') || event.target.closest('#pauseMainMenuButton')) resetDamageStats();
+}, true);
+
 window.addEventListener('keydown', (event) => {
   if (!root.classList.contains('visible') || allowSyntheticRematch) return;
   event.preventDefault();
