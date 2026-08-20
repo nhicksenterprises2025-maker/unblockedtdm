@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "UnblockedTDM",
+      "gameVersion": "1.8",
+      "build": 1,
+      "sequence": 16,
+      "phase": "Flow Integration / Unified Game UI",
+      "tag": "build-1.8-v1",
+      "title": "UnblockedTDM Build 1.8 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.8-v1/UnblockedTDM-1.8-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.8-v1/UnblockedTDM-Setup-1.8-v1.exe",
+      "sha256": "f007349366de6a6309da7e2469da671e7e145f04628b4e68135d723a7a75cc2c",
+      "installerSha256": "de08ed8f149d60549a381ad4948ee2222235dff29d2f456f114424c368657b21",
+      "publishedAt": "2026-08-20T16:01:43.586Z"
+    },
+    {
+      "product": "UnblockedTDM",
       "gameVersion": "1.7",
       "build": 1,
       "sequence": 15,
