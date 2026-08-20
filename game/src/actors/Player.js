@@ -43,7 +43,7 @@ export class Player {
     }
 
     this.updateAim(input,camera);
-    if(input.dashPressed()&&!this.dashing) this.tryStartDash();
+    if(input.dashPressed()&&!this.dashing) this.tryStartDash(input);
     if(this.dashing) this.updateDash(dt,map); else this.updateLocomotion(dt,input,map);
     this.updateVisualMotion(dt); this.updateTrail(dt);
   }
@@ -78,10 +78,13 @@ export class Player {
     else this.stamina=Math.min(SPRINT_STAMINA_MAX,this.stamina+SPRINT_REGEN_PER_SECOND*dt);
   }
 
-  tryStartDash(){
+  tryStartDash(input=null){
     if(!this.health.alive||this.dashCooldown>0||this.dashCharges<=0||this.stamina<DASH_STAMINA_COST){this.dashDeniedTimer=0.18;return false;}
     this.weaponManager?.cancelReload();
-    this.dashing=true; this.sprinting=false; this.state='dash'; this.dashDirection=this.aimAngle; this.dashDistanceRemaining=DASH_DISTANCE_TILES*TILE_SIZE;
+    const axis=input?.axis?.()??{x:0,y:0};
+    const hasMove=Math.abs(axis.x)+Math.abs(axis.y)>0.001;
+    this.dashDirection=hasMove?Math.atan2(axis.y,axis.x):this.aimAngle;
+    this.dashing=true; this.sprinting=false; this.state='dash'; this.dashDistanceRemaining=DASH_DISTANCE_TILES*TILE_SIZE;
     this.dashCharges-=1; this.stamina=Math.max(0,this.stamina-DASH_STAMINA_COST); this.staminaRegenDelay=SPRINT_REGEN_DELAY;
     this.invulnerabilityTimer=DASH_INVULNERABILITY; this.dashStartedThisFrame=true; this.dashGhostTimer=0; return true;
   }
