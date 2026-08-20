@@ -4,7 +4,8 @@ import { GridPathfinder } from './ai/GridPathfinder.js';
 import { DamageSystem } from './combat/DamageSystem.js';
 import { ProjectileSystem } from './combat/ProjectileSystem.js';
 import { WeaponManager } from './combat/WeaponManager.js';
-import { DEFAULT_LOADOUT, WEAPONS } from './data/weapons.js';
+import { LoadoutStore } from './data/LoadoutStore.js';
+import { WEAPONS } from './data/weapons.js';
 import { GameLoop } from './engine/GameLoop.js';
 import { Input } from './engine/Input.js';
 import { AIM_CAMERA_LEAD_TILES, DASH_CHARGES_MAX, TILE_SIZE } from './engine/constants.js';
@@ -21,6 +22,45 @@ import { MAP_01 } from './world/map01.js';
 import { SpawnSystem } from './world/SpawnSystem.js';
 import { TileMap } from './world/TileMap.js';
 
+const AI_MULTIPLIERS = Object.freeze({ Beginner: 0.80, Average: 1.00, Sweat: 1.35, Pro: 1.75 });
+const SETTINGS_DEFAULTS = Object.freeze({ sensitivity: 1, aiDifficulty: 'Average', minimapMode: 'north-up', screenShake: true, damageVignette: true });
+
+function readStorage(key, fallback) {
+  try {
+    const value = localStorage.getItem(`unblockedtdm.${key}`);
+    return value === null ? fallback : value;
+  } catch {
+    return fallback;
+  }
+}
+
+function readBoolean(key, fallback) {
+  const value = readStorage(key, fallback ? 'true' : 'false');
+  return value !== 'false';
+}
+
+function readGameplaySettings() {
+  const sensitivity = Math.max(0.35, Math.min(2.5, Number(readStorage('sensitivity', '1')) || 1));
+  const storedDifficulty = readStorage('aiDifficulty', 'Average');
+  const aiDifficulty = AI_MULTIPLIERS[storedDifficulty] ? storedDifficulty : 'Average';
+  const minimapMode = readStorage('minimapMode', 'north-up') === 'rotate' ? 'rotate' : 'north-up';
+  return {
+    sensitivity,
+    aiDifficulty,
+    minimapMode,
+    screenShake: readBoolean('screenShake', true),
+    damageVignette: readBoolean('damageVignette', true)
+  };
+}
+
+function writeGameplaySetting(key, value) {
+  try { localStorage.setItem(`unblockedtdm.${key}`, String(value)); } catch {}
+  gameplaySettings = readGameplaySettings();
+  window.dispatchEvent(new CustomEvent('unblockedtdm:settings-change', { detail: { ...gameplaySettings } }));
+}
+
+let gameplaySettings = readGameplaySettings();
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
 const input = new Input(window);
@@ -34,6 +74,7 @@ const combatFeedback = new CombatFeedbackRenderer(ctx);
 const damageSystem = new DamageSystem();
 const spawnSystem = new SpawnSystem(map);
 const minimapRenderer = new MinimapRenderer(document.getElementById('minimapCanvas'), map);
+const loadoutStore = new LoadoutStore();
 
 const player = new Player(MAP_01.spawns.blue[1], 'blue', 'local-blue');
 player.isLocal = true;
@@ -104,7 +145,8 @@ function attachWeapons(actor, loadout) {
   return manager;
 }
 
-const weapons = attachWeapons(player, DEFAULT_LOADOUT);
+const initialLoadout = loadoutStore.get();
+const weapons = attachWeapons(player, { primary: initialLoadout.primary, secondary: initialLoadout.secondary });
 attachWeapons(blueBot1, { primary: WEAPONS.smg, secondary: WEAPONS.pistol });
 attachWeapons(blueBot2, { primary: WEAPONS.sniper, secondary: WEAPONS.shotgun });
 attachWeapons(redBot1, { primary: WEAPONS.assaultRifle, secondary: WEAPONS.launcher });
@@ -151,13 +193,15 @@ camera.x = player.x;
 camera.y = player.y;
 camera.clamp();
 
-new LoadoutScreen(document.getElementById('loadoutScreen'), ({ primary, secondary }) => {
+new LoadoutScreen(document.getElementById('loadoutScreen'), loadoutStore, ({ primary, secondary, slotIndex, name }) => {
   weapons.setLoadout(primary, secondary);
+  loadoutStore.setActive(slotIndex);
   matchStarted = true;
   paused = false;
   document.body.classList.add('match-started');
   match.startMatch();
-  showCombatBanner(`${primary.shortName} + ${secondary.shortName} EQUIPPED`, false, 1.0);
+  renderRoundLoadoutPanel();
+  showCombatBanner(`${name.toUpperCase()} · ${primary.shortName} + ${secondary.shortName}`, false, 1.0);
   updateDiagnostics();
 });
 
@@ -307,7 +351,7 @@ function render(dt, now, isPaused) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.fillStyle = '#142b36';
   ctx.fillRect(0, 0, innerWidth, innerHeight);
-  const shake = combatFeedback.shakeOffset();
+  const shake = gameplaySettings.screenShake ? combatFeedback.shakeOffset() : { x: 0, y: 0 };
   ctx.save();
   ctx.translate(shake.x, shake.y);
   camera.begin(ctx);
@@ -330,7 +374,7 @@ function render(dt, now, isPaused) {
   ctx.restore();
 
   if (matchStarted) {
-    damageFeedback.drawScreen(player, innerWidth, innerHeight);
+    damageFeedback.drawScreen(player, innerWidth, innerHeight, { vignette: gameplaySettings.damageVignette });
     const pointer = input.pointerPosition();
     combatFeedback.drawCrosshair(pointer, weapons);
     combatFeedback.drawHitmarker(pointer);
@@ -398,6 +442,25 @@ function updateWeaponHud() {
   root.classList.toggle('empty', weapon?.magazineSize > 0 && (ammo?.magazine ?? 0) <= 0);
 }
 
+const roundLoadoutPanel = document.getElementById('roundLoadoutPanel');
+const roundLoadoutGrid = document.getElementById('roundLoadoutGrid');
+
+function renderRoundLoadoutPanel() {
+  const active = loadoutStore.get();
+  document.getElementById('roundLoadoutCurrent').textContent = `SLOT ${String(active.index + 1).padStart(2, '0')} · ${active.name.toUpperCase()} · ${active.primary.shortName} + ${active.secondary.shortName}`;
+  roundLoadoutGrid.innerHTML = loadoutStore.all().map((slot) => `<button type="button" data-round-loadout="${slot.index}" class="${slot.index === active.index ? 'active' : ''}"><b>${String(slot.index + 1).padStart(2, '0')}</b><span>${slot.name}</span><small>${slot.primary.shortName} + ${slot.secondary.shortName}</small></button>`).join('');
+}
+
+roundLoadoutGrid.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-round-loadout]');
+  if (!button || !match.canChangeLoadout()) return;
+  const saved = loadoutStore.setActive(Number(button.dataset.roundLoadout));
+  weapons.setLoadout(saved.primary, saved.secondary);
+  renderRoundLoadoutPanel();
+  updateWeaponHud();
+  showCombatBanner(`NEXT ROUND · ${saved.name.toUpperCase()} · ${saved.primary.shortName} + ${saved.secondary.shortName}`, false, 0.9);
+});
+
 function updateMatchHud() {
   const snapshot = match.snapshot();
   document.getElementById('roundLabel').textContent = `ROUND ${snapshot.round} / 9`;
@@ -413,12 +476,19 @@ function updateMatchHud() {
   overlay.classList.toggle('sudden', snapshot.state === 'sudden-death');
   text.textContent = snapshot.overlay;
   sub.textContent = snapshot.state === 'round-break'
-    ? `NEXT ROUND IN ${Math.ceil(snapshot.stateTimer)} · SIDES SWAP`
+    ? `NEXT ROUND IN ${Math.ceil(snapshot.stateTimer)} · SIDES SWAP · QUICK LOADOUT BELOW`
     : snapshot.state === 'match-over'
       ? 'PRESS ENTER TO RUN IT BACK'
       : snapshot.state === 'countdown'
         ? 'GET READY'
         : snapshot.state === 'sudden-death' ? 'NEXT CREDITED KILL WINS THE ROUND' : '';
+
+  roundLoadoutPanel.classList.toggle('visible', matchStarted && snapshot.canChangeLoadout && !paused);
+  const active = loadoutStore.get();
+  document.getElementById('roundLoadoutCurrent').textContent = `SLOT ${String(active.index + 1).padStart(2, '0')} · ${active.name.toUpperCase()} · ${active.primary.shortName} + ${active.secondary.shortName}`;
+  document.getElementById('pauseRound').textContent = `${snapshot.round} / 9`;
+  document.getElementById('pauseScore').textContent = `${snapshot.kills.blue} - ${snapshot.kills.red}`;
+  document.getElementById('pauseLoadout').textContent = `${String(active.index + 1).padStart(2, '0')} · ${active.name.toUpperCase()}`;
 }
 
 function updateDiagnostics() {
@@ -443,15 +513,78 @@ function updateDiagnostics() {
   updateWeaponHud();
 }
 
+const pausePanel = document.getElementById('pausePanel');
+const pauseMatchView = document.getElementById('pauseMatchView');
+const pauseSettingsView = document.getElementById('pauseSettingsView');
+
+function showPauseTab(tab) {
+  const settings = tab === 'settings';
+  pauseMatchView.classList.toggle('active', !settings);
+  pauseSettingsView.classList.toggle('active', settings);
+  for (const button of document.querySelectorAll('[data-pause-tab]')) button.classList.toggle('active', button.dataset.pauseTab === (settings ? 'settings' : 'match'));
+  if (settings) syncPauseSettings();
+}
+
+function setPaused(value) {
+  if (!matchStarted) return;
+  paused = Boolean(value);
+  loop.setPaused(paused);
+  pausePanel.classList.toggle('visible', paused);
+  roundLoadoutPanel.classList.toggle('visible', !paused && match.canChangeLoadout());
+  if (paused) {
+    showPauseTab('match');
+    updateMatchHud();
+    syncPauseSettings();
+  }
+  input.endFrame();
+}
+
+function syncPauseSettings() {
+  gameplaySettings = readGameplaySettings();
+  const sensitivity = document.getElementById('pauseSensitivity');
+  const ai = document.getElementById('pauseAiDifficulty');
+  const minimap = document.getElementById('pauseMinimapMode');
+  sensitivity.value = String(gameplaySettings.sensitivity);
+  ai.value = gameplaySettings.aiDifficulty;
+  minimap.value = gameplaySettings.minimapMode;
+  document.getElementById('pauseScreenShake').checked = gameplaySettings.screenShake;
+  document.getElementById('pauseDamageVignette').checked = gameplaySettings.damageVignette;
+  document.getElementById('pauseSensitivityValue').textContent = `${gameplaySettings.sensitivity.toFixed(2)}×`;
+  document.getElementById('pauseAiDifficultyValue').textContent = `${gameplaySettings.aiDifficulty.toUpperCase()} · ${AI_MULTIPLIERS[gameplaySettings.aiDifficulty].toFixed(2)}×`;
+  document.getElementById('pauseMinimapModeValue').textContent = gameplaySettings.minimapMode === 'rotate' ? 'ROTATE WITH AIM' : 'NORTH UP';
+}
+
+for (const button of document.querySelectorAll('[data-pause-tab]')) button.addEventListener('click', () => showPauseTab(button.dataset.pauseTab));
+document.getElementById('pauseSettingsButton').addEventListener('click', () => showPauseTab('settings'));
+document.getElementById('settingsBackButton').addEventListener('click', () => showPauseTab('match'));
+document.getElementById('resumeButton').addEventListener('click', () => setPaused(false));
+document.getElementById('pauseSensitivity').addEventListener('input', (event) => writeGameplaySetting('sensitivity', Number(event.currentTarget.value).toFixed(2)));
+document.getElementById('pauseAiDifficulty').addEventListener('change', (event) => writeGameplaySetting('aiDifficulty', event.currentTarget.value));
+document.getElementById('pauseMinimapMode').addEventListener('change', (event) => writeGameplaySetting('minimapMode', event.currentTarget.value));
+document.getElementById('pauseScreenShake').addEventListener('change', (event) => writeGameplaySetting('screenShake', event.currentTarget.checked));
+document.getElementById('pauseDamageVignette').addEventListener('change', (event) => writeGameplaySetting('damageVignette', event.currentTarget.checked));
+document.getElementById('pauseFullscreenButton').addEventListener('click', () => window.gameAPI.toggleFullscreen());
+document.getElementById('resetSettingsButton').addEventListener('click', () => {
+  writeGameplaySetting('sensitivity', SETTINGS_DEFAULTS.sensitivity.toFixed(2));
+  writeGameplaySetting('aiDifficulty', SETTINGS_DEFAULTS.aiDifficulty);
+  writeGameplaySetting('minimapMode', SETTINGS_DEFAULTS.minimapMode);
+  writeGameplaySetting('screenShake', SETTINGS_DEFAULTS.screenShake);
+  writeGameplaySetting('damageVignette', SETTINGS_DEFAULTS.damageVignette);
+  syncPauseSettings();
+});
+
+window.addEventListener('unblockedtdm:settings-change', () => {
+  gameplaySettings = readGameplaySettings();
+  syncPauseSettings();
+});
+
 const loop = new GameLoop(update, render);
 window.addEventListener('keydown', (event) => {
-  if (event.code === 'Escape' && matchStarted) {
-    paused = !paused;
-    loop.setPaused(paused);
-    document.getElementById('pausePanel').classList.toggle('visible', paused);
-    input.endFrame();
-  }
+  if (event.code === 'Escape' && matchStarted && !event.repeat) setPaused(!paused);
 });
+
+renderRoundLoadoutPanel();
+syncPauseSettings();
 
 (async () => {
   const buildInfo = await window.gameAPI.getBuildInfo();

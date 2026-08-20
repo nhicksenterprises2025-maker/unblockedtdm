@@ -4,10 +4,10 @@ UnblockedTDM is a 2D top-down 3v3 team deathmatch game delivered as one continuo
 
 ## Current development build
 
-**Build 1.41 — Version 1**  
-Phase: **Minimap / HUD / Pathfinding / Aim Accuracy**
+**Build 1.5 — Version 1**  
+Phase: **Midpoint / Persistent Loadouts / Pause Settings**
 
-Build 1.41 focuses on control fidelity and match readability: a circular tactical minimap, cleaner normal HUD, obstacle-aware A* bot pathfinding, live path debug visualization and a more accurate no-assist mouse-aim pipeline.
+Build 1.5 is the midpoint quality update for the 1.x cycle. It adds 25 persistent saved loadouts, legal between-round loadout switching, and a real pause/settings hub while preserving the existing combat rules and balance.
 
 ### Current playable systems
 - 32×22 Training Complex on the 64px tile system.
@@ -18,7 +18,11 @@ Build 1.41 focuses on control fidelity and match readability: a circular tactica
 - A* navigation grid with obstacle-aware routing, route smoothing, wall avoidance and forced repathing when bots become stuck.
 - AI target selection, weapon-range behavior, low-health retreating, reload/swap decisions, teammate spacing, strafing and dash decisions.
 - Circular minimap built from real map geometry; teammates are always visible and firing enemies reveal for 1.5 seconds.
-- F1 debug tuning for live AI difficulty, sensitivity, minimap mode, collision visualization and bot navigation paths.
+- 25 persistent saved loadout slots with names, Primary/Secondary validation and active-slot persistence.
+- Quick loadout switching during the 10-second round break only; no mid-round or death-screen loadout changes.
+- ESC pause hub with Match and Settings tabs.
+- Functional pause settings for sensitivity, AI difficulty, minimap orientation, screen shake, damage vignette and fullscreen.
+- F1 debug tuning remains available and synchronizes with the same saved settings.
 - Dynamic spawn scoring for enemy LOS, multiple watchers, close enemies, teammate proximity, recent combat and repeat-spawn avoidance.
 - 150 HP, regeneration cap, death, 3-second respawn and 1-second spawn protection.
 - Eight complete weapons: Assault Rifle, SMG, Sniper Rifle, Shotgun, LMG, Pistol, Launcher and Melee.
@@ -29,9 +33,10 @@ Build 1.41 focuses on control fidelity and match readability: a circular tactica
 ## Road to 2.0
 - **1.4** — AI / Spawn / Aim Physics ✅
 - **1.41** — Match HUD + Circular Minimap + Pathfinding / Aim Accuracy ✅
-- **1.6** — 25 Persistent Loadouts + Between-Round Changes
-- **1.7** — Main Menu + Settings + Keybinds
-- **1.8** — Postgame Stats + Rematch Flow
+- **1.5** — Persistent Loadouts + Between-Round Changes + Pause Settings ✅
+- **1.6** — Main Menu + Settings Completion + Keybinds
+- **1.7** — Postgame Stats + Winner / Rematch Flow
+- **1.8** — Full Game-Flow Integration + Persistence / UX Hardening
 - **1.9** — Feature-Complete Release Candidate / Balance / Stability
 - **2.0** — Major Polish Update: animation, character/map art, weapon feel, VFX, audio, camera, UI and final presentation
 

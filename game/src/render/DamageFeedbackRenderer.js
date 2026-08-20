@@ -53,13 +53,7 @@ export class DamageFeedbackRenderer {
       ctx.ellipse(player.x - 2, player.y, 18, 14, player.visualAimAngle, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(
-        player.x + Math.cos(player.visualAimAngle) * 9,
-        player.y + Math.sin(player.visualAimAngle) * 9,
-        10.5,
-        0,
-        Math.PI * 2
-      );
+      ctx.arc(player.x + Math.cos(player.visualAimAngle) * 9, player.y + Math.sin(player.visualAimAngle) * 9, 10.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }
@@ -71,7 +65,6 @@ export class DamageFeedbackRenderer {
       const x = player.x - width / 2;
       const y = player.y - 38;
       const ratio = player.health.healthPercent();
-
       ctx.save();
       ctx.globalAlpha = opacity;
       ctx.fillStyle = 'rgba(5,15,21,.78)';
@@ -96,29 +89,23 @@ export class DamageFeedbackRenderer {
     ctx.restore();
   }
 
-  drawScreen(player, width, height) {
+  drawScreen(player, width, height, { vignette = true } = {}) {
     const health = player.health;
     if (!health) return;
 
-    const recentHit = health.vignettePercent();
-    const lowHealth = health.alive ? Math.max(0, (0.5 - health.healthPercent()) / 0.5) : 0;
-    const intensity = Math.min(0.55, recentHit * 0.28 + lowHealth * 0.24);
-
-    if (intensity > 0.002) {
-      const ctx = this.ctx;
-      const gradient = ctx.createRadialGradient(
-        width / 2,
-        height / 2,
-        Math.min(width, height) * 0.24,
-        width / 2,
-        height / 2,
-        Math.max(width, height) * 0.72
-      );
-      gradient.addColorStop(0, 'rgba(140,0,16,0)');
-      gradient.addColorStop(0.64, `rgba(150,0,18,${intensity * 0.14})`);
-      gradient.addColorStop(1, `rgba(135,0,14,${intensity})`);
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
+    if (vignette) {
+      const recentHit = health.vignettePercent();
+      const lowHealth = health.alive ? Math.max(0, (0.5 - health.healthPercent()) / 0.5) : 0;
+      const intensity = Math.min(0.55, recentHit * 0.28 + lowHealth * 0.24);
+      if (intensity > 0.002) {
+        const ctx = this.ctx;
+        const gradient = ctx.createRadialGradient(width / 2, height / 2, Math.min(width, height) * 0.24, width / 2, height / 2, Math.max(width, height) * 0.72);
+        gradient.addColorStop(0, 'rgba(140,0,16,0)');
+        gradient.addColorStop(0.64, `rgba(150,0,18,${intensity * 0.14})`);
+        gradient.addColorStop(1, `rgba(135,0,14,${intensity})`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+      }
     }
 
     const indicator = health.indicatorPercent();
@@ -128,7 +115,6 @@ export class DamageFeedbackRenderer {
       const radius = Math.min(112, Math.min(width, height) * 0.14);
       const cx = width / 2 + Math.cos(angle) * radius;
       const cy = height / 2 + Math.sin(angle) * radius;
-
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(angle + Math.PI / 2);
