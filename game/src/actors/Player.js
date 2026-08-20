@@ -1,6 +1,6 @@
 import {
   DASH_CHARGES_MAX,DASH_COOLDOWN,DASH_DISTANCE_TILES,DASH_INVULNERABILITY,DASH_SPEED_TILES,DASH_STAMINA_COST,DASH_SWEEP_STEP_PIXELS,
-  PLAYER_RADIUS_TILES,PLAYER_SPEED_TILES,SPRINT_DRAIN_PER_SECOND,SPRINT_REGEN_DELAY,SPRINT_REGEN_PER_SECOND,SPRINT_SPEED_MULTIPLIER,
+  DEFAULT_ZOOM,PLAYER_RADIUS_TILES,PLAYER_SPEED_TILES,SPRINT_DRAIN_PER_SECOND,SPRINT_REGEN_DELAY,SPRINT_REGEN_PER_SECOND,SPRINT_SPEED_MULTIPLIER,
   SPRINT_STAMINA_MAX,TILE_SIZE,WORLD_HEIGHT,WORLD_WIDTH
 } from '../engine/constants.js';
 import { HealthState } from '../combat/HealthState.js';
@@ -29,6 +29,9 @@ export class Player {
 
   update(dt,input,map,camera) {
     this.health.update(dt);
+    const adsProgress=this.health.alive?(this.weaponManager?.adsProgress??0):0;
+    camera.zoom=approach(camera.zoom,DEFAULT_ZOOM+adsProgress*0.10,12,dt);
+    camera.clamp();
     this.dashStartedThisFrame=false; this.dashEndedThisFrame=false;
     this.dashDeniedTimer=Math.max(0,this.dashDeniedTimer-dt);
     this.invulnerabilityTimer=Math.max(0,this.invulnerabilityTimer-dt);
