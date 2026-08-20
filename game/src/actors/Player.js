@@ -8,6 +8,7 @@ import { moveCircle, moveCircleSwept } from '../world/Collision.js';
 
 const WALK_CYCLE_RATE=3.2, SPRINT_CYCLE_RATE=4.5, IDLE_CYCLE_RATE=0.75;
 const TRAIL_INTERVAL=0.055, TRAIL_LIFETIME=0.22, DASH_GHOST_INTERVAL=0.026, DASH_GHOST_LIFETIME=0.18;
+const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 function normalizeAngle(angle){let v=angle;while(v>Math.PI)v-=Math.PI*2;while(v<-Math.PI)v+=Math.PI*2;return v;}
 function approachAngle(current,target,rate,dt){const d=normalizeAngle(target-current);return normalizeAngle(current+d*(1-Math.exp(-rate*dt)));}
 function approach(current,target,rate,dt){return current+(target-current)*(1-Math.exp(-rate*dt));}
@@ -16,7 +17,7 @@ export class Player {
   constructor(spawn, team='blue', id='local-player') {
     this.id=id;this.x=spawn.x;this.y=spawn.y;this.radius=PLAYER_RADIUS_TILES*TILE_SIZE;this.team=team;
     this.health=new HealthState();this.weaponManager=null;this.controlsCamera=true;this.isLocal=false;
-    this.aimAngle=0;this.moveAngle=0;this.visualAimAngle=0;this.visualMoveAngle=0;this.state='idle';
+    this.aimAngle=0;this.aimAngularVelocity=0;this.moveAngle=0;this.visualAimAngle=0;this.visualMoveAngle=0;this.state='idle';
     this.animationTime=0;this.animationPhase=0;this.motionBlend=0;this.sprintBlend=0;this.dashBlend=0;this.bodyLean=0;
     this.stamina=SPRINT_STAMINA_MAX;this.sprinting=false;this.staminaRegenDelay=0;
     this.dashCharges=DASH_CHARGES_MAX;this.dashing=false;this.dashDirection=0;this.dashDistanceRemaining=0;this.dashCooldown=0;
@@ -28,14 +29,21 @@ export class Player {
     this.health.update(dt);const adsProgress=this.health.alive?(this.weaponManager?.adsProgress??0):0;
     if(this.controlsCamera){camera.zoom=approach(camera.zoom,DEFAULT_ZOOM+adsProgress*.10,12,dt);camera.clamp();}
     this.dashStartedThisFrame=false;this.dashEndedThisFrame=false;this.dashDeniedTimer=Math.max(0,this.dashDeniedTimer-dt);this.invulnerabilityTimer=Math.max(0,this.invulnerabilityTimer-dt);if(!this.dashing)this.dashCooldown=Math.max(0,this.dashCooldown-dt);
-    if(!this.health.alive){this.sprinting=false;this.dashing=false;this.state='dead';this.velocityX=0;this.velocityY=0;this.updateVisualMotion(dt);this.updateTrail(dt);return;}
-    this.updateAim(input,camera);const axis=input.axis();
+    if(!this.health.alive){this.sprinting=false;this.dashing=false;this.state='dead';this.velocityX=0;this.velocityY=0;this.aimAngularVelocity=0;this.updateVisualMotion(dt);this.updateTrail(dt);return;}
+    this.updateAim(dt,input,camera);const axis=input.axis();
     if(input.dashPressed()&&!this.dashing){const direction=Math.abs(axis.x)+Math.abs(axis.y)>.001?Math.atan2(axis.y,axis.x):this.aimAngle;this.tryStartDash(direction);}
     const blockers=dynamicBlockers.length?[...map.blockers,...dynamicBlockers]:map.blockers;
     if(this.dashing)this.updateDash(dt,map,blockers);else this.updateLocomotion(dt,input,map,axis,blockers);
     this.updateVisualMotion(dt);this.updateTrail(dt);
   }
-  updateAim(input,camera){const pointer=input.pointerPosition();const world=camera.screenToWorld(pointer.x,pointer.y);const dx=world.x-this.x,dy=world.y-this.y;if(Math.abs(dx)+Math.abs(dy)>.001)this.aimAngle=Math.atan2(dy,dx);}
+  updateAim(dt,input,camera){
+    const pointer=input.pointerPosition();const world=camera.screenToWorld(pointer.x,pointer.y);const dx=world.x-this.x,dy=world.y-this.y;if(Math.abs(dx)+Math.abs(dy)<=.001)return;
+    const desired=Math.atan2(dy,dx),delta=normalizeAngle(desired-this.aimAngle),sensitivity=clamp(input.aimSensitivity?.()??1,.35,2.5);
+    const response=18+13*sensitivity,maxTurn=5.5+6.5*sensitivity,desiredVelocity=clamp(delta*response,-maxTurn,maxTurn);
+    const accel=1-Math.exp(-(15+7*sensitivity)*dt);this.aimAngularVelocity+=(desiredVelocity-this.aimAngularVelocity)*accel;
+    if(Math.abs(delta)<.002&&Math.abs(this.aimAngularVelocity)<.08){this.aimAngle=desired;this.aimAngularVelocity=0;return;}
+    this.aimAngle=normalizeAngle(this.aimAngle+this.aimAngularVelocity*dt);
+  }
   updateLocomotion(dt,input,map,axis=input.axis(),blockers=map.blockers){
     const moving=axis.x!==0||axis.y!==0;const wantsSprint=input.sprintHeld()&&!input.adsHeld()&&moving&&this.stamina>0;this.sprinting=wantsSprint;
     if(this.sprinting){this.stamina=Math.max(0,this.stamina-SPRINT_DRAIN_PER_SECOND*dt);this.staminaRegenDelay=SPRINT_REGEN_DELAY;if(this.stamina<=0)this.sprinting=false;}else this.updateStaminaRegen(dt);
@@ -48,11 +56,11 @@ export class Player {
   }
   updateDash(dt,map,blockers=map.blockers){const desired=Math.min(this.dashDistanceRemaining,DASH_SPEED_TILES*TILE_SIZE*dt);const dx=Math.cos(this.dashDirection)*desired,dy=Math.sin(this.dashDirection)*desired;const bx=this.x,by=this.y;const result=moveCircleSwept(this,dx,dy,blockers,{w:WORLD_WIDTH,h:WORLD_HEIGHT},DASH_SWEEP_STEP_PIXELS);this.velocityX=dt>0?(this.x-bx)/dt:0;this.velocityY=dt>0?(this.y-by)/dt:0;this.moveAngle=this.dashDirection;this.dashDistanceRemaining=Math.max(0,this.dashDistanceRemaining-result.distance);if(result.blocked||result.distance+.01<desired||this.dashDistanceRemaining<=.5)this.endDash();}
   endDash(){if(!this.dashing)return;this.dashing=false;this.dashDistanceRemaining=0;this.dashCooldown=DASH_COOLDOWN;this.dashEndedThisFrame=true;this.state='idle';}
-  updateVisualMotion(dt){const speedTiles=this.speedTilesPerSecond(),alive=this.health.alive;const movingTarget=alive&&speedTiles>.05?1:0,sprintTarget=alive&&this.sprinting?1:0,dashTarget=alive&&this.dashing?1:0;this.motionBlend=approach(this.motionBlend,movingTarget,movingTarget?15:10,dt);this.sprintBlend=approach(this.sprintBlend,sprintTarget,11,dt);this.dashBlend=approach(this.dashBlend,dashTarget,dashTarget?24:13,dt);this.visualAimAngle=approachAngle(this.visualAimAngle,this.aimAngle,18,dt);const lower=speedTiles>.08?this.moveAngle:this.aimAngle;this.visualMoveAngle=approachAngle(this.visualMoveAngle,lower,speedTiles>.08?13:5,dt);const leanTarget=this.dashing?1:this.sprinting?0.55:speedTiles>.08?0.16:0;this.bodyLean=approach(this.bodyLean,leanTarget,12,dt);const rate=this.dashing?2.1:this.sprinting?SPRINT_CYCLE_RATE:speedTiles>.08?WALK_CYCLE_RATE:IDLE_CYCLE_RATE;this.animationTime+=dt;this.animationPhase=(this.animationPhase+dt*rate)%1;}
+  updateVisualMotion(dt){const speedTiles=this.speedTilesPerSecond(),alive=this.health.alive;const movingTarget=alive&&speedTiles>.05?1:0,sprintTarget=alive&&this.sprinting?1:0,dashTarget=alive&&this.dashing?1:0;this.motionBlend=approach(this.motionBlend,movingTarget,movingTarget?15:10,dt);this.sprintBlend=approach(this.sprintBlend,sprintTarget,11,dt);this.dashBlend=approach(this.dashBlend,dashTarget,dashTarget?24:13,dt);this.visualAimAngle=approachAngle(this.visualAimAngle,this.aimAngle,22,dt);const lower=speedTiles>.08?this.moveAngle:this.aimAngle;this.visualMoveAngle=approachAngle(this.visualMoveAngle,lower,speedTiles>.08?13:5,dt);const leanTarget=this.dashing?1:this.sprinting?0.55:speedTiles>.08?0.16:0;this.bodyLean=approach(this.bodyLean,leanTarget,12,dt);const rate=this.dashing?2.1:this.sprinting?SPRINT_CYCLE_RATE:speedTiles>.08?WALK_CYCLE_RATE:IDLE_CYCLE_RATE;this.animationTime+=dt;this.animationPhase=(this.animationPhase+dt*rate)%1;}
   updateTrail(dt){for(const ghost of this.trail)ghost.life-=dt;this.trail=this.trail.filter(g=>g.life>0);if(!this.health.alive)return;if(this.dashing){this.dashGhostTimer-=dt;if(this.dashGhostTimer<=0){this.dashGhostTimer=DASH_GHOST_INTERVAL;this.pushGhost('dash',DASH_GHOST_LIFETIME);}return;}if(!this.sprinting||this.speedTilesPerSecond()<.05){this.trailTimer=0;return;}this.trailTimer-=dt;if(this.trailTimer<=0){this.trailTimer=TRAIL_INTERVAL;this.pushGhost('sprint',TRAIL_LIFETIME);}}
   pushGhost(type,lifetime){this.trail.push({type,x:this.x,y:this.y,aimAngle:this.visualAimAngle,moveAngle:this.visualMoveAngle,phase:this.animationPhase,lean:this.bodyLean,life:lifetime,maxLife:lifetime});if(this.trail.length>9)this.trail.shift();}
-  onDeath(){this.sprinting=false;this.dashing=false;this.dashDistanceRemaining=0;this.invulnerabilityTimer=0;this.velocityX=0;this.velocityY=0;this.state='dead';this.trail.length=0;this.weaponManager?.cancelReload();}
-  respawn(spawn){this.x=spawn.x;this.y=spawn.y;this.stamina=SPRINT_STAMINA_MAX;this.staminaRegenDelay=0;this.sprinting=false;this.dashing=false;this.dashDistanceRemaining=0;this.dashCooldown=0;this.invulnerabilityTimer=0;this.velocityX=0;this.velocityY=0;this.state='idle';this.trail.length=0;this.health.respawn();this.weaponManager?.resetForLife();}
-  resetForRound(spawn=null){if(spawn){this.x=spawn.x;this.y=spawn.y;}this.stamina=SPRINT_STAMINA_MAX;this.staminaRegenDelay=0;this.dashCharges=DASH_CHARGES_MAX;this.dashing=false;this.dashDistanceRemaining=0;this.dashCooldown=0;this.invulnerabilityTimer=0;this.velocityX=0;this.velocityY=0;this.trail.length=0;this.health.resetForRound();this.weaponManager?.resetForLife();}
+  onDeath(){this.sprinting=false;this.dashing=false;this.dashDistanceRemaining=0;this.invulnerabilityTimer=0;this.aimAngularVelocity=0;this.velocityX=0;this.velocityY=0;this.state='dead';this.trail.length=0;this.weaponManager?.cancelReload();}
+  respawn(spawn){this.x=spawn.x;this.y=spawn.y;this.stamina=SPRINT_STAMINA_MAX;this.staminaRegenDelay=0;this.sprinting=false;this.dashing=false;this.dashDistanceRemaining=0;this.dashCooldown=0;this.invulnerabilityTimer=0;this.aimAngularVelocity=0;this.velocityX=0;this.velocityY=0;this.state='idle';this.trail.length=0;this.health.respawn();this.weaponManager?.resetForLife();}
+  resetForRound(spawn=null){if(spawn){this.x=spawn.x;this.y=spawn.y;}this.stamina=SPRINT_STAMINA_MAX;this.staminaRegenDelay=0;this.dashCharges=DASH_CHARGES_MAX;this.dashing=false;this.dashDistanceRemaining=0;this.dashCooldown=0;this.invulnerabilityTimer=0;this.aimAngularVelocity=0;this.velocityX=0;this.velocityY=0;this.trail.length=0;this.health.resetForRound();this.weaponManager?.resetForLife();}
   staminaPercent(){return this.stamina/SPRINT_STAMINA_MAX;}speedTilesPerSecond(){return Math.hypot(this.velocityX,this.velocityY)/TILE_SIZE;}dashPercentRemaining(){return this.dashDistanceRemaining/(DASH_DISTANCE_TILES*TILE_SIZE);}isInvulnerable(){return this.health.isSpawnProtected()||this.invulnerabilityTimer>0;}canFire(){return this.health.alive&&!this.dashing;}canSwitchWeapon(){return this.health.alive&&!this.dashing;}notifyFired(){this.health.endSpawnProtection();}
 }
