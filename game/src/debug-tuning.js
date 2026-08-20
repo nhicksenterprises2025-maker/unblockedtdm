@@ -27,5 +27,5 @@
     sync();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
-  import('./postgame-runtime.js').catch((error)=>console.error('Postgame runtime failed to load',error));
+  import('./flow-v18.js').catch((error)=>console.error('Build 1.8 flow runtime failed to load',error));
 })();
