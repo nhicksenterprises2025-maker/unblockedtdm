@@ -199,7 +199,11 @@ export class MatchManager {
       this.matchWinner = winner;
       this.state = 'match-over';
       this.stateTimer = 0;
-      this.onMatchEnd?.({ winner, snapshot: this.postgameSnapshot() });
+      const finalSnapshot = this.postgameSnapshot();
+      this.onMatchEnd?.({ winner, snapshot: finalSnapshot });
+      try {
+        window.dispatchEvent(new CustomEvent('unblockedtdm:match-complete', { detail: finalSnapshot }));
+      } catch {}
       return;
     }
     this.state = 'round-break';
