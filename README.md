@@ -4,16 +4,18 @@ UnblockedTDM is a 2D top-down 3v3 team deathmatch game delivered as one continuo
 
 ## Current development build
 
-**Build 1.13 — Version 1**  
-Phase: **Weapon Framework / Assault Rifle**
+**Build 1.13 — Version 2**  
+Phase: **Weapon Framework / Input & Visual Polish**
 
-Build 1.13 adds the permanent weapon architecture and the first complete firearm. The Assault Rifle is now rendered in the player's hands and can fire real hitscan rounds through the existing health/damage system, with ammo, preserved-ammo reloads, ADS, spread, range falloff, critical hits, hitmarkers, damage numbers and combat effects.
+Build 1.13 Version 2 corrects the first weapon build without changing the Assault Rifle's canonical balance. RMB ADS and LMB fire now work simultaneously, the rifle is properly shoulder-mounted with aligned hands/muzzle feedback, and Training Complex has received a substantial environment-rendering pass while preserving the same gameplay geometry and 64px tile system.
 
 ### Current playable systems
-- 32×22 Training Complex on the 64px tile system.
+- 32×22 Training Complex on the 64px tile system, now with upgraded ground, structure, lane and spawn-zone rendering.
 - Naturalized player locomotion, mouse aim, sprint/stamina and four-charge dash.
 - 150 HP, regeneration cap, death, respawn and spawn protection.
 - Full Assault Rifle implementation: 20 damage, 2% crit, 32 crit damage, 0.30s fire interval, 32+96 ammo, 2.5s reload, 13.5t full range, 13 falloff, 4° base spread and 0.4s ADS.
+- Simultaneous RMB ADS + LMB automatic fire.
+- Shoulder-mounted Assault Rifle with visible grip hands and muzzle/tracer origin aligned to the rendered barrel.
 - Hitscan blocked by map geometry, dynamic crosshair, hitmarkers, tracers, muzzle flash and damage numbers.
 - Red-side live development target using the same Player and HealthState systems.
 
