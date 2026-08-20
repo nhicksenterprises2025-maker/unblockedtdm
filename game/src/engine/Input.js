@@ -1,17 +1,23 @@
-const BLOCKED_KEYS = new Set([
-  'KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
-  'ShiftLeft','ShiftRight','Space','Tab','KeyR','Digit1','Digit2','Numpad1','Numpad2','F1','F2','F3','F4','F6'
-]);
+import { mouseBindingCode } from './GameSettings.js';
 
+const FIXED_BLOCKED_KEYS = new Set(['F1', 'F11']);
+const UI_SELECTOR = 'button,input,select,textarea,[contenteditable="true"],[data-ui-surface],.debug-controls,.loadout-screen,.round-loadout-panel,.pause-panel,.main-menu';
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
+function isUiTarget(target) {
+  return Boolean(target?.closest?.(UI_SELECTOR));
+}
+
 export class Input {
-  constructor(target = window) {
+  constructor(target = window, settings = null) {
+    this.target = target;
+    this.settings = settings;
     this.down = new Set();
     this.pressed = new Set();
     this.mouseDown = new Set();
     this.mousePressed = new Set();
     this.wheelDirection = 0;
+    this.suspended = false;
 
     const centerX = innerWidth / 2;
     const centerY = innerHeight / 2;
@@ -20,47 +26,49 @@ export class Input {
     this.aimVelocity = { x: 0, y: 0 };
     this.lastAimClock = performance.now();
     this.sensitivity = 1;
-    try { this.setSensitivity(localStorage.getItem('unblockedtdm.sensitivity') || 1); } catch {}
+    try { this.setSensitivity(this.settings?.gameplay?.().sensitivity ?? localStorage.getItem('unblockedtdm.sensitivity') ?? 1); } catch {}
 
     this.onKeyDown = (event) => {
-      if (BLOCKED_KEYS.has(event.code)) event.preventDefault();
+      if (this.suspended || isUiTarget(event.target)) return;
+      if (this.shouldBlockKey(event.code)) event.preventDefault();
       if (!this.down.has(event.code)) this.pressed.add(event.code);
       this.down.add(event.code);
     };
-    this.onKeyUp = (event) => this.down.delete(event.code);
+
+    this.onKeyUp = (event) => {
+      this.down.delete(event.code);
+    };
+
     this.onMouseDown = (event) => {
-      if (event.target?.closest?.('.debug-controls')) return;
+      if (this.suspended || isUiTarget(event.target)) return;
       if (!this.mouseDown.has(event.button)) this.mousePressed.add(event.button);
       this.mouseDown.add(event.button);
       if (event.button === 0 || event.button === 2) event.preventDefault();
     };
+
     this.onMouseUp = (event) => {
       this.mouseDown.delete(event.button);
-      if (event.button === 0 || event.button === 2) event.preventDefault();
+      if (!this.suspended && !isUiTarget(event.target) && (event.button === 0 || event.button === 2)) event.preventDefault();
     };
+
     this.onWheel = (event) => {
-      if (event.target?.closest?.('.debug-controls')) return;
+      if (this.suspended || isUiTarget(event.target)) return;
       this.wheelDirection = event.deltaY < 0 ? -1 : 1;
       event.preventDefault();
     };
+
     this.onPointerMove = (event) => {
       this.rawPointer.x = event.clientX;
       this.rawPointer.y = event.clientY;
       this.rawPointer.inside = true;
     };
+
     this.onPointerLeave = () => {
       this.rawPointer.inside = false;
       this.pointer.inside = false;
     };
-    this.onBlur = () => {
-      this.down.clear();
-      this.pressed.clear();
-      this.mouseDown.clear();
-      this.mousePressed.clear();
-      this.wheelDirection = 0;
-      this.aimVelocity.x = 0;
-      this.aimVelocity.y = 0;
-    };
+
+    this.onBlur = () => this.clearTransientState();
 
     target.addEventListener('keydown', this.onKeyDown);
     target.addEventListener('keyup', this.onKeyUp);
@@ -70,7 +78,32 @@ export class Input {
     target.addEventListener('pointermove', this.onPointerMove);
     target.addEventListener('pointerleave', this.onPointerLeave);
     target.addEventListener('blur', this.onBlur);
-    target.addEventListener('contextmenu', (event) => event.preventDefault());
+    target.addEventListener('contextmenu', (event) => {
+      if (!isUiTarget(event.target)) event.preventDefault();
+    });
+  }
+
+  clearTransientState() {
+    this.down.clear();
+    this.pressed.clear();
+    this.mouseDown.clear();
+    this.mousePressed.clear();
+    this.wheelDirection = 0;
+    this.aimVelocity.x = 0;
+    this.aimVelocity.y = 0;
+  }
+
+  setSuspended(value) {
+    const next = Boolean(value);
+    if (next === this.suspended) return;
+    this.suspended = next;
+    this.clearTransientState();
+  }
+
+  shouldBlockKey(code) {
+    if (FIXED_BLOCKED_KEYS.has(code)) return true;
+    const bindings = this.settings?.bindings?.() || {};
+    return Object.values(bindings).includes(code);
   }
 
   setSensitivity(value) {
@@ -79,13 +112,14 @@ export class Input {
 
   aimSensitivity() {
     try {
-      const stored = Number(localStorage.getItem('unblockedtdm.sensitivity'));
+      const stored = this.settings?.gameplay?.().sensitivity ?? Number(localStorage.getItem('unblockedtdm.sensitivity'));
       if (Number.isFinite(stored) && stored > 0) this.setSensitivity(stored);
     } catch {}
     return this.sensitivity;
   }
 
   updateAimPointer() {
+    if (this.suspended) return;
     const now = performance.now();
     const dt = clamp((now - this.lastAimClock) / 1000, 0, 0.05);
     this.lastAimClock = now;
@@ -142,16 +176,40 @@ export class Input {
     this.pointer.inside = this.rawPointer.inside;
   }
 
+  binding(action) {
+    return this.settings?.binding?.(action) || null;
+  }
+
+  controlDown(code) {
+    if (!code) return false;
+    if (code.startsWith('Mouse')) return this.mouseDown.has(Number(code.slice(5)));
+    return this.down.has(code);
+  }
+
+  controlPressed(code) {
+    if (!code) return false;
+    if (code.startsWith('Mouse')) return this.mousePressed.has(Number(code.slice(5)));
+    return this.pressed.has(code);
+  }
+
+  actionDown(action) {
+    return this.controlDown(this.binding(action));
+  }
+
+  actionPressed(action) {
+    return this.controlPressed(this.binding(action));
+  }
+
   isDown(...codes) { return codes.some((code) => this.down.has(code)); }
   wasPressed(...codes) { return codes.some((code) => this.pressed.has(code)); }
 
   axis() {
     let x = 0;
     let y = 0;
-    if (this.isDown('KeyA', 'ArrowLeft')) x -= 1;
-    if (this.isDown('KeyD', 'ArrowRight')) x += 1;
-    if (this.isDown('KeyW', 'ArrowUp')) y -= 1;
-    if (this.isDown('KeyS', 'ArrowDown')) y += 1;
+    if (this.actionDown('moveLeft') || this.isDown('ArrowLeft')) x -= 1;
+    if (this.actionDown('moveRight') || this.isDown('ArrowRight')) x += 1;
+    if (this.actionDown('moveUp') || this.isDown('ArrowUp')) y -= 1;
+    if (this.actionDown('moveDown') || this.isDown('ArrowDown')) y += 1;
     if (x && y) {
       x *= Math.SQRT1_2;
       y *= Math.SQRT1_2;
@@ -159,14 +217,14 @@ export class Input {
     return { x, y };
   }
 
-  sprintHeld() { return this.isDown('ShiftLeft', 'ShiftRight'); }
-  dashPressed() { return this.wasPressed('Space'); }
-  reloadPressed() { return this.wasPressed('KeyR'); }
-  slotPrimaryPressed() { return this.wasPressed('Digit1', 'Numpad1') || this.wheelDirection < 0; }
-  slotSecondaryPressed() { return this.wasPressed('Digit2', 'Numpad2') || this.wheelDirection > 0; }
-  fireHeld() { return this.mouseDown.has(0); }
-  firePressed() { return this.mousePressed.has(0); }
-  adsHeld() { return this.mouseDown.has(2); }
+  sprintHeld() { return this.actionDown('sprint'); }
+  dashPressed() { return this.actionPressed('dash'); }
+  reloadPressed() { return this.actionPressed('reload'); }
+  slotPrimaryPressed() { return this.actionPressed('primary') || this.wheelDirection < 0; }
+  slotSecondaryPressed() { return this.actionPressed('secondary') || this.wheelDirection > 0; }
+  fireHeld() { return this.actionDown('fire'); }
+  firePressed() { return this.actionPressed('fire'); }
+  adsHeld() { return this.actionDown('ads'); }
 
   pointerPosition() {
     return { ...this.pointer };
@@ -178,3 +236,5 @@ export class Input {
     this.wheelDirection = 0;
   }
 }
+
+export { isUiTarget, mouseBindingCode };

@@ -1,11 +1,11 @@
 {
   "product":"UnblockedTDM",
-  "gameVersion":"1.5",
+  "gameVersion":"1.6",
   "build":1,
-  "phase":"Midpoint / Persistent Loadouts / Pause Settings",
-  "tag":"build-1.5-v1",
-  "title":"UnblockedTDM Build 1.5 — Version 1",
-  "notesFile":"docs/releases/build-1.5-v1.md",
-  "sequence":13,
+  "phase":"Front End / Main Menu / Settings / Keybinds",
+  "tag":"build-1.6-v1",
+  "title":"UnblockedTDM Build 1.6 — Version 1",
+  "notesFile":"docs/releases/build-1.6-v1.md",
+  "sequence":14,
   "releaseRevision":1
 }
