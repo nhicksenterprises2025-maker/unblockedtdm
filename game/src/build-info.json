@@ -1,10 +1,10 @@
 {
   "product":"UnblockedTDM",
-  "gameVersion":"1.7",
+  "gameVersion":"1.8",
   "build":1,
-  "sequence":15,
-  "phase":"Postgame / Launcher / Controls",
-  "tag":"build-1.7-v1",
-  "title":"UnblockedTDM Build 1.7 — Version 1",
+  "sequence":16,
+  "phase":"Flow Integration / Unified Game UI",
+  "tag":"build-1.8-v1",
+  "title":"UnblockedTDM Build 1.8 — Version 1",
   "repository":"nhicksenterprises2025-maker/unblockedtdm"
 }
