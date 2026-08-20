@@ -33,17 +33,24 @@ function installHomeStatus() {
   hero.appendChild(row);
 }
 
+let currentBuild = null;
+function syncLoadoutCopy() {
+  const eyebrow = document.querySelector('#loadoutScreen .loadout-head .eyebrow');
+  if (eyebrow) eyebrow.textContent = currentBuild ? `UNBLOCKED // TDM · LOADOUT CLIENT ${currentBuild.gameVersion}.${currentBuild.build}` : 'UNBLOCKED // TDM · LOADOUT CLIENT';
+}
+
 async function syncBuildCopy() {
   try {
-    const build = await window.gameAPI.getBuildInfo();
+    currentBuild = await window.gameAPI.getBuildInfo();
     const menuBuild = document.getElementById('mainBuildLabel');
     const menuPhase = document.getElementById('mainPhaseLabel');
-    if (menuBuild) menuBuild.textContent = `BUILD ${build.gameVersion} // VERSION ${build.build}`;
-    if (menuPhase) menuPhase.textContent = build.phase;
+    if (menuBuild) menuBuild.textContent = `BUILD ${currentBuild.gameVersion} // VERSION ${currentBuild.build}`;
+    if (menuPhase) menuPhase.textContent = currentBuild.phase;
     const heroEyebrow = document.querySelector('[data-menu-view="home"] .menu-eyebrow');
-    if (heroEyebrow) heroEyebrow.textContent = `MATCH CLIENT // BUILD ${build.gameVersion}.${build.build}`;
+    if (heroEyebrow) heroEyebrow.textContent = `MATCH CLIENT // BUILD ${currentBuild.gameVersion}.${currentBuild.build}`;
     const pauseCopy = document.querySelector('.pause-head small');
-    if (pauseCopy) pauseCopy.textContent = `MATCH CLIENT // BUILD ${build.gameVersion}.${build.build} // SETTINGS + MATCH CONTROL`;
+    if (pauseCopy) pauseCopy.textContent = `MATCH CLIENT // BUILD ${currentBuild.gameVersion}.${currentBuild.build} // SETTINGS + MATCH CONTROL`;
+    syncLoadoutCopy();
   } catch {}
 }
 
@@ -127,12 +134,8 @@ window.addEventListener('keydown', (event) => {
   }
 }, true);
 
-const observer = new MutationObserver(() => {
-  installBranding();
-  installHomeStatus();
-  if (document.body.classList.contains('match-started') && !document.querySelector('.pause-panel.visible')) blurUiFocus();
-});
-observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+const loadoutRoot = document.getElementById('loadoutScreen');
+if (loadoutRoot) new MutationObserver(syncLoadoutCopy).observe(loadoutRoot, { childList: true });
 
 installBranding();
 installHomeStatus();
