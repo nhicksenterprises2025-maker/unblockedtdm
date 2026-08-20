@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "UnblockedTDM",
+      "gameVersion": "1.9.2",
+      "build": 1,
+      "sequence": 18,
+      "phase": "Loadout UI Hotfix",
+      "tag": "build-1.9.2-v1",
+      "title": "UnblockedTDM Build 1.9.2 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.9.2-v1/UnblockedTDM-1.9.2-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.9.2-v1/UnblockedTDM-Setup-1.9.2-v1.exe",
+      "sha256": "74c49c37827e8521d626071ef86566d828b9c6a0bb740922ab874b227940bb61",
+      "installerSha256": "dbfd4ac5d1259d5d1e8432beb44cbc2961679960dc9f540068f54859fd135600",
+      "publishedAt": "2026-08-20T20:34:00.759Z"
+    },
+    {
+      "product": "UnblockedTDM",
       "gameVersion": "1.9",
       "build": 1,
       "sequence": 17,
