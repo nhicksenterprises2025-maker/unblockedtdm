@@ -1,5 +1,7 @@
 import { PostgameScreen } from './ui/PostgameScreen.js';
 
+const LAST_MATCH_KEY = 'unblockedtdm.lastMatchSummary';
+
 function ensureStyle(href) {
   if ([...document.querySelectorAll('link[rel="stylesheet"]')].some((link) => link.getAttribute('href') === href)) return;
   const link = document.createElement('link');
@@ -24,13 +26,39 @@ function installBranding() {
   if (brand) brand.textContent = 'UNBLOCKED // TDM';
 }
 
-function installHomeStatus() {
+function readLastMatch() {
+  try {
+    const raw = localStorage.getItem(LAST_MATCH_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveLastMatch(snapshot) {
+  try {
+    localStorage.setItem(LAST_MATCH_KEY, JSON.stringify({
+      winner: snapshot.matchWinner || null,
+      blue: snapshot.wins?.blue ?? 0,
+      red: snapshot.wins?.red ?? 0,
+      duration: snapshot.durationLabel || '0:00',
+      completedAt: Date.now()
+    }));
+  } catch {}
+}
+
+function syncHomeStatus() {
   const hero = document.querySelector('[data-menu-view="home"] .menu-hero');
-  if (!hero || hero.querySelector('.ut-menu-status')) return;
-  const row = document.createElement('div');
-  row.className = 'ut-menu-status';
-  row.innerHTML = '<span><i></i>CLIENT <b>READY</b></span><span>MODE <b>3V3 TDM</b></span><span>MAP <b>TRAINING COMPLEX</b></span><span>PROFILE <b>LOCAL</b></span>';
-  hero.appendChild(row);
+  if (!hero) return;
+  let row = hero.querySelector('.ut-menu-status');
+  if (!row) {
+    row = document.createElement('div');
+    row.className = 'ut-menu-status';
+    hero.appendChild(row);
+  }
+  const last = readLastMatch();
+  const lastText = last?.winner ? `${last.winner.toUpperCase()} ${last.blue}-${last.red}` : 'NONE';
+  row.innerHTML = `<span><i></i>CLIENT <b>READY</b></span><span>MODE <b>3V3 TDM</b></span><span>MAP <b>TRAINING COMPLEX</b></span><span>LAST <b>${lastText}</b></span>`;
 }
 
 let currentBuild = null;
@@ -101,6 +129,7 @@ const postgame = new PostgameScreen(postgameRoot, {
     document.body.classList.remove('postgame-open');
     resetDamageStats();
     blurUiFocus();
+    syncHomeStatus();
     document.getElementById('pauseMainMenuButton')?.click();
   }
 });
@@ -111,6 +140,8 @@ window.addEventListener('unblockedtdm:match-complete', (event) => {
     const tracked = damageStats.get(row.id);
     return tracked ? { ...row, damage: Math.round(tracked.damage), criticals: tracked.criticals } : row;
   });
+  saveLastMatch(snapshot);
+  syncHomeStatus();
   blurUiFocus();
   document.body.classList.add('postgame-open');
   document.getElementById('roundOverlay')?.classList.remove('visible');
@@ -138,5 +169,5 @@ const loadoutRoot = document.getElementById('loadoutScreen');
 if (loadoutRoot) new MutationObserver(syncLoadoutCopy).observe(loadoutRoot, { childList: true });
 
 installBranding();
-installHomeStatus();
+syncHomeStatus();
 syncBuildCopy();
