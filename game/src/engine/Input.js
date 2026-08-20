@@ -17,12 +17,19 @@ export class Input {
       this.down.add(event.code);
     };
     this.onKeyUp = (event) => this.down.delete(event.code);
-    this.onPointerDown = (event) => {
+
+    // Mouse events are intentionally used instead of pointerdown/pointerup here.
+    // Pointer Events only emit pointerdown for the first pressed mouse button,
+    // which broke RMB (ADS) + LMB (fire) chords in Build 1.13 v1.
+    this.onMouseDown = (event) => {
       if (!this.mouseDown.has(event.button)) this.mousePressed.add(event.button);
       this.mouseDown.add(event.button);
-      if (event.button === 2) event.preventDefault();
+      if (event.button === 0 || event.button === 2) event.preventDefault();
     };
-    this.onPointerUp = (event) => this.mouseDown.delete(event.button);
+    this.onMouseUp = (event) => {
+      this.mouseDown.delete(event.button);
+      if (event.button === 0 || event.button === 2) event.preventDefault();
+    };
     this.onPointerMove = (event) => {
       this.pointer.x = event.clientX;
       this.pointer.y = event.clientY;
@@ -30,13 +37,16 @@ export class Input {
     };
     this.onPointerLeave = () => { this.pointer.inside = false; };
     this.onBlur = () => {
-      this.down.clear(); this.pressed.clear(); this.mouseDown.clear(); this.mousePressed.clear();
+      this.down.clear();
+      this.pressed.clear();
+      this.mouseDown.clear();
+      this.mousePressed.clear();
     };
 
     target.addEventListener('keydown', this.onKeyDown);
     target.addEventListener('keyup', this.onKeyUp);
-    target.addEventListener('pointerdown', this.onPointerDown);
-    target.addEventListener('pointerup', this.onPointerUp);
+    target.addEventListener('mousedown', this.onMouseDown);
+    target.addEventListener('mouseup', this.onMouseUp);
     target.addEventListener('pointermove', this.onPointerMove);
     target.addEventListener('pointerleave', this.onPointerLeave);
     target.addEventListener('blur', this.onBlur);
