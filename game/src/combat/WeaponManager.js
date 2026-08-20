@@ -4,6 +4,9 @@ import { castHitscan } from './Hitscan.js';
 
 const DEG_TO_RAD = Math.PI / 180;
 const lerp = (a,b,t) => a + (b-a)*t;
+const RIFLE_MUZZLE_FORWARD = 67;
+const RIFLE_SHOULDER_SIDE = 12.5;
+const RIFLE_ADS_SIDE_SHIFT = 2.5;
 
 function freshAmmo(weapon) {
   return weapon ? { magazine: weapon.magazineSize, reserve: weapon.magazineSize * weapon.extraMagazines } : null;
@@ -50,11 +53,14 @@ export class WeaponManager {
     }
 
     const weapon=this.currentWeapon(); if(!weapon)return;
-    const wantsADS=input.adsHeld()&&!this.owner.sprinting;
+    const wantsADS=input.adsHeld();
     const adsDelta=dt/Math.max(0.01,weapon.adsTime);
     this.adsProgress=Math.max(0,Math.min(1,this.adsProgress+(wantsADS?adsDelta:-adsDelta)));
     if(wantsADS)this.owner.sprinting=false;
-    if(input.fireHeld())this.tryFire(map,targets);
+
+    // Firing is independent from ADS state. Holding RMB and then pressing/holding
+    // LMB must continuously feed this path just like hip-fire.
+    if(input.fireHeld()) this.tryFire(map,targets);
   }
 
   tryFire(map,targets){
@@ -66,7 +72,7 @@ export class WeaponManager {
     const spread=this.currentSpreadDegrees();
     const shotAngle=this.owner.aimAngle+(Math.random()-0.5)*spread*DEG_TO_RAD;
     const origin={x:this.owner.x,y:this.owner.y};
-    const muzzle={x:this.owner.x+Math.cos(this.owner.visualAimAngle)*67,y:this.owner.y+Math.sin(this.owner.visualAimAngle)*67};
+    const muzzle=this.muzzleWorldPosition();
     const hit=castHitscan({origin,angle:shotAngle,map,targets,shooter:this.owner,maxDistance:Math.hypot(map.width,map.height)});
     const crit=Math.random()<weapon.critChance;
     const damage=crit?weapon.critDamage:(hit.distance<=weapon.fullDamageRangeTiles*TILE_SIZE?weapon.damage:weapon.falloffDamage);
@@ -79,6 +85,17 @@ export class WeaponManager {
       if(result.killed){ hit.target.onDeath(); this.callbacks.onKill?.(hit.target,result); }
     }
     return result;
+  }
+
+  muzzleWorldPosition(){
+    const state=this.animationState();
+    const angle=this.owner.visualAimAngle;
+    const forward=RIFLE_MUZZLE_FORWARD+(state.ads*4)-(state.fireKick*3);
+    const side=RIFLE_SHOULDER_SIDE-(state.ads*RIFLE_ADS_SIDE_SHIFT);
+    return {
+      x:this.owner.x+Math.cos(angle)*forward-Math.sin(angle)*side,
+      y:this.owner.y+Math.sin(angle)*forward+Math.cos(angle)*side
+    };
   }
 
   startReload(){
