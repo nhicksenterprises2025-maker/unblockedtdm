@@ -1,14 +1,14 @@
 {
   "product": "UnblockedTDM",
-  "gameVersion": "1.6",
+  "gameVersion": "1.7",
   "build": 1,
-  "sequence": 14,
-  "phase": "Front End / Main Menu / Settings / Keybinds",
-  "tag": "build-1.6-v1",
-  "title": "UnblockedTDM Build 1.6 — Version 1",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.6-v1/UnblockedTDM-1.6-v1.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.6-v1/UnblockedTDM-Setup-1.6-v1.exe",
-  "sha256": "2e4b1847e98da83069c0226be54c4449ca8d951a746c7938c3fbdfdefc413d42",
-  "installerSha256": "7ff633993b3ecbf74dcd7e98a6f5ac969de5506a3d5f0c64522a00c875ac7951",
-  "publishedAt": "2026-08-20T13:55:19.254Z"
+  "sequence": 15,
+  "phase": "Postgame / Launcher / Controls",
+  "tag": "build-1.7-v1",
+  "title": "UnblockedTDM Build 1.7 — Version 1",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.7-v1/UnblockedTDM-1.7-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.7-v1/UnblockedTDM-Setup-1.7-v1.exe",
+  "sha256": "9c49dad261b0c9796b9ce6c69336bc5ae4c5e4ecacb29b787480f5b7630f1129",
+  "installerSha256": "f445861228c42bc3df996dbdd62647db52c8deb14f55983da98d90bccc9ef26f",
+  "publishedAt": "2026-08-20T14:42:13.707Z"
 }
