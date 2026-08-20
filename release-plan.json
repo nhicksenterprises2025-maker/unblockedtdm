@@ -1,11 +1,11 @@
 {
   "product":"UnblockedTDM",
-  "gameVersion":"1.21",
+  "gameVersion":"1.3",
   "build":1,
-  "phase":"Combat Presentation / Input Fixes",
-  "tag":"build-1.21-v1",
-  "title":"UnblockedTDM Build 1.21 — Version 1",
-  "notesFile":"docs/releases/build-1.21-v1.md",
-  "sequence":9,
+  "phase":"3v3 Match Core / Directional Dash",
+  "tag":"build-1.3-v1",
+  "title":"UnblockedTDM Build 1.3 — Version 1",
+  "notesFile":"docs/releases/build-1.3-v1.md",
+  "sequence":10,
   "releaseRevision":1
 }
