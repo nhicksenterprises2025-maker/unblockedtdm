@@ -16,7 +16,6 @@ for (const token of [
   "ensureStyle('ui-v17.css')",
   "ensureStyle('ui-v18.css')",
   "ensureStyle('ui-v18-postgame.css')",
-  "document.body.classList.add('ui-v18')",
   "unblockedtdm:match-complete",
   "unblockedtdm:damage-applied",
   "LAST_MATCH_KEY",
@@ -24,6 +23,7 @@ for (const token of [
   "new MutationObserver(syncLoadoutCopy).observe(loadoutRoot, { childList: true })",
   "data-menu-action=\"home\""
 ]) assert.ok(flow.includes(token), `Missing Build 1.8 flow contract: ${token}`);
+assert.match(flow, /classList\.add\([^)]*['"]ui-v18['"]/, 'Build 1.8 body class marker must remain enabled even when later UI classes are added.');
 
 assert.ok(!flow.includes('observer.observe(document.body'), 'Build 1.8 must not globally observe gameplay class mutations');
 assert.ok(flow.includes('PostgameScreen'), 'Postgame must be integrated into the Build 1.8 flow');
