@@ -1,0 +1,62 @@
+/* Build 1.9 v1 — release-candidate gameplay HUD pass.
+   Visual target: compact authored top-down shooter HUD, based on the approved gameplay reference. */
+body.match-started:not(.menu-open):not(.postgame-open){--hud-ink:#071018;--hud-surface:rgba(8,22,31,.92);--hud-surface-2:rgba(12,30,41,.96);--hud-border:rgba(130,180,202,.18);--hud-text:#f2f6f8;--hud-muted:#78919e;--hud-blue:#5ed2ff;--hud-red:#ff7180;--hud-green:#62e5a6;--hud-yellow:#f1ce59}
+body.match-started .match-hud{top:24px;grid-template-columns:98px 80px 168px 80px 98px;border-radius:12px;background:var(--hud-surface-2);border:1px solid var(--hud-border);box-shadow:0 16px 36px rgba(0,0,0,.24);backdrop-filter:blur(8px)}
+body.match-started .match-hud>div{padding:10px 9px}
+body.match-started .match-hud .blue{background:rgba(41,133,175,.16)}
+body.match-started .match-hud .red{background:rgba(154,59,73,.15)}
+body.match-started .match-hud span{font:800 7px/1.1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.18em;color:#7595a5}
+body.match-started .match-hud strong{margin-top:4px;font:950 18px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--hud-text)}
+body.match-started .match-hud .blue strong{color:var(--hud-blue)}body.match-started .match-hud .red strong{color:var(--hud-red)}
+body.match-started .match-hud .clock{box-shadow:inset 1px 0 rgba(255,255,255,.025),inset -1px 0 rgba(255,255,255,.025)}
+body.match-started .match-hud .clock strong{font-size:22px;letter-spacing:.03em}
+
+body.match-started .minimap-shell{left:18px;top:24px;width:176px;height:176px;border-radius:50%;background:#07131b;border:3px solid #0a1821;box-shadow:0 0 0 2px rgba(83,198,236,.35),0 10px 28px rgba(0,0,0,.28);backdrop-filter:none}
+body.match-started .minimap-shell:before{content:'N';position:absolute;z-index:3;top:5px;left:50%;transform:translateX(-50%);font:900 7px/1 ui-monospace,monospace;color:#9ab4c0;letter-spacing:.08em;pointer-events:none}
+body.match-started .minimap-shell:after{content:'';position:absolute;inset:8px;border:1px solid rgba(135,206,232,.15);border-radius:50%;pointer-events:none}
+
+body.match-started .health-hud,body.match-started .stamina-hud{left:22px;width:248px;border-radius:10px;background:var(--hud-surface);border:1px solid rgba(123,179,200,.12);box-shadow:0 12px 28px rgba(0,0,0,.21);backdrop-filter:blur(8px)}
+body.match-started .health-hud{bottom:96px;padding:12px 12px 11px}
+body.match-started .stamina-hud{bottom:18px;padding:11px 12px}
+body.match-started .health-copy span,body.match-started .stamina-copy span{font:900 8px/1 ui-monospace,monospace;letter-spacing:.16em;color:#8aa6b4}
+body.match-started .health-copy strong,body.match-started .stamina-copy strong{font:950 14px/1 ui-monospace,monospace;color:#f4f7f8}
+body.match-started .health-copy small{margin-top:4px;font:700 6px/1.15 ui-monospace,monospace;letter-spacing:.08em;color:#5f7d8c}
+body.match-started .health-track,body.match-started .stamina-track{height:7px;margin-top:10px;border-radius:4px;background:#14252e;overflow:hidden}
+body.match-started .health-fill{background:var(--hud-green);box-shadow:0 0 12px rgba(98,229,166,.18)}
+body.match-started .stamina-fill{background:#5dd9ef;box-shadow:0 0 12px rgba(93,217,239,.16)}
+
+body.match-started .weapon-hud{right:18px;bottom:18px;width:282px;min-height:150px;padding:14px 14px 12px;border-radius:10px;background:var(--hud-surface);border:1px solid rgba(123,179,200,.12);box-shadow:0 12px 28px rgba(0,0,0,.23);backdrop-filter:blur(8px)}
+body.match-started .weapon-title span{font:900 8px/1 ui-monospace,monospace;letter-spacing:.16em;color:#7396a6}
+body.match-started .weapon-title strong{margin-top:5px;font-size:17px;letter-spacing:.03em}
+body.match-started .weapon-title small{font:850 7px/1 ui-monospace,monospace;color:#8ba5b1;letter-spacing:.08em}
+body.match-started .ammo-line{margin-top:8px;justify-content:flex-end;gap:6px}
+body.match-started .ammo-line strong{font:950 31px/1 ui-monospace,monospace;color:#f3f7f8}
+body.match-started .ammo-line span,body.match-started .ammo-line b{font:900 12px/1 ui-monospace,monospace;color:#88a4b1}
+body.match-started .weapon-slots{gap:8px;margin-top:9px}
+body.match-started .weapon-slots span{padding:6px 8px;border-radius:6px;background:#102934;border:1px solid rgba(89,184,219,.16);color:#7693a0;font:900 7px/1 ui-monospace,monospace;letter-spacing:.04em}
+body.match-started .weapon-slots span.active{background:#0d3545;border-color:rgba(86,210,255,.55);color:#edf9fc;box-shadow:inset 2px 0 var(--hud-blue)}
+body.match-started .weapon-controls{margin-top:9px;font:700 6px/1.45 ui-monospace,monospace;letter-spacing:.07em;color:#587583}
+
+body.match-started .dash-hud{right:18px;bottom:168px;width:176px;padding:9px 12px;border-radius:9px;background:var(--hud-surface);border:1px solid rgba(123,179,200,.12);box-shadow:0 10px 24px rgba(0,0,0,.2)}
+body.match-started .dash-copy span{font:900 8px/1 ui-monospace,monospace;letter-spacing:.16em;color:#7898a7}
+body.match-started .dash-copy strong{font:950 12px/1 ui-monospace,monospace;color:#f2f6f8}
+body.match-started .dash-pips{gap:5px;margin-top:7px}
+body.match-started .dash-pips i{height:5px;border-radius:3px;background:#53caf3;box-shadow:none}
+body.match-started .dash-pips i.spent{background:#1a2c35}
+
+body.match-started .round-overlay>div{min-width:128px;padding:20px 22px;border-radius:4px;background:rgba(6,14,21,.93);border:1px solid rgba(130,180,202,.16);box-shadow:0 18px 50px rgba(0,0,0,.32);backdrop-filter:blur(6px);text-shadow:none}
+body.match-started .round-overlay strong{font:1000 48px/1 ui-monospace,monospace;letter-spacing:.02em;color:#f4f7f8}
+body.match-started .round-overlay small{margin-top:8px;font:900 8px/1 ui-monospace,monospace;letter-spacing:.18em;color:#c1d5dd}
+body.match-started .round-overlay.sudden>div{border-color:rgba(241,206,89,.45)}
+body.match-started .round-overlay.sudden strong{color:var(--hud-yellow)}
+
+body.match-started .combat-banner{top:15%;padding:8px 14px;border-radius:4px;background:rgba(7,17,24,.78);border:1px solid rgba(140,191,211,.14);font:950 15px/1 ui-monospace,monospace;letter-spacing:.12em;text-shadow:none}
+body.match-started .streak-banner{top:21%;font:1000 22px/1 ui-monospace,monospace;letter-spacing:.12em;text-shadow:0 3px 14px rgba(0,0,0,.5)}
+
+body.match-started .respawn-panel>div{border-radius:4px!important;background:rgba(5,14,20,.94)!important;border-color:rgba(128,180,202,.18)!important;box-shadow:0 20px 55px rgba(0,0,0,.35)!important}
+body.match-started .respawn-panel span,body.match-started .respawn-panel small{font-family:ui-monospace,monospace!important;letter-spacing:.14em!important}
+
+body.match-started .engine-footer,body.match-started .aim-note,body.match-started .dev-note{opacity:.72}
+body.match-started:not(.debug-visible) .engine-footer,body.match-started:not(.debug-visible) .aim-note,body.match-started:not(.debug-visible) .dev-note{display:none!important}
+
+@media(max-width:1100px){body.match-started .match-hud{grid-template-columns:84px 68px 138px 68px 84px}body.match-started .weapon-hud{width:250px}body.match-started .health-hud,body.match-started .stamina-hud{width:218px}}
