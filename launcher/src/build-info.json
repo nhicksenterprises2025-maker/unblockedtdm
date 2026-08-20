@@ -1,10 +1,10 @@
 {
   "product":"UnblockedTDM",
-  "gameVersion":"1.5",
+  "gameVersion":"1.6",
   "build":1,
-  "sequence":13,
-  "phase":"Midpoint / Persistent Loadouts / Pause Settings",
-  "tag":"build-1.5-v1",
-  "title":"UnblockedTDM Build 1.5 — Version 1",
+  "sequence":14,
+  "phase":"Front End / Main Menu / Settings / Keybinds",
+  "tag":"build-1.6-v1",
+  "title":"UnblockedTDM Build 1.6 — Version 1",
   "repository":"nhicksenterprises2025-maker/unblockedtdm"
 }
