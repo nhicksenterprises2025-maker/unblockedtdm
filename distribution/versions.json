@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "UnblockedTDM",
+      "gameVersion": "1.21",
+      "build": 1,
+      "sequence": 9,
+      "phase": "Combat Presentation / Input Fixes",
+      "tag": "build-1.21-v1",
+      "title": "UnblockedTDM Build 1.21 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.21-v1/UnblockedTDM-1.21-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.21-v1/UnblockedTDM-Setup-1.21-v1.exe",
+      "sha256": "4eb7b94afe77ea8fae80e0d73ab2e1ab4471a4c8c558f862d36cece511fa10fe",
+      "installerSha256": "dee1f0eda8c4cf4449b73a786ae018387cf957c34f6081b22d98d04af72ae326",
+      "publishedAt": "2026-08-20T03:54:58.596Z"
+    },
+    {
+      "product": "UnblockedTDM",
       "gameVersion": "1.2",
       "build": 1,
       "sequence": 8,
