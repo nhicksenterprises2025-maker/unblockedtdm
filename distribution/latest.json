@@ -1,14 +1,14 @@
 {
   "product": "UnblockedTDM",
-  "gameVersion": "1.4",
+  "gameVersion": "1.41",
   "build": 1,
-  "sequence": 11,
-  "phase": "AI / Spawn / Aim Physics",
-  "tag": "build-1.4-v1",
-  "title": "UnblockedTDM Build 1.4 — Version 1",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.4-v1/UnblockedTDM-1.4-v1.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.4-v1/UnblockedTDM-Setup-1.4-v1.exe",
-  "sha256": "ae3be46e1bed9654fe944abf65f7d7f4d36823996082f4b19a485c8e6b96a501",
-  "installerSha256": "92974bd3cd2f43a5e59863db64ef49858ccd6b41015d0980feb8075c8e708580",
-  "publishedAt": "2026-08-20T05:21:24.901Z"
+  "sequence": 12,
+  "phase": "Minimap / HUD / Pathfinding / Aim Accuracy",
+  "tag": "build-1.41-v1",
+  "title": "UnblockedTDM Build 1.41 — Version 1",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.41-v1/UnblockedTDM-1.41-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.41-v1/UnblockedTDM-Setup-1.41-v1.exe",
+  "sha256": "93c7febf73c22b874c4a95ece3f7624483a719b57d01d9caa49082c33fd9fd6e",
+  "installerSha256": "2ca7ce4e498d2ecfebb8ed23ec9bc815b3cc79c498f38303d03a1a41e591c8f0",
+  "publishedAt": "2026-08-20T05:42:03.429Z"
 }
