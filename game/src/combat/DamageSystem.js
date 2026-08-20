@@ -1,3 +1,18 @@
+import { WEAPON_LIST } from '../data/weapons.js';
+
+const WEAPON_BY_ID = new Map(WEAPON_LIST.map((weapon) => [weapon.id, weapon]));
+
+function inferCritical(sourceType, amount, explicit) {
+  if (typeof explicit === 'boolean') return explicit;
+  const weapon = WEAPON_BY_ID.get(sourceType);
+  if (!weapon || weapon.critChance <= 0) return false;
+  if (weapon.kind === 'shotgun') {
+    const pellets = amount / weapon.critDamage;
+    return Number.isInteger(pellets) && pellets >= 1 && pellets <= weapon.pelletCount;
+  }
+  return Math.abs(amount - weapon.critDamage) < 0.001;
+}
+
 export class DamageSystem {
   constructor({ onDamage = null } = {}) {
     this.onDamage = onDamage;
@@ -11,7 +26,7 @@ export class DamageSystem {
     sourcePosition = null,
     sourceType = 'unknown',
     selfDamage = false,
-    critical = false
+    critical = null
   }) {
     if (!target?.health?.alive) {
       return { applied: false, reason: 'dead', killed: false, amount: 0 };
@@ -46,12 +61,13 @@ export class DamageSystem {
       selfDamage: isSelf && selfDamage,
       directionAngle
     });
+    const wasCritical = inferCritical(sourceType, amount, critical);
 
     const enriched = {
       ...result,
       reason: result.applied ? 'applied' : 'ignored',
       directionAngle,
-      critical: Boolean(critical),
+      critical: wasCritical,
       recentDamage: result.killed ? target.health.recentDamage() : null
     };
 
@@ -62,7 +78,7 @@ export class DamageSystem {
         sourceType,
         target,
         selfDamage: isSelf && selfDamage,
-        critical: Boolean(critical),
+        critical: wasCritical,
         result: enriched
       });
     }
