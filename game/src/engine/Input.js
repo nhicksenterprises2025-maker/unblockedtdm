@@ -11,6 +11,7 @@ export class Input {
     this.mousePressed = new Set();
     this.wheelDirection = 0;
     this.pointer = { x: innerWidth / 2, y: innerHeight / 2, inside: true };
+    this.sensitivity = 1;
 
     this.onKeyDown = (event) => {
       if (BLOCKED_KEYS.has(event.code)) event.preventDefault();
@@ -19,6 +20,7 @@ export class Input {
     };
     this.onKeyUp = (event) => this.down.delete(event.code);
     this.onMouseDown = (event) => {
+      if (event.target?.closest?.('.debug-controls')) return;
       if (!this.mouseDown.has(event.button)) this.mousePressed.add(event.button);
       this.mouseDown.add(event.button);
       if (event.button === 0 || event.button === 2) event.preventDefault();
@@ -28,6 +30,7 @@ export class Input {
       if (event.button === 0 || event.button === 2) event.preventDefault();
     };
     this.onWheel = (event) => {
+      if (event.target?.closest?.('.debug-controls')) return;
       this.wheelDirection = event.deltaY < 0 ? -1 : 1;
       event.preventDefault();
     };
@@ -56,6 +59,8 @@ export class Input {
     target.addEventListener('contextmenu', (event) => event.preventDefault());
   }
 
+  setSensitivity(value) { this.sensitivity = Math.max(0.35, Math.min(2.5, Number(value) || 1)); }
+  aimSensitivity() { return this.sensitivity; }
   isDown(...codes) { return codes.some((code) => this.down.has(code)); }
   wasPressed(...codes) { return codes.some((code) => this.pressed.has(code)); }
   axis() {
