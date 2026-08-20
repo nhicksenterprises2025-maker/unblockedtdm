@@ -34,6 +34,11 @@ export class LoadoutScreen {
     this.root.classList.add('hidden');
   }
 
+  back() {
+    this.close();
+    this.onComplete?.({ mode: 'back' });
+  }
+
   weaponsFor(slot) { return slot === 'primary' ? PRIMARY_WEAPONS : SECONDARY_WEAPONS; }
 
   loadSavedSlot(index) {
@@ -146,7 +151,7 @@ export class LoadoutScreen {
             <div class="loadout-message">${this.message}</div>
           </div>
         </div>
-        <div class="loadout-foot"><div><span>ACTIVE SAVED LOADOUT · SLOT ${String(this.selectedIndex + 1).padStart(2, '0')}</span><strong>${current.name} · ${this.selection.primary?.name || '—'} + ${this.selection.secondary?.name || '—'}</strong><small>During a round break you can switch instantly between any of these 25 saved slots.</small></div><button type="button" id="deployButton" class="deploy-button">${this.mode === 'play' ? 'START MATCH' : 'SAVE & BACK TO MENU'}</button></div>
+        <div class="loadout-foot"><div><span>ACTIVE SAVED LOADOUT · SLOT ${String(this.selectedIndex + 1).padStart(2, '0')}</span><strong>${current.name} · ${this.selection.primary?.name || '—'} + ${this.selection.secondary?.name || '—'}</strong><small>During a round break you can switch instantly between any of these 25 saved slots.</small></div><div class="loadout-foot-actions"><button type="button" id="loadoutBackButton" class="select-weapon">BACK TO MAIN MENU</button><button type="button" id="deployButton" class="deploy-button">${this.mode === 'play' ? 'START MATCH' : 'SAVE & BACK'}</button></div></div>
       </div>`;
 
     for (const button of this.root.querySelectorAll('[data-loadout-index]')) button.addEventListener('click', () => this.loadSavedSlot(Number(button.dataset.loadoutIndex)));
@@ -161,6 +166,7 @@ export class LoadoutScreen {
       if (event.key === 'Enter') this.renameCurrent(event.currentTarget.value);
     });
     this.root.querySelector('#resetLoadoutSlot')?.addEventListener('click', () => this.resetCurrent());
+    this.root.querySelector('#loadoutBackButton')?.addEventListener('click', () => this.back());
     this.root.querySelector('#deployButton')?.addEventListener('click', () => this.complete());
   }
 
