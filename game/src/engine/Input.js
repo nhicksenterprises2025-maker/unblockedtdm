@@ -1,6 +1,6 @@
 const BLOCKED_KEYS = new Set([
   'KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
-  'ShiftLeft','ShiftRight','Space','Tab','KeyR','Digit1','Digit2','F1','F2','F3','F4','F6'
+  'ShiftLeft','ShiftRight','Space','Tab','KeyR','Digit1','Digit2','Numpad1','Numpad2','F1','F2','F3','F4','F6'
 ]);
 
 export class Input {
@@ -9,6 +9,7 @@ export class Input {
     this.pressed = new Set();
     this.mouseDown = new Set();
     this.mousePressed = new Set();
+    this.wheelDirection = 0;
     this.pointer = { x: innerWidth / 2, y: innerHeight / 2, inside: true };
 
     this.onKeyDown = (event) => {
@@ -17,10 +18,6 @@ export class Input {
       this.down.add(event.code);
     };
     this.onKeyUp = (event) => this.down.delete(event.code);
-
-    // Mouse events are intentionally used instead of pointerdown/pointerup here.
-    // Pointer Events only emit pointerdown for the first pressed mouse button,
-    // which broke RMB (ADS) + LMB (fire) chords in Build 1.13 v1.
     this.onMouseDown = (event) => {
       if (!this.mouseDown.has(event.button)) this.mousePressed.add(event.button);
       this.mouseDown.add(event.button);
@@ -29,6 +26,10 @@ export class Input {
     this.onMouseUp = (event) => {
       this.mouseDown.delete(event.button);
       if (event.button === 0 || event.button === 2) event.preventDefault();
+    };
+    this.onWheel = (event) => {
+      this.wheelDirection = event.deltaY < 0 ? -1 : 1;
+      event.preventDefault();
     };
     this.onPointerMove = (event) => {
       this.pointer.x = event.clientX;
@@ -41,12 +42,14 @@ export class Input {
       this.pressed.clear();
       this.mouseDown.clear();
       this.mousePressed.clear();
+      this.wheelDirection = 0;
     };
 
     target.addEventListener('keydown', this.onKeyDown);
     target.addEventListener('keyup', this.onKeyUp);
     target.addEventListener('mousedown', this.onMouseDown);
     target.addEventListener('mouseup', this.onMouseUp);
+    target.addEventListener('wheel', this.onWheel, { passive: false });
     target.addEventListener('pointermove', this.onPointerMove);
     target.addEventListener('pointerleave', this.onPointerLeave);
     target.addEventListener('blur', this.onBlur);
@@ -54,7 +57,7 @@ export class Input {
   }
 
   isDown(...codes) { return codes.some((code) => this.down.has(code)); }
-  wasPressed(code) { return this.pressed.has(code); }
+  wasPressed(...codes) { return codes.some((code) => this.pressed.has(code)); }
   axis() {
     let x=0,y=0;
     if (this.isDown('KeyA','ArrowLeft')) x-=1;
@@ -67,11 +70,11 @@ export class Input {
   sprintHeld() { return this.isDown('ShiftLeft','ShiftRight'); }
   dashPressed() { return this.wasPressed('Space'); }
   reloadPressed() { return this.wasPressed('KeyR'); }
-  slotPrimaryPressed() { return this.wasPressed('Digit1'); }
-  slotSecondaryPressed() { return this.wasPressed('Digit2'); }
+  slotPrimaryPressed() { return this.wasPressed('Digit1','Numpad1') || this.wheelDirection < 0; }
+  slotSecondaryPressed() { return this.wasPressed('Digit2','Numpad2') || this.wheelDirection > 0; }
   fireHeld() { return this.mouseDown.has(0); }
   firePressed() { return this.mousePressed.has(0); }
   adsHeld() { return this.mouseDown.has(2); }
   pointerPosition() { return { ...this.pointer }; }
-  endFrame() { this.pressed.clear(); this.mousePressed.clear(); }
+  endFrame() { this.pressed.clear(); this.mousePressed.clear(); this.wheelDirection = 0; }
 }
