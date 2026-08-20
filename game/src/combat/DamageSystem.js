@@ -72,7 +72,7 @@ export class DamageSystem {
     };
 
     if (enriched.applied) {
-      this.onDamage?.({
+      const event = {
         sourceId,
         sourceTeam,
         sourceType,
@@ -80,7 +80,11 @@ export class DamageSystem {
         selfDamage: isSelf && selfDamage,
         critical: wasCritical,
         result: enriched
-      });
+      };
+      this.onDamage?.(event);
+      try {
+        window.dispatchEvent(new CustomEvent('unblockedtdm:damage-applied', { detail: event }));
+      } catch {}
     }
 
     return enriched;
