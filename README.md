@@ -4,19 +4,19 @@ UnblockedTDM is a 2D top-down 3v3 team deathmatch game delivered as one continuo
 
 ## Current development build
 
-**Build 1.13 — Version 2**  
-Phase: **Weapon Framework / Input & Visual Polish**
+**Build 1.2 — Version 1**  
+Phase: **Complete Weapon Roster / Loadout Select**
 
-Build 1.13 Version 2 corrects the first weapon build without changing the Assault Rifle's canonical balance. RMB ADS and LMB fire now work simultaneously, the rifle is properly shoulder-mounted with aligned hands/muzzle feedback, and Training Complex has received a substantial environment-rendering pass while preserving the same gameplay geometry and 64px tile system.
+Build 1.2 completes the first eight-weapon roster, adds the mandatory pre-match Primary/Secondary selection screen with exact weapon stats, implements projectile sniper and launcher combat, shotgun pellets and shell reload, semi-auto pistol behavior, melee combat, and another player/weapon animation polish pass.
 
 ### Current playable systems
-- 32×22 Training Complex on the 64px tile system, now with upgraded ground, structure, lane and spawn-zone rendering.
-- Naturalized player locomotion, mouse aim, sprint/stamina and four-charge dash.
+- 32×22 Training Complex on the 64px tile system with the polished environment pass.
+- Refined humanoid player presentation, mouse aim, sprint/stamina and four-charge dash.
 - 150 HP, regeneration cap, death, respawn and spawn protection.
-- Full Assault Rifle implementation: 20 damage, 2% crit, 32 crit damage, 0.30s fire interval, 32+96 ammo, 2.5s reload, 13.5t full range, 13 falloff, 4° base spread and 0.4s ADS.
-- Simultaneous RMB ADS + LMB automatic fire.
-- Shoulder-mounted Assault Rifle with visible grip hands and muzzle/tracer origin aligned to the rendered barrel.
-- Hitscan blocked by map geometry, dynamic crosshair, hitmarkers, tracers, muzzle flash and damage numbers.
+- Eight complete weapons: Assault Rifle, SMG, Sniper Rifle, Shotgun, LMG, Pistol, Launcher and Melee.
+- Primary/Secondary switching with canonical swap tiers and weapon movement penalties.
+- Hitscan, physical projectiles, explosive self-damage, zero friendly fire, critical hits, falloff, dynamic spread, ammo and reload behavior.
+- Pre-match loadout selection with exact numerical stats and SELECT buttons.
 - Red-side live development target using the same Player and HealthState systems.
 
 ## Distribution
