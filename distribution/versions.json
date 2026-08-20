@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "UnblockedTDM",
+      "gameVersion": "1.5",
+      "build": 1,
+      "sequence": 13,
+      "phase": "Midpoint / Persistent Loadouts / Pause Settings",
+      "tag": "build-1.5-v1",
+      "title": "UnblockedTDM Build 1.5 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.5-v1/UnblockedTDM-1.5-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.5-v1/UnblockedTDM-Setup-1.5-v1.exe",
+      "sha256": "3c966fcf268104d98553c7dc34a878df39fb28a48ab62342ed1e0fee474982b4",
+      "installerSha256": "973d5e2a39987ed2f1c9b3f5d0a774a342639b44cb5ab67ef82746bbf0ce2833",
+      "publishedAt": "2026-08-20T06:03:04.811Z"
+    },
+    {
+      "product": "UnblockedTDM",
       "gameVersion": "1.41",
       "build": 1,
       "sequence": 12,

@@ -1,14 +1,14 @@
 {
   "product": "UnblockedTDM",
-  "gameVersion": "1.41",
+  "gameVersion": "1.5",
   "build": 1,
-  "sequence": 12,
-  "phase": "Minimap / HUD / Pathfinding / Aim Accuracy",
-  "tag": "build-1.41-v1",
-  "title": "UnblockedTDM Build 1.41 — Version 1",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.41-v1/UnblockedTDM-1.41-v1.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.41-v1/UnblockedTDM-Setup-1.41-v1.exe",
-  "sha256": "93c7febf73c22b874c4a95ece3f7624483a719b57d01d9caa49082c33fd9fd6e",
-  "installerSha256": "2ca7ce4e498d2ecfebb8ed23ec9bc815b3cc79c498f38303d03a1a41e591c8f0",
-  "publishedAt": "2026-08-20T05:42:03.429Z"
+  "sequence": 13,
+  "phase": "Midpoint / Persistent Loadouts / Pause Settings",
+  "tag": "build-1.5-v1",
+  "title": "UnblockedTDM Build 1.5 — Version 1",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.5-v1/UnblockedTDM-1.5-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.5-v1/UnblockedTDM-Setup-1.5-v1.exe",
+  "sha256": "3c966fcf268104d98553c7dc34a878df39fb28a48ab62342ed1e0fee474982b4",
+  "installerSha256": "973d5e2a39987ed2f1c9b3f5d0a774a342639b44cb5ab67ef82746bbf0ce2833",
+  "publishedAt": "2026-08-20T06:03:04.811Z"
 }
