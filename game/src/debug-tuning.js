@@ -16,7 +16,13 @@
     sensitivity.addEventListener('input',()=>write('unblockedtdm.sensitivity',clamp(Number(sensitivity.value),.35,2.5).toFixed(2)));
     minimap.addEventListener('change',()=>write('unblockedtdm.minimapMode',minimap.value));
     window.addEventListener('unblockedtdm:settings-change',sync);
-    window.addEventListener('keydown',(event)=>{if(event.code==='F1'&&!event.repeat){panel.classList.toggle('visible');}});
+    window.addEventListener('keydown',(event)=>{
+      if(event.code!=='F1'||event.repeat)return;
+      const inMatch=document.body.classList.contains('match-started');
+      const paused=document.getElementById('pausePanel')?.classList.contains('visible');
+      if(!inMatch||paused)return;
+      panel.classList.toggle('visible');
+    });
     sync();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
