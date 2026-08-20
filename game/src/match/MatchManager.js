@@ -67,6 +67,7 @@ export class MatchManager {
 
   isLive() { return this.state === 'active' || this.state === 'sudden-death'; }
   isFrozen() { return this.state === 'countdown' || this.state === 'round-break' || this.state === 'match-over'; }
+  canChangeLoadout() { return this.state === 'round-break'; }
 
   update(dt) {
     this.goTimer = Math.max(0, this.goTimer - dt);
@@ -185,8 +186,21 @@ export class MatchManager {
   }
 
   snapshot() {
-    return { round:this.round,state:this.state,timer:this.roundTimer,timerLabel:this.formatTimer(),kills:{...this.roundKills},wins:{...this.roundWins},suddenDeath:this.suddenDeath,stateTimer:this.stateTimer,lastRoundWinner:this.lastRoundWinner,matchWinner:this.matchWinner,overlay:this.overlayText() };
+    return {
+      round: this.round,
+      state: this.state,
+      timer: this.roundTimer,
+      timerLabel: this.formatTimer(),
+      kills: { ...this.roundKills },
+      wins: { ...this.roundWins },
+      suddenDeath: this.suddenDeath,
+      stateTimer: this.stateTimer,
+      lastRoundWinner: this.lastRoundWinner,
+      matchWinner: this.matchWinner,
+      canChangeLoadout: this.canChangeLoadout(),
+      overlay: this.overlayText()
+    };
   }
 }
 
-export const MATCH_RULES = Object.freeze({ ROUND_DURATION,ROUND_KILL_TARGET,ROUND_WINS_TO_MATCH,MAX_ROUNDS,COUNTDOWN_DURATION,ROUND_BREAK_DURATION });
+export const MATCH_RULES = Object.freeze({ ROUND_DURATION, ROUND_KILL_TARGET, ROUND_WINS_TO_MATCH, MAX_ROUNDS, COUNTDOWN_DURATION, ROUND_BREAK_DURATION });
