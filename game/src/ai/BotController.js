@@ -1,6 +1,8 @@
 import { castHitscan } from '../combat/Hitscan.js';
 import { TILE_SIZE } from '../engine/constants.js';
 
+const BOT_AIM_ERROR_SCALE = 1.65;
+const BOT_TARGET_MOTION_ERROR_SCALE = 1.35;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalize = (x, y) => {
   const length = Math.hypot(x, y);
@@ -279,13 +281,15 @@ export class BotController {
     weapon = this.weaponManager.currentWeapon();
     ammo = this.weaponManager.currentAmmo();
 
-    const jitter = jitterBase(weapon) / clamp(skill, 0.65, 2.2)
-      + Math.min(7, (this.target.speedTilesPerSecond?.() || 0) * 1.25) / skill;
+    const baseError = jitterBase(weapon) * BOT_AIM_ERROR_SCALE / clamp(skill, 0.65, 2.2);
+    const motionError = Math.min(10, (this.target.speedTilesPerSecond?.() || 0) * 1.7)
+      * BOT_TARGET_MOTION_ERROR_SCALE / skill;
+    const jitter = baseError + motionError;
     const desiredAim = {
       x: this.target.x + Math.cos(this.strafeClock * 1.83 + this.seed) * jitter,
       y: this.target.y + Math.sin(this.strafeClock * 1.39 + this.seed * 0.7) * jitter
     };
-    const aimBlend = 1 - Math.exp(-(4.8 + 5.4 * skill) * dt);
+    const aimBlend = 1 - Math.exp(-(4.6 + 5.0 * skill) * dt);
     this.aimWorld.x += (desiredAim.x - this.aimWorld.x) * aimBlend;
     this.aimWorld.y += (desiredAim.y - this.aimWorld.y) * aimBlend;
 
