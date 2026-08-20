@@ -55,13 +55,16 @@ assert.equal(input.mouseDown.size, 0);
 
 const loadoutStorage = new MemoryStorage();
 const loadouts = new LoadoutStore(loadoutStorage);
-assert.equal(loadouts.all().length, 25);
+assert.equal(loadouts.capacity(), 25);
+assert.equal(loadouts.all().length, 3);
 loadouts.save(4, { name: 'Aggro', primary: WEAPONS.smg, secondary: WEAPONS.shotgun });
+assert.equal(loadouts.all().length, 5, 'Saving a higher slot should preserve it in the created-slot model.');
 loadouts.setActive(4);
 const reloaded = new LoadoutStore(loadoutStorage);
 assert.equal(reloaded.get().name, 'Aggro');
 assert.equal(reloaded.get().primary.id, 'smg');
 assert.equal(reloaded.get().secondary.id, 'shotgun');
+assert.equal(reloaded.all().length, 5);
 
 const match = new MatchManager({ players: [], spawnSystem: null, projectileSystem: { reset() {} } });
 match.state = 'active';
