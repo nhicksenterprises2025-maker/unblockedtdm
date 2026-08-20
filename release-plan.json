@@ -1,11 +1,11 @@
 {
   "product":"UnblockedTDM",
-  "gameVersion":"1.2",
+  "gameVersion":"1.21",
   "build":1,
-  "phase":"Complete Weapon Roster / Loadout Select",
-  "tag":"build-1.2-v1",
-  "title":"UnblockedTDM Build 1.2 — Version 1",
-  "notesFile":"docs/releases/build-1.2-v1.md",
-  "sequence":8,
+  "phase":"Combat Presentation / Input Fixes",
+  "tag":"build-1.21-v1",
+  "title":"UnblockedTDM Build 1.21 — Version 1",
+  "notesFile":"docs/releases/build-1.21-v1.md",
+  "sequence":9,
   "releaseRevision":1
 }
