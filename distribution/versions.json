@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "UnblockedTDM",
+      "gameVersion": "1.6",
+      "build": 1,
+      "sequence": 14,
+      "phase": "Front End / Main Menu / Settings / Keybinds",
+      "tag": "build-1.6-v1",
+      "title": "UnblockedTDM Build 1.6 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.6-v1/UnblockedTDM-1.6-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.6-v1/UnblockedTDM-Setup-1.6-v1.exe",
+      "sha256": "2e4b1847e98da83069c0226be54c4449ca8d951a746c7938c3fbdfdefc413d42",
+      "installerSha256": "7ff633993b3ecbf74dcd7e98a6f5ac969de5506a3d5f0c64522a00c875ac7951",
+      "publishedAt": "2026-08-20T13:55:19.254Z"
+    },
+    {
+      "product": "UnblockedTDM",
       "gameVersion": "1.5",
       "build": 1,
       "sequence": 13,

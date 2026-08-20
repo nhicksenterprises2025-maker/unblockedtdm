@@ -1,14 +1,14 @@
 {
   "product": "UnblockedTDM",
-  "gameVersion": "1.5",
+  "gameVersion": "1.6",
   "build": 1,
-  "sequence": 13,
-  "phase": "Midpoint / Persistent Loadouts / Pause Settings",
-  "tag": "build-1.5-v1",
-  "title": "UnblockedTDM Build 1.5 — Version 1",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.5-v1/UnblockedTDM-1.5-v1.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.5-v1/UnblockedTDM-Setup-1.5-v1.exe",
-  "sha256": "3c966fcf268104d98553c7dc34a878df39fb28a48ab62342ed1e0fee474982b4",
-  "installerSha256": "973d5e2a39987ed2f1c9b3f5d0a774a342639b44cb5ab67ef82746bbf0ce2833",
-  "publishedAt": "2026-08-20T06:03:04.811Z"
+  "sequence": 14,
+  "phase": "Front End / Main Menu / Settings / Keybinds",
+  "tag": "build-1.6-v1",
+  "title": "UnblockedTDM Build 1.6 — Version 1",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.6-v1/UnblockedTDM-1.6-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.6-v1/UnblockedTDM-Setup-1.6-v1.exe",
+  "sha256": "2e4b1847e98da83069c0226be54c4449ca8d951a746c7938c3fbdfdefc413d42",
+  "installerSha256": "7ff633993b3ecbf74dcd7e98a6f5ac969de5506a3d5f0c64522a00c875ac7951",
+  "publishedAt": "2026-08-20T13:55:19.254Z"
 }
