@@ -1,10 +1,10 @@
 {
   "product":"UnblockedTDM",
-  "gameVersion":"1.41",
+  "gameVersion":"1.5",
   "build":1,
-  "sequence":12,
-  "phase":"Minimap / HUD / Pathfinding / Aim Accuracy",
-  "tag":"build-1.41-v1",
-  "title":"UnblockedTDM Build 1.41 — Version 1",
+  "sequence":13,
+  "phase":"Midpoint / Persistent Loadouts / Pause Settings",
+  "tag":"build-1.5-v1",
+  "title":"UnblockedTDM Build 1.5 — Version 1",
   "repository":"nhicksenterprises2025-maker/unblockedtdm"
 }
