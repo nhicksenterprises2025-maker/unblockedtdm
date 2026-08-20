@@ -13,7 +13,8 @@ function ensureStyle(href) {
 ensureStyle('ui-v17.css');
 ensureStyle('ui-v18.css');
 ensureStyle('ui-v18-postgame.css');
-document.body.classList.add('ui-v18');
+ensureStyle('ui-v19.css');
+document.body.classList.add('ui-v18', 'ui-v19');
 
 function blurUiFocus() {
   const active = document.activeElement;
