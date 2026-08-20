@@ -4,109 +4,99 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UnblockedTDM Launcher</title>
+  <link rel="icon" href="assets/unblockedtdm-mark.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark">UT</div>
-        <div><strong>UNBLOCKED</strong><span>TDM</span></div>
+  <div class="launcher-shell">
+    <aside class="rail">
+      <div class="rail-brand">
+        <img src="assets/unblockedtdm-mark.svg" alt="UT" />
+        <span>UT</span>
       </div>
-      <nav>
-        <button class="nav-button active" data-view="home">Home</button>
-        <button class="nav-button" data-view="archive">Version Archive</button>
-        <button class="nav-button" data-view="settings">Settings</button>
-        <button class="nav-button" data-view="diagnostics">Diagnostics</button>
+      <nav class="rail-nav" aria-label="Launcher navigation">
+        <button class="nav-button active" data-view="home"><i></i><span>PLAY</span></button>
+        <button class="nav-button" data-view="archive"><i></i><span>BUILDS</span></button>
+        <button class="nav-button" data-view="settings"><i></i><span>SETTINGS</span></button>
+        <button class="nav-button" data-view="diagnostics"><i></i><span>DIAGNOSTICS</span></button>
       </nav>
-      <div class="sidebar-footer">
-        <span id="phaseLabel">PRE-DEVELOPMENT</span>
-        <small id="launcherBuild">Build 1.00 · Version 1</small>
+      <div class="rail-footer">
+        <span id="launcherBuild">v—</span>
+        <small id="phaseLabel">CLIENT</small>
+        <b><i class="status-dot"></i> ONLINE</b>
       </div>
     </aside>
 
-    <main>
-      <header>
-        <div>
-          <p class="eyebrow">UNBLOCKEDTDM</p>
-          <h1 id="viewTitle">Launcher</h1>
-        </div>
-        <div id="connectionBadge" class="badge">GitHub distribution</div>
+    <main class="client">
+      <header class="client-header">
+        <div class="wordmark"><strong>UNBLOCKED</strong><span>TDM //</span></div>
+        <div class="header-meta"><span id="viewTitle">MATCH CLIENT // 01</span><b id="connectionBadge"><i class="status-dot"></i> ONLINE</b></div>
       </header>
 
       <section id="home" class="view active">
-        <div class="hero panel">
-          <div>
-            <p class="eyebrow">CURRENT INSTALL</p>
-            <h2 id="currentTitle">UnblockedTDM</h2>
-            <p id="currentMeta" class="muted">Loading installed build…</p>
+        <article class="build-focus">
+          <div class="build-art" aria-hidden="true"></div>
+          <div class="build-copy">
+            <span class="mono-line">[ CURRENT BUILD ]</span>
+            <h1 id="currentTitle">UnblockedTDM</h1>
+            <p id="currentMeta">Loading installed build…</p>
+            <div class="build-markers"><span>TRAINING COMPLEX</span><span>3V3</span><span>LOCAL MATCH CLIENT</span></div>
           </div>
-          <div class="hero-actions">
-            <button id="playButton" class="primary large">PLAY</button>
+          <div class="launch-zone">
+            <button id="playButton" class="launch-button">LAUNCH GAME</button>
+            <span id="launchState" class="launch-state">READY // FILES VERIFIED</span>
+          </div>
+        </article>
+
+        <div class="status-strip" aria-label="Launcher status">
+          <div><span>INSTALLED</span><strong id="installedBuild">—</strong></div>
+          <div><span>LATEST</span><strong id="latestBuild">—</strong></div>
+          <div><span>STATUS</span><strong id="statusReady">READY</strong></div>
+          <div><span>FILES</span><strong id="filesStatus">VERIFIED ✓</strong></div>
+        </div>
+
+        <section class="update-line">
+          <div class="update-copy">
+            <span class="section-kicker">LATEST PATCH</span>
+            <h2 id="patchTitle">Checking release channel…</h2>
+            <p id="patchDetail">Current build information will appear here when the launcher checks GitHub.</p>
+          </div>
+          <div class="update-actions">
+            <strong id="updateStatus">Checking…</strong>
+            <span id="updateDetail">Reading release manifest.</span>
             <button id="updateButton" class="secondary">CHECK FOR UPDATES</button>
           </div>
-        </div>
+        </section>
 
-        <div class="grid two">
-          <article class="panel stat-card">
-            <span class="label">Update status</span>
-            <strong id="updateStatus">Checking…</strong>
-            <p id="updateDetail" class="muted">Connecting to the GitHub release channel.</p>
-          </article>
-          <article class="panel stat-card">
-            <span class="label">Version archive</span>
-            <strong>Every published build stays available</strong>
-            <p class="muted">Archived builds install separately and never downgrade your current build.</p>
-          </article>
-        </div>
-
-        <div id="progressPanel" class="panel progress-panel hidden">
-          <div class="progress-row"><span id="progressText">Working…</span><span id="progressPercent"></span></div>
+        <section id="progressPanel" class="download-panel hidden">
+          <div class="download-head"><span id="progressText">Working…</span><strong id="progressPercent"></strong></div>
           <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
-        </div>
+        </section>
       </section>
 
       <section id="archive" class="view">
-        <div class="section-heading">
-          <div><h2>Version Archive</h2><p class="muted">Download and launch any immutable UnblockedTDM build.</p></div>
-          <button id="refreshArchive" class="secondary">REFRESH</button>
-        </div>
+        <div class="page-title"><div><span class="section-kicker">IMMUTABLE BUILDS</span><h1>BUILD ARCHIVE</h1><p>Published versions install separately and never replace the current game unless you explicitly update.</p></div><button id="refreshArchive" class="secondary">REFRESH</button></div>
+        <div class="table-head"><span>BUILD</span><span>PHASE</span><span>TAG</span><span>ACTION</span></div>
         <div id="archiveList" class="archive-list"></div>
       </section>
 
       <section id="settings" class="view">
-        <div class="panel settings-list">
-          <label class="setting-row">
-            <div><strong>Automatic update checks</strong><span>Check GitHub when the launcher opens.</span></div>
-            <input id="autoCheckUpdates" type="checkbox" />
-          </label>
-          <label class="setting-row">
-            <div><strong>Minimize launcher when playing</strong><span>Keep the launcher running in the taskbar.</span></div>
-            <input id="minimizeOnPlay" type="checkbox" />
-          </label>
-          <label class="setting-row">
-            <div><strong>Close launcher after Play</strong><span>Exit the launcher once UnblockedTDM starts.</span></div>
-            <input id="closeAfterPlay" type="checkbox" />
-          </label>
-          <div class="save-row"><button id="saveSettings" class="primary">SAVE SETTINGS</button><span id="settingsStatus" class="muted"></span></div>
+        <div class="page-title"><div><span class="section-kicker">CLIENT BEHAVIOR</span><h1>SETTINGS</h1><p>Launcher-only preferences. Game controls and graphics live inside UnblockedTDM.</p></div></div>
+        <div class="settings-lines">
+          <label class="setting-row"><div><strong>Automatic update checks</strong><span>Query the live build manifest when this launcher opens.</span></div><input id="autoCheckUpdates" type="checkbox" /></label>
+          <label class="setting-row"><div><strong>Minimize launcher when playing</strong><span>Keep the launcher available in the taskbar after launch.</span></div><input id="minimizeOnPlay" type="checkbox" /></label>
+          <label class="setting-row"><div><strong>Close launcher after Play</strong><span>Exit the client after UnblockedTDM starts.</span></div><input id="closeAfterPlay" type="checkbox" /></label>
         </div>
+        <div class="save-row"><button id="saveSettings" class="primary">SAVE SETTINGS</button><span id="settingsStatus"></span></div>
       </section>
 
       <section id="diagnostics" class="view">
-        <div class="grid two">
-          <article class="panel">
-            <span class="label">Current game executable</span>
-            <code id="gamePath">Loading…</code>
-            <button id="openGameFolder" class="secondary full">OPEN GAME FOLDER</button>
-          </article>
-          <article class="panel">
-            <span class="label">File integrity</span>
-            <strong>SHA-256 verified distribution</strong>
-            <p class="muted">Repair compares your installed executable with the immutable GitHub archive and restores it if needed.</p>
-            <button id="repairButton" class="secondary full">VERIFY / REPAIR GAME</button>
-          </article>
+        <div class="page-title"><div><span class="section-kicker">CLIENT DIAGNOSTICS</span><h1>DIAGNOSTICS</h1><p>Only the information needed to verify or repair the local install.</p></div></div>
+        <div class="diag-lines">
+          <section><span>GAME EXECUTABLE</span><code id="gamePath">Loading…</code><button id="openGameFolder" class="secondary">OPEN GAME FOLDER</button></section>
+          <section><span>INTEGRITY</span><strong>SHA-256 VERIFIED DISTRIBUTION</strong><p>Repair compares your current executable against the immutable release asset.</p><button id="repairButton" class="secondary">VERIFY / REPAIR GAME</button></section>
         </div>
-        <div id="diagnosticStatus" class="panel muted">Diagnostics ready.</div>
+        <div id="diagnosticStatus" class="diagnostic-status">DIAGNOSTICS READY</div>
       </section>
     </main>
   </div>

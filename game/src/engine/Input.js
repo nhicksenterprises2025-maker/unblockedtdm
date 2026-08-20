@@ -1,7 +1,7 @@
 import { mouseBindingCode } from './GameSettings.js';
 
 const FIXED_BLOCKED_KEYS = new Set(['F1', 'F11']);
-const UI_SELECTOR = 'button,input,select,textarea,[contenteditable="true"],[data-ui-surface],.debug-controls,.loadout-screen,.round-loadout-panel,.pause-panel,.main-menu';
+const UI_SELECTOR = 'button,input,select,textarea,[contenteditable="true"],[data-ui-surface],.debug-controls,.loadout-screen,.round-loadout-panel,.pause-panel,.main-menu,.postgame-screen';
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function isUiTarget(target) {
@@ -29,7 +29,9 @@ export class Input {
     try { this.setSensitivity(this.settings?.gameplay?.().sensitivity ?? localStorage.getItem('unblockedtdm.sensitivity') ?? 1); } catch {}
 
     this.onKeyDown = (event) => {
-      if (this.suspended || isUiTarget(event.target)) return;
+      // Keyboard gameplay ownership is controlled by setSuspended(). Do not reject
+      // a live-match key simply because a hidden menu button still has DOM focus.
+      if (this.suspended) return;
       if (this.shouldBlockKey(event.code)) event.preventDefault();
       if (!this.down.has(event.code)) this.pressed.add(event.code);
       this.down.add(event.code);
@@ -93,11 +95,20 @@ export class Input {
     this.aimVelocity.y = 0;
   }
 
+  releaseUiFocus() {
+    try {
+      const active = document.activeElement;
+      if (active && active !== document.body && typeof active.blur === 'function') active.blur();
+    } catch {}
+    this.clearTransientState();
+  }
+
   setSuspended(value) {
     const next = Boolean(value);
     if (next === this.suspended) return;
     this.suspended = next;
     this.clearTransientState();
+    if (!next) this.releaseUiFocus();
   }
 
   shouldBlockKey(code) {

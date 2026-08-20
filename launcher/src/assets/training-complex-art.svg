@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#080c11"/>
+  <g opacity=".32" stroke="#233140" stroke-width="2">
+    <path d="M0 120h1200M0 240h1200M0 360h1200M0 480h1200M0 600h1200"/>
+    <path d="M120 0v720M240 0v720M360 0v720M480 0v720M600 0v720M720 0v720M840 0v720M960 0v720M1080 0v720"/>
+  </g>
+  <g fill="#111925" stroke="#2a3949" stroke-width="4">
+    <rect x="80" y="76" width="188" height="116"/><rect x="932" y="76" width="188" height="116"/>
+    <rect x="80" y="528" width="188" height="116"/><rect x="932" y="528" width="188" height="116"/>
+    <rect x="434" y="46" width="332" height="94"/><rect x="434" y="580" width="332" height="94"/>
+    <rect x="470" y="282" width="260" height="156"/>
+  </g>
+  <g fill="#192535" stroke="#304255" stroke-width="3">
+    <rect x="305" y="214" width="82" height="190"/><rect x="813" y="316" width="82" height="190"/>
+    <rect x="404" y="190" width="86" height="86"/><rect x="710" y="444" width="86" height="86"/>
+    <rect x="712" y="190" width="86" height="86"/><rect x="402" y="444" width="86" height="86"/>
+  </g>
+  <g fill="none" stroke="#37b8ff" stroke-width="3" opacity=".45">
+    <path d="M126 360h184m580 0h184"/><path d="M154 338l-28 22 28 22M1046 338l28 22-28 22"/>
+  </g>
+  <g opacity=".72">
+    <circle cx="226" cy="360" r="14" fill="#37b8ff"/><circle cx="976" cy="360" r="14" fill="#ff596d"/>
+    <circle cx="274" cy="310" r="8" fill="#37b8ff"/><circle cx="926" cy="410" r="8" fill="#ff596d"/>
+  </g>
+  <g fill="#37b8ff" opacity=".28"><rect x="0" y="352" width="1200" height="16"/></g>
+  <g font-family="monospace" font-size="20" fill="#6b7b8d" opacity=".72">
+    <text x="42" y="700">TRAINING COMPLEX // GRID 32×22</text>
+    <text x="928" y="700">MATCH CLIENT // 01</text>
+  </g>
+</svg>

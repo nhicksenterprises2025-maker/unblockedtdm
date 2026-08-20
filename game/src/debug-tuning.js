@@ -20,10 +20,12 @@
       if(event.code!=='F1'||event.repeat)return;
       const inMatch=document.body.classList.contains('match-started');
       const paused=document.getElementById('pausePanel')?.classList.contains('visible');
-      if(!inMatch||paused)return;
+      const postgame=document.body.classList.contains('postgame-open');
+      if(!inMatch||paused||postgame)return;
       panel.classList.toggle('visible');
     });
     sync();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  import('./postgame-runtime.js').catch((error)=>console.error('Postgame runtime failed to load',error));
 })();
