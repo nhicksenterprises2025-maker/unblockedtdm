@@ -12,6 +12,7 @@ export class Input {
     this.wheelDirection = 0;
     this.pointer = { x: innerWidth / 2, y: innerHeight / 2, inside: true };
     this.sensitivity = 1;
+    try { this.setSensitivity(localStorage.getItem('unblockedtdm.sensitivity') || 1); } catch {}
 
     this.onKeyDown = (event) => {
       if (BLOCKED_KEYS.has(event.code)) event.preventDefault();
@@ -60,7 +61,10 @@ export class Input {
   }
 
   setSensitivity(value) { this.sensitivity = Math.max(0.35, Math.min(2.5, Number(value) || 1)); }
-  aimSensitivity() { return this.sensitivity; }
+  aimSensitivity() {
+    try { const saved=Number(localStorage.getItem('unblockedtdm.sensitivity')); if (Number.isFinite(saved) && saved>0) this.setSensitivity(saved); } catch {}
+    return this.sensitivity;
+  }
   isDown(...codes) { return codes.some((code) => this.down.has(code)); }
   wasPressed(...codes) { return codes.some((code) => this.pressed.has(code)); }
   axis() {
