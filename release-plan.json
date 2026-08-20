@@ -1,11 +1,11 @@
 {
   "product":"UnblockedTDM",
-  "gameVersion":"1.9",
+  "gameVersion":"1.9.2",
   "build":1,
-  "phase":"Release Candidate / Gameplay HUD",
-  "tag":"build-1.9-v1",
-  "title":"UnblockedTDM Build 1.9 — Version 1",
-  "notesFile":"docs/releases/build-1.9-v1.md",
-  "sequence":17,
-  "releaseRevision":3
+  "phase":"Loadout UI Hotfix",
+  "tag":"build-1.9.2-v1",
+  "title":"UnblockedTDM Build 1.9.2 — Version 1",
+  "notesFile":"docs/releases/build-1.9.2-v1.md",
+  "sequence":18,
+  "releaseRevision":1
 }

@@ -31,7 +31,7 @@ export class LoadoutScreen {
     this.loadFromStore();
     this.message = this.mode === 'play'
       ? 'Choose your saved loadout, inspect weapon stats, then start the match.'
-      : 'Edit any of the 25 persistent loadout slots. Changes save immediately.';
+      : 'Edit created loadout slots or add more when you need them.';
     this.root.classList.remove('hidden');
     this.render();
   }
@@ -46,6 +46,21 @@ export class LoadoutScreen {
     this.selection = { primary: saved.primary, secondary: saved.secondary };
     this.previewWeapon = this.selection[this.activeSlot];
     this.message = `${saved.name} selected.`;
+    this.render();
+  }
+
+  addSavedSlot() {
+    const created = this.store.addSlot();
+    if (!created) {
+      this.message = `Maximum of ${this.store.capacity()} loadout slots reached.`;
+      this.render();
+      return;
+    }
+    const saved = this.store.setActive(created.index);
+    this.selectedIndex = saved.index;
+    this.selection = { primary: saved.primary, secondary: saved.secondary };
+    this.previewWeapon = this.selection[this.activeSlot];
+    this.message = `${saved.name} created. ${this.store.count()} / ${this.store.capacity()} slots in use.`;
     this.render();
   }
 
@@ -105,22 +120,26 @@ export class LoadoutScreen {
     const selectedHere = this.selection[this.activeSlot]?.id === weapon.id;
     const blockedPreview = this.selection[otherSlot]?.id === weapon.id;
     const savedSlots = this.store.all();
-    const current = savedSlots[this.selectedIndex];
+    const current = savedSlots.find((slot) => slot.index === this.selectedIndex) || this.store.get(this.selectedIndex);
     const esc = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    const addSlot = this.store.canAddSlot()
+      ? `<button type="button" id="addLoadoutSlot" class="loadout-preset loadout-add-slot"><b>+</b><span>ADD SLOT</span><small>${this.store.count()} / ${this.store.capacity()} CREATED</small></button>`
+      : `<div class="loadout-preset loadout-add-slot maxed"><b>25</b><span>MAX SLOTS</span><small>CAPACITY REACHED</small></div>`;
 
     this.root.innerHTML = `<div class="loadout-shell loadout-shell-v16" data-ui-surface>
-      <div class="loadout-head"><div><span class="eyebrow">UNBLOCKEDTDM · BUILD 1.6</span><h1>${this.mode === 'play' ? 'CHOOSE YOUR LOADOUT' : 'LOADOUTS'}</h1><p>${this.mode === 'play' ? 'Select one of your 25 saved setups before deployment.' : 'Persistent slots save across restarts and future launcher updates.'}</p></div><div class="selected-summary"><span>PRIMARY <b>${this.selection.primary?.name || '—'}</b></span><span>SECONDARY <b>${this.selection.secondary?.name || '—'}</b></span></div></div>
-      <div class="loadout-presets">${savedSlots.map((slot) => `<button type="button" data-loadout-index="${slot.index}" class="loadout-preset ${slot.index === this.selectedIndex ? 'active' : ''}"><b>${String(slot.index + 1).padStart(2, '0')}</b><span>${slot.name}</span><small>${slot.primary.shortName} + ${slot.secondary.shortName}</small></button>`).join('')}</div>
+      <div class="loadout-head"><div><span class="eyebrow">UNBLOCKEDTDM · LOADOUT CLIENT</span><h1>${this.mode === 'play' ? 'CHOOSE YOUR LOADOUT' : 'LOADOUTS'}</h1><p>${this.mode === 'play' ? 'Choose a saved setup before deployment. Add more slots only when you need them.' : `Three slots are available by default. Create additional slots up to ${this.store.capacity()} total.`}</p></div><div class="selected-summary"><span>PRIMARY <b>${this.selection.primary?.name || '—'}</b></span><span>SECONDARY <b>${this.selection.secondary?.name || '—'}</b></span></div></div>
+      <div class="loadout-presets">${savedSlots.map((slot) => `<button type="button" data-loadout-index="${slot.index}" class="loadout-preset ${slot.index === this.selectedIndex ? 'active' : ''}"><b>${String(slot.index + 1).padStart(2, '0')}</b><span>${slot.name}</span><small>${slot.primary.shortName} + ${slot.secondary.shortName}</small></button>`).join('')}${addSlot}</div>
       <div class="loadout-name-row"><label>ACTIVE SLOT <strong>${String(this.selectedIndex + 1).padStart(2, '0')}</strong></label><input id="loadoutName" maxlength="24" value="${esc(current.name)}"><button type="button" id="saveLoadoutName">SAVE NAME</button><button type="button" id="resetLoadoutSlot" class="muted">RESET SLOT</button></div>
       <div class="slot-tabs"><button type="button" data-slot="primary" class="${this.activeSlot === 'primary' ? 'active' : ''}">1 · PRIMARY</button><button type="button" data-slot="secondary" class="${this.activeSlot === 'secondary' ? 'active' : ''}">2 · SECONDARY</button></div>
       <div class="loadout-body"><div class="weapon-list">${list.map((item) => { const selected = this.selection[this.activeSlot]?.id === item.id; const blocked = this.selection[otherSlot]?.id === item.id; return `<button type="button" class="weapon-card ${selected ? 'selected' : ''} ${blocked ? 'blocked' : ''}" data-weapon="${item.id}" ${blocked ? 'disabled' : ''}><span class="weapon-class">${item.kind.toUpperCase()}</span><strong>${item.name}</strong><small>${item.fireMode.toUpperCase()} · SWAP T${item.swapTier}</small>${selected ? '<i>EQUIPPED</i>' : '<i>CLICK TO EQUIP</i>'}</button>`; }).join('')}</div>
       <div class="weapon-detail"><div class="weapon-detail-title"><div><span>${this.activeSlot.toUpperCase()} WEAPON</span><h2>${weapon.name}</h2></div><b>${weapon.shortName}</b></div><div class="stat-grid">${stats.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('')}</div><div class="weapon-rule">${this.description(weapon)}</div><button type="button" id="selectWeapon" class="select-weapon" ${blockedPreview ? 'disabled' : ''}>${selectedHere ? `EQUIPPED AS ${this.activeSlot.toUpperCase()}` : `SELECT ${weapon.name.toUpperCase()}`}</button><div class="loadout-message">${this.message}</div></div></div>
-      <div class="loadout-foot"><div><span>ACTIVE SAVED LOADOUT · SLOT ${String(this.selectedIndex + 1).padStart(2, '0')}</span><strong>${current.name} · ${this.selection.primary?.name || '—'} + ${this.selection.secondary?.name || '—'}</strong><small>Round-break loadout changes remain limited to the existing 10-second break.</small></div><div class="loadout-foot-actions"><button type="button" id="loadoutBackButton" class="select-weapon">BACK TO MAIN MENU</button><button type="button" id="deployButton" class="deploy-button">${this.mode === 'play' ? 'START MATCH' : 'SAVE & BACK'}</button></div></div>
+      <div class="loadout-foot"><div><span>ACTIVE SAVED LOADOUT · SLOT ${String(this.selectedIndex + 1).padStart(2, '0')}</span><strong>${current.name} · ${this.selection.primary?.name || '—'} + ${this.selection.secondary?.name || '—'}</strong><small>${this.store.count()} CREATED · ${this.store.capacity()} MAX · Round-break changes stay limited to the 10-second break.</small></div><div class="loadout-foot-actions"><button type="button" id="loadoutBackButton" class="select-weapon">BACK TO MAIN MENU</button><button type="button" id="deployButton" class="deploy-button">${this.mode === 'play' ? 'START MATCH' : 'SAVE & BACK'}</button></div></div>
     </div>`;
 
     for (const button of this.root.querySelectorAll('[data-loadout-index]')) button.addEventListener('click', () => this.loadSavedSlot(Number(button.dataset.loadoutIndex)));
     for (const button of this.root.querySelectorAll('[data-slot]')) button.addEventListener('click', () => this.setSlot(button.dataset.slot));
     for (const button of this.root.querySelectorAll('[data-weapon]')) button.addEventListener('click', () => { const item = list.find((entry) => entry.id === button.dataset.weapon); if (item) this.select(item); });
+    this.root.querySelector('#addLoadoutSlot')?.addEventListener('click', () => this.addSavedSlot());
     this.root.querySelector('#selectWeapon')?.addEventListener('click', () => this.select(weapon));
     this.root.querySelector('#saveLoadoutName')?.addEventListener('click', () => this.renameCurrent(this.root.querySelector('#loadoutName')?.value));
     this.root.querySelector('#loadoutName')?.addEventListener('keydown', (event) => { if (event.key === 'Enter') this.renameCurrent(event.currentTarget.value); });

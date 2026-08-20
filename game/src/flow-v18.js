@@ -14,6 +14,7 @@ ensureStyle('ui-v17.css');
 ensureStyle('ui-v18.css');
 ensureStyle('ui-v18-postgame.css');
 ensureStyle('ui-v19.css');
+ensureStyle('ui-v192.css');
 document.body.classList.add('ui-v18', 'ui-v19');
 
 function blurUiFocus() {
