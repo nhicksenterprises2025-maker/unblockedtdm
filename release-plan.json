@@ -1,11 +1,11 @@
 {
-  "product": "UnblockedTDM",
-  "gameVersion": "1.12",
-  "build": 1,
-  "phase": "Health / Damage / Respawn",
-  "tag": "build-1.12-v1",
-  "title": "UnblockedTDM Build 1.12 — Version 1",
-  "notesFile": "docs/releases/build-1.12-v1.md",
-  "sequence": 5,
-  "releaseRevision": 1
+  "product":"UnblockedTDM",
+  "gameVersion":"1.13",
+  "build":1,
+  "phase":"Weapon Framework / Assault Rifle",
+  "tag":"build-1.13-v1",
+  "title":"UnblockedTDM Build 1.13 — Version 1",
+  "notesFile":"docs/releases/build-1.13-v1.md",
+  "sequence":6,
+  "releaseRevision":1
 }
