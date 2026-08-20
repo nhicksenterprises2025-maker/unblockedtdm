@@ -2,11 +2,22 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 let state;
 
+function buildCode(entry = {}) {
+  const version = entry.gameVersion ?? '—';
+  const build = entry.build ?? '—';
+  return `${version}.${build}`;
+}
+
 function setView(name) {
   $$('.nav-button').forEach((button) => button.classList.toggle('active', button.dataset.view === name));
   $$('.view').forEach((view) => view.classList.toggle('active', view.id === name));
-  const titles = { home: 'Launcher', archive: 'Version Archive', settings: 'Settings', diagnostics: 'Diagnostics' };
-  $('#viewTitle').textContent = titles[name] || 'Launcher';
+  const titles = {
+    home: 'MATCH CLIENT // 01',
+    archive: 'BUILD ARCHIVE',
+    settings: 'CLIENT SETTINGS',
+    diagnostics: 'CLIENT DIAGNOSTICS'
+  };
+  $('#viewTitle').textContent = titles[name] || 'MATCH CLIENT // 01';
   if (name === 'archive') loadArchive();
 }
 
@@ -15,59 +26,78 @@ function setProgress(payload) {
   panel.classList.remove('hidden');
   if (payload.type === 'download') {
     const percent = payload.percent ?? 0;
-    $('#progressText').textContent = 'Downloading update…';
+    $('#progressText').textContent = 'DOWNLOADING UPDATE';
     $('#progressPercent').textContent = payload.percent == null ? '' : `${percent}%`;
     $('#progressBar').style.width = `${percent}%`;
+    $('#statusReady').textContent = 'DOWNLOADING';
   } else if (payload.type === 'status') {
-    $('#progressText').textContent = payload.message;
+    $('#progressText').textContent = String(payload.message || 'WORKING').toUpperCase();
   }
 }
 
 function renderState(next) {
   state = next;
   const { buildInfo, installed, settings, gamePath } = next;
-  $('#phaseLabel').textContent = buildInfo.phase.toUpperCase();
-  $('#launcherBuild').textContent = `Build ${buildInfo.gameVersion} · Version ${buildInfo.build}`;
-  $('#currentTitle').textContent = installed.title || `${buildInfo.product} ${buildInfo.gameVersion}`;
-  $('#currentMeta').textContent = `${installed.phase || buildInfo.phase} · Build ${installed.gameVersion} · Version ${installed.build}`;
+  const installedCode = buildCode(installed?.gameVersion ? installed : buildInfo);
+  $('#phaseLabel').textContent = (installed.phase || buildInfo.phase || 'CLIENT').toUpperCase();
+  $('#launcherBuild').textContent = `v${installedCode}`;
+  $('#currentTitle').textContent = `BUILD ${installedCode}`;
+  $('#currentMeta').textContent = installed.phase || buildInfo.phase || 'UnblockedTDM';
+  $('#installedBuild').textContent = installedCode;
+  $('#latestBuild').textContent = installedCode;
+  $('#patchTitle').textContent = `BUILD ${installedCode} // ${(installed.phase || buildInfo.phase || 'CURRENT').toUpperCase()}`;
+  $('#patchDetail').textContent = 'Installed build is ready to launch. Check the release channel for newer builds.';
   $('#gamePath').textContent = gamePath;
   $('#autoCheckUpdates').checked = settings.autoCheckUpdates;
   $('#minimizeOnPlay').checked = settings.minimizeOnPlay;
   $('#closeAfterPlay').checked = settings.closeAfterPlay;
+  $('#statusReady').textContent = 'READY';
+  $('#filesStatus').textContent = 'VERIFIED ✓';
+  $('#launchState').textContent = 'READY // FILES VERIFIED';
 }
 
 async function checkUpdates() {
-  $('#updateStatus').textContent = 'Checking GitHub…';
-  $('#updateDetail').textContent = 'Reading the live UnblockedTDM release manifest.';
+  $('#updateStatus').textContent = 'CHECKING CHANNEL';
+  $('#updateDetail').textContent = 'Reading live release manifest.';
   try {
     const result = await window.launcherAPI.checkUpdates();
+    const latestCode = buildCode(result.latest || result.installed);
+    $('#latestBuild').textContent = latestCode;
+    $('#patchTitle').textContent = `BUILD ${latestCode} // ${(result.latest?.phase || result.installed?.phase || 'CURRENT').toUpperCase()}`;
+    $('#patchDetail').textContent = result.latest?.title || result.installed?.title || 'Current UnblockedTDM release.';
     if (result.updateAvailable) {
-      $('#updateStatus').textContent = 'Update available';
-      $('#updateDetail').textContent = `${result.latest.title} is ready to install.`;
+      $('#updateStatus').textContent = 'UPDATE AVAILABLE';
+      $('#updateDetail').textContent = `${result.latest.title} is ready.`;
       $('#updateButton').textContent = 'INSTALL UPDATE';
       $('#updateButton').dataset.mode = 'install';
+      $('#statusReady').textContent = 'UPDATE';
     } else {
-      $('#updateStatus').textContent = 'Up to date';
-      $('#updateDetail').textContent = `${result.installed.title} is the latest published build.`;
+      $('#updateStatus').textContent = 'CURRENT';
+      $('#updateDetail').textContent = 'Installed build matches the live channel.';
       $('#updateButton').textContent = 'CHECK FOR UPDATES';
       $('#updateButton').dataset.mode = 'check';
+      $('#statusReady').textContent = 'READY';
     }
   } catch (error) {
-    $('#updateStatus').textContent = 'Unable to check';
+    $('#updateStatus').textContent = 'CHANNEL ERROR';
     $('#updateDetail').textContent = error.message;
+    $('#statusReady').textContent = 'OFFLINE';
   }
 }
 
 async function installLatest() {
   try {
     $('#updateButton').disabled = true;
+    $('#statusReady').textContent = 'INSTALLING';
     const result = await window.launcherAPI.installLatest();
     state.installed = result.entry;
     renderState(state);
     await checkUpdates();
+    $('#progressPanel').classList.add('hidden');
   } catch (error) {
-    $('#updateStatus').textContent = 'Update failed';
+    $('#updateStatus').textContent = 'UPDATE FAILED';
     $('#updateDetail').textContent = error.message;
+    $('#statusReady').textContent = 'ERROR';
   } finally {
     $('#updateButton').disabled = false;
   }
@@ -75,35 +105,31 @@ async function installLatest() {
 
 async function loadArchive() {
   const list = $('#archiveList');
-  list.innerHTML = '<div class="panel muted">Loading immutable builds from GitHub…</div>';
+  list.innerHTML = '<div class="empty-row">LOADING IMMUTABLE BUILDS…</div>';
   try {
     const versions = await window.launcherAPI.listVersions();
     if (!versions.length) {
-      list.innerHTML = '<div class="panel muted">No published archived builds are available yet.</div>';
+      list.innerHTML = '<div class="empty-row">NO PUBLISHED ARCHIVED BUILDS.</div>';
       return;
     }
     list.innerHTML = '';
     for (const entry of versions) {
       const item = document.createElement('article');
-      item.className = 'panel archive-item';
+      item.className = 'archive-item';
       item.innerHTML = `
-        <div>
-          <strong>${entry.title}</strong>
-          <div class="archive-meta">
-            <span>${entry.phase}</span><span>Build ${entry.gameVersion}</span><span>Version ${entry.build}</span><span>${entry.tag}</span>
-          </div>
-        </div>
+        <strong>BUILD ${buildCode(entry)}</strong>
+        <span class="phase">${entry.phase}</span>
+        <span class="tag">${entry.tag}</span>
         <div class="archive-actions"></div>`;
       const actions = item.querySelector('.archive-actions');
       const action = document.createElement('button');
       action.className = entry.downloaded ? 'primary' : 'secondary';
-      action.textContent = entry.downloaded ? 'PLAY VERSION' : 'DOWNLOAD';
+      action.textContent = entry.downloaded ? 'PLAY' : 'DOWNLOAD';
       action.addEventListener('click', async () => {
         action.disabled = true;
         try {
-          if (entry.downloaded) {
-            await window.launcherAPI.playVersion(entry.tag);
-          } else {
+          if (entry.downloaded) await window.launcherAPI.playVersion(entry.tag);
+          else {
             await window.launcherAPI.downloadVersion(entry);
             await loadArchive();
           }
@@ -117,7 +143,7 @@ async function loadArchive() {
       list.appendChild(item);
     }
   } catch (error) {
-    list.innerHTML = `<div class="panel error">${error.message}</div>`;
+    list.innerHTML = `<div class="empty-row error">${error.message}</div>`;
   }
 }
 
@@ -125,9 +151,28 @@ async function init() {
   renderState(await window.launcherAPI.getState());
   window.launcherAPI.onProgress(setProgress);
   $$('.nav-button').forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
+
   $('#playButton').addEventListener('click', async () => {
-    try { await window.launcherAPI.playCurrent(); } catch (error) { alert(error.message); }
+    const button = $('#playButton');
+    const stateText = $('#launchState');
+    button.disabled = true;
+    button.textContent = 'LAUNCHING…';
+    stateText.textContent = 'STARTING MATCH CLIENT // 01';
+    try {
+      await window.launcherAPI.playCurrent();
+      stateText.textContent = 'GAME PROCESS STARTED';
+    } catch (error) {
+      alert(error.message);
+      stateText.textContent = 'LAUNCH FAILED';
+    } finally {
+      setTimeout(() => {
+        button.disabled = false;
+        button.textContent = 'LAUNCH GAME';
+        if (stateText.textContent !== 'LAUNCH FAILED') stateText.textContent = 'READY // FILES VERIFIED';
+      }, 900);
+    }
   });
+
   $('#updateButton').addEventListener('click', () => $('#updateButton').dataset.mode === 'install' ? installLatest() : checkUpdates());
   $('#refreshArchive').addEventListener('click', loadArchive);
   $('#saveSettings').addEventListener('click', async () => {
@@ -137,29 +182,33 @@ async function init() {
       closeAfterPlay: $('#closeAfterPlay').checked
     });
     state.settings = saved;
-    $('#settingsStatus').textContent = 'Saved.';
+    $('#settingsStatus').textContent = 'SAVED ✓';
     setTimeout(() => $('#settingsStatus').textContent = '', 1600);
   });
   $('#openGameFolder').addEventListener('click', () => window.launcherAPI.openGameFolder());
   $('#repairButton').addEventListener('click', async () => {
     const status = $('#diagnosticStatus');
-    status.textContent = 'Verifying game files…';
+    status.textContent = 'VERIFYING GAME FILES…';
+    status.className = 'diagnostic-status';
     try {
       const result = await window.launcherAPI.repair();
-      status.textContent = result.message;
-      status.className = 'panel success';
+      status.textContent = String(result.message || 'FILES VERIFIED').toUpperCase();
+      status.className = 'diagnostic-status success';
+      $('#filesStatus').textContent = 'VERIFIED ✓';
     } catch (error) {
       status.textContent = error.message;
-      status.className = 'panel error';
+      status.className = 'diagnostic-status error';
+      $('#filesStatus').textContent = 'CHECK FILES';
     }
   });
+
   if (state.settings.autoCheckUpdates) checkUpdates();
   else {
-    $('#updateStatus').textContent = 'Automatic checks disabled';
-    $('#updateDetail').textContent = 'Use Check for Updates whenever you want to query GitHub.';
+    $('#updateStatus').textContent = 'MANUAL CHECK';
+    $('#updateDetail').textContent = 'Automatic release checks are disabled.';
   }
 }
 
 init().catch((error) => {
-  document.body.innerHTML = `<pre style="padding:30px;color:#ff9d9d">Launcher initialization failed:\n${error.stack || error.message}</pre>`;
+  document.body.innerHTML = `<pre style="padding:30px;color:#ff6878;background:#080c11">Launcher initialization failed:\n${error.stack || error.message}</pre>`;
 });
