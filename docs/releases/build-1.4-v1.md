@@ -14,21 +14,22 @@ The four canonical debug difficulty modes are:
 The multiplier changes AI decision/reaction speed, target commitment, aim error, aiming response, semi-auto cadence requests, dash decision frequency and tactical update frequency. It does not alter canonical weapon damage, health, ammo, player movement speeds or weapon fire-rate limits.
 
 ### AI behavior upgrade
-- Bots now score targets instead of blindly selecting the nearest living enemy.
+- Bots score targets instead of blindly selecting the nearest living enemy.
 - Lower-health targets are more attractive while team-spacing logic reduces bot stacking.
 - Bots maintain weapon-specific preferred engagement distances.
-- Bots can switch between their Primary and Secondary when the alternate weapon better fits the current range or the current weapon is exhausted.
+- Bots can switch between Primary and Secondary when the alternate weapon better fits the current range or the current weapon is exhausted.
 - Launcher users avoid firing inside the unsafe close splash envelope.
 - Low-health bots retreat/reposition to create regeneration opportunities.
 - Reload decisions account for line of sight, ammo percentage and engagement distance.
-- Route selection now rotates between lanes and contains stuck detection/re-route behavior.
+- Route selection rotates between lanes and contains stuck detection/re-route behavior.
 - Strafing, sprinting and dash decisions scale with AI difficulty.
 - Aim uses reaction delay, aim settling and difficulty-scaled error rather than instant perfect target locking.
 
 ### Aim physics and sensitivity
-- Local aim no longer snaps the firing angle directly to the mouse target.
-- Aim now has angular velocity, acceleration, damping and a maximum turn rate.
-- Sensitivity directly scales aim response and maximum turn speed.
+- The local aim cursor now accelerates toward raw mouse movement instead of snapping instantly.
+- Aim cursor velocity is damped and capped, giving fast turns a smoother ramp-in/ramp-out feel.
+- The player's firing angle reads the same inertial cursor that is rendered on screen, keeping crosshair and shot direction aligned.
+- Sensitivity directly scales cursor response and maximum aim speed.
 - Default sensitivity is 1.00x.
 - Debug sensitivity range is 0.35x through 2.50x in 0.05 increments.
 - Sensitivity is persisted locally between game launches.
@@ -57,4 +58,4 @@ Press F1 to open the Build 1.4 tuning panel while also enabling the existing col
 - Existing launcher/update/version archive infrastructure.
 
 ### Validation gate
-The release workflow runs the full JavaScript syntax validation chain before Windows packaging, now including `debug-tuning.js`, the upgraded BotController, Input, Player aim physics and SpawnSystem.
+The release workflow runs the full JavaScript syntax validation chain before Windows packaging, including `debug-tuning.js`, the upgraded BotController, Input aim physics, Player integration and SpawnSystem.
