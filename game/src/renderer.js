@@ -7,6 +7,7 @@ import { WeaponManager } from './combat/WeaponManager.js';
 import { LoadoutStore } from './data/LoadoutStore.js';
 import { WEAPONS } from './data/weapons.js';
 import { GameLoop } from './engine/GameLoop.js';
+import { GameSettings, bindingLabel } from './engine/GameSettings.js';
 import { Input } from './engine/Input.js';
 import { AIM_CAMERA_LEAD_TILES, DASH_CHARGES_MAX, TILE_SIZE } from './engine/constants.js';
 import { MatchManager } from './match/MatchManager.js';
@@ -17,53 +18,19 @@ import { PlayerRenderer } from './render/PlayerRenderer.js';
 import { WeaponRenderer } from './render/WeaponRenderer.js';
 import { WorldRenderer } from './render/WorldRenderer.js';
 import { LoadoutScreen } from './ui/LoadoutScreen.js';
+import { MainMenu } from './ui/MainMenu.js';
+import { SettingsPanel } from './ui/SettingsPanel.js';
 import { Camera } from './world/Camera.js';
 import { MAP_01 } from './world/map01.js';
 import { SpawnSystem } from './world/SpawnSystem.js';
 import { TileMap } from './world/TileMap.js';
 
-const AI_MULTIPLIERS = Object.freeze({ Beginner: 0.80, Average: 1.00, Sweat: 1.35, Pro: 1.75 });
-const SETTINGS_DEFAULTS = Object.freeze({ sensitivity: 1, aiDifficulty: 'Average', minimapMode: 'north-up', screenShake: true, damageVignette: true });
-
-function readStorage(key, fallback) {
-  try {
-    const value = localStorage.getItem(`unblockedtdm.${key}`);
-    return value === null ? fallback : value;
-  } catch {
-    return fallback;
-  }
-}
-
-function readBoolean(key, fallback) {
-  const value = readStorage(key, fallback ? 'true' : 'false');
-  return value !== 'false';
-}
-
-function readGameplaySettings() {
-  const sensitivity = Math.max(0.35, Math.min(2.5, Number(readStorage('sensitivity', '1')) || 1));
-  const storedDifficulty = readStorage('aiDifficulty', 'Average');
-  const aiDifficulty = AI_MULTIPLIERS[storedDifficulty] ? storedDifficulty : 'Average';
-  const minimapMode = readStorage('minimapMode', 'north-up') === 'rotate' ? 'rotate' : 'north-up';
-  return {
-    sensitivity,
-    aiDifficulty,
-    minimapMode,
-    screenShake: readBoolean('screenShake', true),
-    damageVignette: readBoolean('damageVignette', true)
-  };
-}
-
-function writeGameplaySetting(key, value) {
-  try { localStorage.setItem(`unblockedtdm.${key}`, String(value)); } catch {}
-  gameplaySettings = readGameplaySettings();
-  window.dispatchEvent(new CustomEvent('unblockedtdm:settings-change', { detail: { ...gameplaySettings } }));
-}
-
-let gameplaySettings = readGameplaySettings();
+const settings = new GameSettings();
+let gameplaySettings = settings.gameplay();
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
-const input = new Input(window);
+const input = new Input(window, settings);
 const map = new TileMap(MAP_01);
 const camera = new Camera();
 const worldRenderer = new WorldRenderer(ctx, map);
@@ -94,8 +61,22 @@ let killStreak = 0;
 let recentKills = [];
 let combatBannerTimer = 0;
 let streakBannerTimer = 0;
+let debug = false;
+let paused = false;
+let matchStarted = false;
+let fps = 0;
+let frames = 0;
+let fpsClock = 0;
+let statusClock = 0;
+let dpr = 1;
+
 const combatBanner = document.getElementById('combatBanner');
 const streakBanner = document.getElementById('streakBanner');
+const pausePanel = document.getElementById('pausePanel');
+const pauseMatchView = document.getElementById('pauseMatchView');
+const pauseSettingsView = document.getElementById('pauseSettingsView');
+const roundLoadoutPanel = document.getElementById('roundLoadoutPanel');
+const roundLoadoutGrid = document.getElementById('roundLoadoutGrid');
 
 function showCombatBanner(text, crit = false, duration = 0.8) {
   combatBanner.textContent = text;
@@ -169,15 +150,6 @@ match = new MatchManager({
   onMatchEnd: ({ winner }) => showStreakBanner(`${winner.toUpperCase()} TEAM WINS`, 2.2)
 });
 
-let debug = false;
-let paused = false;
-let matchStarted = false;
-let fps = 0;
-let frames = 0;
-let fpsClock = 0;
-let statusClock = 0;
-let dpr = 1;
-
 function resizeCanvas() {
   dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = Math.max(1, Math.floor(innerWidth * dpr));
@@ -193,17 +165,66 @@ camera.x = player.x;
 camera.y = player.y;
 camera.clamp();
 
-new LoadoutScreen(document.getElementById('loadoutScreen'), loadoutStore, ({ primary, secondary, slotIndex, name }) => {
+function startMatchWithLoadout({ primary, secondary, slotIndex, name }) {
   weapons.setLoadout(primary, secondary);
   loadoutStore.setActive(slotIndex);
   matchStarted = true;
   paused = false;
+  input.setSuspended(false);
+  document.body.classList.remove('menu-open');
   document.body.classList.add('match-started');
+  mainMenu.hide();
+  pausePanel.classList.remove('visible');
   match.startMatch();
   renderRoundLoadoutPanel();
   showCombatBanner(`${name.toUpperCase()} · ${primary.shortName} + ${secondary.shortName}`, false, 1.0);
   updateDiagnostics();
+  updateMatchHud();
+}
+
+function openLoadouts(mode) {
+  mainMenu.hide();
+  document.body.classList.add('menu-open');
+  input.setSuspended(true);
+  loadoutScreen.open(mode);
+}
+
+function returnToMainMenu() {
+  paused = false;
+  matchStarted = false;
+  loop.setPaused(false);
+  input.setSuspended(true);
+  pausePanel.classList.remove('visible');
+  roundLoadoutPanel.classList.remove('visible');
+  document.body.classList.remove('match-started');
+  document.body.classList.add('menu-open');
+  mainMenu.show('home');
+}
+
+const loadoutScreen = new LoadoutScreen(document.getElementById('loadoutScreen'), loadoutStore, (result) => {
+  if (result.mode === 'manage') {
+    document.body.classList.add('menu-open');
+    input.setSuspended(true);
+    mainMenu.show('home');
+    renderRoundLoadoutPanel();
+    return;
+  }
+  startMatchWithLoadout(result);
 });
+
+const mainMenu = new MainMenu(document.getElementById('mainMenu'), {
+  onPlay: () => openLoadouts('play'),
+  onLoadouts: () => openLoadouts('manage'),
+  onQuit: () => window.gameAPI.quit()
+});
+
+new SettingsPanel(document.getElementById('mainSettingsPanel'), settings, {
+  onFullscreen: () => window.gameAPI.toggleFullscreen()
+});
+new SettingsPanel(pauseSettingsView, settings, {
+  onFullscreen: () => window.gameAPI.toggleFullscreen()
+});
+input.setSuspended(true);
 
 function opponentsOf(actor) {
   return players.filter((other) => other !== actor && other.team !== actor.team && other.health.alive);
@@ -428,12 +449,12 @@ function updateWeaponHud() {
         ? `READY ${weapons.postReloadDelay.toFixed(1)}S`
         : weapons.isADSActive() ? `ADS ${Math.round(weapons.adsProgress * 100)}%` : 'READY';
   document.getElementById('spreadState').textContent = `${weapons.currentSpreadDegrees().toFixed(2)}°`;
-  document.getElementById('aimNote').textContent = 'MOVE + SPACE = DIRECTIONAL DASH · NO MOVE + SPACE = AIM DASH';
+  document.getElementById('aimNote').textContent = `${bindingLabel(settings.binding('dash'))} DASH · ${bindingLabel(settings.binding('fire'))} FIRE · ${bindingLabel(settings.binding('ads'))} ADS · F1 DEBUG`;
 
   const primaryIndicator = document.getElementById('primarySlotIndicator');
   const secondaryIndicator = document.getElementById('secondarySlotIndicator');
-  primaryIndicator.textContent = `1 ${weapons.loadout.primary.shortName}`;
-  secondaryIndicator.textContent = `2 ${weapons.loadout.secondary.shortName}`;
+  primaryIndicator.textContent = `${bindingLabel(settings.binding('primary'))} ${weapons.loadout.primary.shortName}`;
+  secondaryIndicator.textContent = `${bindingLabel(settings.binding('secondary'))} ${weapons.loadout.secondary.shortName}`;
   primaryIndicator.classList.toggle('active', weapons.currentSlot === 'primary');
   secondaryIndicator.classList.toggle('active', weapons.currentSlot === 'secondary');
 
@@ -441,9 +462,6 @@ function updateWeaponHud() {
   root.classList.toggle('ads', weapons.isADSActive());
   root.classList.toggle('empty', weapon?.magazineSize > 0 && (ammo?.magazine ?? 0) <= 0);
 }
-
-const roundLoadoutPanel = document.getElementById('roundLoadoutPanel');
-const roundLoadoutGrid = document.getElementById('roundLoadoutGrid');
 
 function renderRoundLoadoutPanel() {
   const active = loadoutStore.get();
@@ -463,7 +481,7 @@ roundLoadoutGrid.addEventListener('click', (event) => {
 
 function updateMatchHud() {
   const snapshot = match.snapshot();
-  document.getElementById('roundLabel').textContent = `ROUND ${snapshot.round} / 9`;
+  document.getElementById('roundLabel').textContent = `ROUND ${snapshot.round || 1} / 9`;
   document.getElementById('roundTimer').textContent = snapshot.timerLabel;
   document.getElementById('blueRoundWins').textContent = snapshot.wins.blue;
   document.getElementById('redRoundWins').textContent = snapshot.wins.red;
@@ -472,7 +490,7 @@ function updateMatchHud() {
   const overlay = document.getElementById('roundOverlay');
   const text = document.getElementById('roundOverlayText');
   const sub = document.getElementById('roundOverlaySub');
-  overlay.classList.toggle('visible', Boolean(snapshot.overlay));
+  overlay.classList.toggle('visible', matchStarted && Boolean(snapshot.overlay));
   overlay.classList.toggle('sudden', snapshot.state === 'sudden-death');
   text.textContent = snapshot.overlay;
   sub.textContent = snapshot.state === 'round-break'
@@ -486,9 +504,18 @@ function updateMatchHud() {
   roundLoadoutPanel.classList.toggle('visible', matchStarted && snapshot.canChangeLoadout && !paused);
   const active = loadoutStore.get();
   document.getElementById('roundLoadoutCurrent').textContent = `SLOT ${String(active.index + 1).padStart(2, '0')} · ${active.name.toUpperCase()} · ${active.primary.shortName} + ${active.secondary.shortName}`;
-  document.getElementById('pauseRound').textContent = `${snapshot.round} / 9`;
+  document.getElementById('pauseRound').textContent = `${snapshot.round || 1} / 9`;
   document.getElementById('pauseScore').textContent = `${snapshot.kills.blue} - ${snapshot.kills.red}`;
   document.getElementById('pauseLoadout').textContent = `${String(active.index + 1).padStart(2, '0')} · ${active.name.toUpperCase()}`;
+}
+
+function updateBindingDiagnostics() {
+  document.getElementById('moveBindingState').textContent = `${bindingLabel(settings.binding('moveUp'))}${bindingLabel(settings.binding('moveLeft'))}${bindingLabel(settings.binding('moveDown'))}${bindingLabel(settings.binding('moveRight'))} / ARROWS`;
+  document.getElementById('sprintBindingState').textContent = bindingLabel(settings.binding('sprint'));
+  document.getElementById('dashBindingState').textContent = bindingLabel(settings.binding('dash'));
+  document.getElementById('fireBindingState').textContent = `${bindingLabel(settings.binding('fire'))} / ${bindingLabel(settings.binding('ads'))}`;
+  document.getElementById('slotBindingState').textContent = `${bindingLabel(settings.binding('primary'))} / ${bindingLabel(settings.binding('secondary'))} + WHEEL`;
+  document.getElementById('reloadBindingState').textContent = bindingLabel(settings.binding('reload'));
 }
 
 function updateDiagnostics() {
@@ -508,90 +535,66 @@ function updateDiagnostics() {
     : 'OFF';
   document.getElementById('damageTestState').textContent = `${players.filter((actor) => actor.health.alive).length}/6 ALIVE`;
   document.getElementById('pathState').textContent = `${bots.filter((bot) => (botBrains.get(bot.id).debugPath || []).length > 0).length}/5`;
+  gameplaySettings = settings.gameplay();
+  document.getElementById('aiModeState').textContent = `${gameplaySettings.aiDifficulty.toUpperCase()}`;
+  document.getElementById('sensState').textContent = `${gameplaySettings.sensitivity.toFixed(2)}X`;
+  updateBindingDiagnostics();
   updateDashHud();
   updateHealthHud();
   updateWeaponHud();
 }
 
-const pausePanel = document.getElementById('pausePanel');
-const pauseMatchView = document.getElementById('pauseMatchView');
-const pauseSettingsView = document.getElementById('pauseSettingsView');
-
 function showPauseTab(tab) {
-  const settings = tab === 'settings';
-  pauseMatchView.classList.toggle('active', !settings);
-  pauseSettingsView.classList.toggle('active', settings);
-  for (const button of document.querySelectorAll('[data-pause-tab]')) button.classList.toggle('active', button.dataset.pauseTab === (settings ? 'settings' : 'match'));
-  if (settings) syncPauseSettings();
+  const settingsTab = tab === 'settings';
+  pauseMatchView.classList.toggle('active', !settingsTab);
+  pauseSettingsView.classList.toggle('active', settingsTab);
+  for (const button of document.querySelectorAll('[data-pause-tab]')) button.classList.toggle('active', button.dataset.pauseTab === (settingsTab ? 'settings' : 'match'));
 }
 
 function setPaused(value) {
   if (!matchStarted) return;
   paused = Boolean(value);
   loop.setPaused(paused);
+  input.setSuspended(paused);
   pausePanel.classList.toggle('visible', paused);
   roundLoadoutPanel.classList.toggle('visible', !paused && match.canChangeLoadout());
   if (paused) {
     showPauseTab('match');
     updateMatchHud();
-    syncPauseSettings();
   }
   input.endFrame();
-}
-
-function syncPauseSettings() {
-  gameplaySettings = readGameplaySettings();
-  const sensitivity = document.getElementById('pauseSensitivity');
-  const ai = document.getElementById('pauseAiDifficulty');
-  const minimap = document.getElementById('pauseMinimapMode');
-  sensitivity.value = String(gameplaySettings.sensitivity);
-  ai.value = gameplaySettings.aiDifficulty;
-  minimap.value = gameplaySettings.minimapMode;
-  document.getElementById('pauseScreenShake').checked = gameplaySettings.screenShake;
-  document.getElementById('pauseDamageVignette').checked = gameplaySettings.damageVignette;
-  document.getElementById('pauseSensitivityValue').textContent = `${gameplaySettings.sensitivity.toFixed(2)}×`;
-  document.getElementById('pauseAiDifficultyValue').textContent = `${gameplaySettings.aiDifficulty.toUpperCase()} · ${AI_MULTIPLIERS[gameplaySettings.aiDifficulty].toFixed(2)}×`;
-  document.getElementById('pauseMinimapModeValue').textContent = gameplaySettings.minimapMode === 'rotate' ? 'ROTATE WITH AIM' : 'NORTH UP';
 }
 
 for (const button of document.querySelectorAll('[data-pause-tab]')) button.addEventListener('click', () => showPauseTab(button.dataset.pauseTab));
 document.getElementById('pauseSettingsButton').addEventListener('click', () => showPauseTab('settings'));
 document.getElementById('settingsBackButton').addEventListener('click', () => showPauseTab('match'));
 document.getElementById('resumeButton').addEventListener('click', () => setPaused(false));
-document.getElementById('pauseSensitivity').addEventListener('input', (event) => writeGameplaySetting('sensitivity', Number(event.currentTarget.value).toFixed(2)));
-document.getElementById('pauseAiDifficulty').addEventListener('change', (event) => writeGameplaySetting('aiDifficulty', event.currentTarget.value));
-document.getElementById('pauseMinimapMode').addEventListener('change', (event) => writeGameplaySetting('minimapMode', event.currentTarget.value));
-document.getElementById('pauseScreenShake').addEventListener('change', (event) => writeGameplaySetting('screenShake', event.currentTarget.checked));
-document.getElementById('pauseDamageVignette').addEventListener('change', (event) => writeGameplaySetting('damageVignette', event.currentTarget.checked));
-document.getElementById('pauseFullscreenButton').addEventListener('click', () => window.gameAPI.toggleFullscreen());
-document.getElementById('resetSettingsButton').addEventListener('click', () => {
-  writeGameplaySetting('sensitivity', SETTINGS_DEFAULTS.sensitivity.toFixed(2));
-  writeGameplaySetting('aiDifficulty', SETTINGS_DEFAULTS.aiDifficulty);
-  writeGameplaySetting('minimapMode', SETTINGS_DEFAULTS.minimapMode);
-  writeGameplaySetting('screenShake', SETTINGS_DEFAULTS.screenShake);
-  writeGameplaySetting('damageVignette', SETTINGS_DEFAULTS.damageVignette);
-  syncPauseSettings();
-});
+document.getElementById('pauseMainMenuButton').addEventListener('click', () => returnToMainMenu());
 
 window.addEventListener('unblockedtdm:settings-change', () => {
-  gameplaySettings = readGameplaySettings();
-  syncPauseSettings();
+  gameplaySettings = settings.gameplay();
+  updateBindingDiagnostics();
 });
 
 const loop = new GameLoop(update, render);
 window.addEventListener('keydown', (event) => {
-  if (event.code === 'Escape' && matchStarted && !event.repeat) setPaused(!paused);
+  if (event.code === 'Escape' && matchStarted && !event.repeat) {
+    if (document.querySelector('.binding-row button.listening')) return;
+    setPaused(!paused);
+  }
 });
 
 renderRoundLoadoutPanel();
-syncPauseSettings();
+updateBindingDiagnostics();
+updateDiagnostics();
+updateMatchHud();
 
 (async () => {
   const buildInfo = await window.gameAPI.getBuildInfo();
   document.getElementById('buildLabel').textContent = `BUILD ${buildInfo.gameVersion} · VERSION ${buildInfo.build}`;
   document.getElementById('phaseLabel').textContent = buildInfo.phase;
   document.getElementById('mapLabel').textContent = `${MAP_01.name.toUpperCase()} · ${MAP_01.cols}×${MAP_01.rows} TILES`;
-  updateDiagnostics();
-  updateMatchHud();
+  document.getElementById('mainBuildLabel').textContent = `BUILD ${buildInfo.gameVersion} · VERSION ${buildInfo.build}`;
+  document.getElementById('mainPhaseLabel').textContent = buildInfo.phase;
   loop.start();
 })();
