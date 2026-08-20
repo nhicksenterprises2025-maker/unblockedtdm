@@ -1,23 +1,185 @@
-const BLOCKED_KEYS=new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','ShiftLeft','ShiftRight','Space','Tab','KeyR','Digit1','Digit2','Numpad1','Numpad2','F1','F2','F3','F4','F6']);
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-export class Input{
-  constructor(target=window){
-    this.down=new Set();this.pressed=new Set();this.mouseDown=new Set();this.mousePressed=new Set();this.wheelDirection=0;
-    const cx=innerWidth/2,cy=innerHeight/2;this.rawPointer={x:cx,y:cy,inside:true};this.pointer={x:cx,y:cy,inside:true};this.aimVelocity={x:0,y:0};this.lastAimClock=performance.now();this.sensitivity=1;
-    try{this.setSensitivity(localStorage.getItem('unblockedtdm.sensitivity')||1);}catch{}
-    this.onKeyDown=e=>{if(BLOCKED_KEYS.has(e.code))e.preventDefault();if(!this.down.has(e.code))this.pressed.add(e.code);this.down.add(e.code);};this.onKeyUp=e=>this.down.delete(e.code);
-    this.onMouseDown=e=>{if(e.target?.closest?.('.debug-controls'))return;if(!this.mouseDown.has(e.button))this.mousePressed.add(e.button);this.mouseDown.add(e.button);if(e.button===0||e.button===2)e.preventDefault();};
-    this.onMouseUp=e=>{this.mouseDown.delete(e.button);if(e.button===0||e.button===2)e.preventDefault();};
-    this.onWheel=e=>{if(e.target?.closest?.('.debug-controls'))return;this.wheelDirection=e.deltaY<0?-1:1;e.preventDefault();};
-    this.onPointerMove=e=>{this.rawPointer.x=e.clientX;this.rawPointer.y=e.clientY;this.rawPointer.inside=true;};this.onPointerLeave=()=>{this.rawPointer.inside=false;this.pointer.inside=false;};
-    this.onBlur=()=>{this.down.clear();this.pressed.clear();this.mouseDown.clear();this.mousePressed.clear();this.wheelDirection=0;this.aimVelocity.x=0;this.aimVelocity.y=0;};
-    target.addEventListener('keydown',this.onKeyDown);target.addEventListener('keyup',this.onKeyUp);target.addEventListener('mousedown',this.onMouseDown);target.addEventListener('mouseup',this.onMouseUp);target.addEventListener('wheel',this.onWheel,{passive:false});target.addEventListener('pointermove',this.onPointerMove);target.addEventListener('pointerleave',this.onPointerLeave);target.addEventListener('blur',this.onBlur);target.addEventListener('contextmenu',e=>e.preventDefault());
+const BLOCKED_KEYS = new Set([
+  'KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight',
+  'ShiftLeft','ShiftRight','Space','Tab','KeyR','Digit1','Digit2','Numpad1','Numpad2','F1','F2','F3','F4','F6'
+]);
+
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+export class Input {
+  constructor(target = window) {
+    this.down = new Set();
+    this.pressed = new Set();
+    this.mouseDown = new Set();
+    this.mousePressed = new Set();
+    this.wheelDirection = 0;
+
+    const centerX = innerWidth / 2;
+    const centerY = innerHeight / 2;
+    this.rawPointer = { x: centerX, y: centerY, inside: true };
+    this.pointer = { x: centerX, y: centerY, inside: true };
+    this.aimVelocity = { x: 0, y: 0 };
+    this.lastAimClock = performance.now();
+    this.sensitivity = 1;
+    try { this.setSensitivity(localStorage.getItem('unblockedtdm.sensitivity') || 1); } catch {}
+
+    this.onKeyDown = (event) => {
+      if (BLOCKED_KEYS.has(event.code)) event.preventDefault();
+      if (!this.down.has(event.code)) this.pressed.add(event.code);
+      this.down.add(event.code);
+    };
+    this.onKeyUp = (event) => this.down.delete(event.code);
+    this.onMouseDown = (event) => {
+      if (event.target?.closest?.('.debug-controls')) return;
+      if (!this.mouseDown.has(event.button)) this.mousePressed.add(event.button);
+      this.mouseDown.add(event.button);
+      if (event.button === 0 || event.button === 2) event.preventDefault();
+    };
+    this.onMouseUp = (event) => {
+      this.mouseDown.delete(event.button);
+      if (event.button === 0 || event.button === 2) event.preventDefault();
+    };
+    this.onWheel = (event) => {
+      if (event.target?.closest?.('.debug-controls')) return;
+      this.wheelDirection = event.deltaY < 0 ? -1 : 1;
+      event.preventDefault();
+    };
+    this.onPointerMove = (event) => {
+      this.rawPointer.x = event.clientX;
+      this.rawPointer.y = event.clientY;
+      this.rawPointer.inside = true;
+    };
+    this.onPointerLeave = () => {
+      this.rawPointer.inside = false;
+      this.pointer.inside = false;
+    };
+    this.onBlur = () => {
+      this.down.clear();
+      this.pressed.clear();
+      this.mouseDown.clear();
+      this.mousePressed.clear();
+      this.wheelDirection = 0;
+      this.aimVelocity.x = 0;
+      this.aimVelocity.y = 0;
+    };
+
+    target.addEventListener('keydown', this.onKeyDown);
+    target.addEventListener('keyup', this.onKeyUp);
+    target.addEventListener('mousedown', this.onMouseDown);
+    target.addEventListener('mouseup', this.onMouseUp);
+    target.addEventListener('wheel', this.onWheel, { passive: false });
+    target.addEventListener('pointermove', this.onPointerMove);
+    target.addEventListener('pointerleave', this.onPointerLeave);
+    target.addEventListener('blur', this.onBlur);
+    target.addEventListener('contextmenu', (event) => event.preventDefault());
   }
-  setSensitivity(v){this.sensitivity=clamp(Number(v)||1,.35,2.5);}
-  aimSensitivity(){try{const v=Number(localStorage.getItem('unblockedtdm.sensitivity'));if(Number.isFinite(v)&&v>0)this.setSensitivity(v);}catch{}return this.sensitivity;}
-  updateAimPointer(){const now=performance.now(),dt=clamp((now-this.lastAimClock)/1000,0,.05);this.lastAimClock=now;if(dt<=0)return;const s=this.aimSensitivity(),response=10+14*s,maxSpeed=500+1450*s,blend=1-Math.exp(-(10+8*s)*dt),ex=this.rawPointer.x-this.pointer.x,ey=this.rawPointer.y-this.pointer.y,dvx=clamp(ex*response,-maxSpeed,maxSpeed),dvy=clamp(ey*response,-maxSpeed,maxSpeed);this.aimVelocity.x+=(dvx-this.aimVelocity.x)*blend;this.aimVelocity.y+=(dvy-this.aimVelocity.y)*blend;this.pointer.x=clamp(this.pointer.x+this.aimVelocity.x*dt,0,innerWidth);this.pointer.y=clamp(this.pointer.y+this.aimVelocity.y*dt,0,innerHeight);if(Math.abs(ex)<.25&&Math.abs(this.aimVelocity.x)<4){this.pointer.x=this.rawPointer.x;this.aimVelocity.x=0;}if(Math.abs(ey)<.25&&Math.abs(this.aimVelocity.y)<4){this.pointer.y=this.rawPointer.y;this.aimVelocity.y=0;}this.pointer.inside=this.rawPointer.inside;}
-  isDown(...c){return c.some(k=>this.down.has(k));}wasPressed(...c){return c.some(k=>this.pressed.has(k));}
-  axis(){let x=0,y=0;if(this.isDown('KeyA','ArrowLeft'))x--;if(this.isDown('KeyD','ArrowRight'))x++;if(this.isDown('KeyW','ArrowUp'))y--;if(this.isDown('KeyS','ArrowDown'))y++;if(x&&y){x*=Math.SQRT1_2;y*=Math.SQRT1_2;}return{x,y};}
-  sprintHeld(){return this.isDown('ShiftLeft','ShiftRight');}dashPressed(){return this.wasPressed('Space');}reloadPressed(){return this.wasPressed('KeyR');}slotPrimaryPressed(){return this.wasPressed('Digit1','Numpad1')||this.wheelDirection<0;}slotSecondaryPressed(){return this.wasPressed('Digit2','Numpad2')||this.wheelDirection>0;}fireHeld(){return this.mouseDown.has(0);}firePressed(){return this.mousePressed.has(0);}adsHeld(){return this.mouseDown.has(2);}
-  pointerPosition(){this.updateAimPointer();return{...this.pointer};}endFrame(){this.pressed.clear();this.mousePressed.clear();this.wheelDirection=0;}
+
+  setSensitivity(value) {
+    this.sensitivity = clamp(Number(value) || 1, 0.35, 2.5);
+  }
+
+  aimSensitivity() {
+    try {
+      const stored = Number(localStorage.getItem('unblockedtdm.sensitivity'));
+      if (Number.isFinite(stored) && stored > 0) this.setSensitivity(stored);
+    } catch {}
+    return this.sensitivity;
+  }
+
+  updateAimPointer() {
+    const now = performance.now();
+    const dt = clamp((now - this.lastAimClock) / 1000, 0, 0.05);
+    this.lastAimClock = now;
+    if (dt <= 0) return;
+
+    const sensitivity = this.aimSensitivity();
+    const errorX = this.rawPointer.x - this.pointer.x;
+    const errorY = this.rawPointer.y - this.pointer.y;
+    const errorDistance = Math.hypot(errorX, errorY);
+
+    // Small mouse corrections settle very quickly so the displayed crosshair
+    // remains faithful to the user's hand instead of floating behind it.
+    const precisionRadius = 18 + sensitivity * 4;
+    if (errorDistance <= precisionRadius) {
+      const settle = 1 - Math.exp(-(46 + 18 * sensitivity) * dt);
+      this.pointer.x += errorX * settle;
+      this.pointer.y += errorY * settle;
+      const damping = Math.exp(-34 * dt);
+      this.aimVelocity.x *= damping;
+      this.aimVelocity.y *= damping;
+      if (errorDistance < 0.65) {
+        this.pointer.x = this.rawPointer.x;
+        this.pointer.y = this.rawPointer.y;
+        this.aimVelocity.x = 0;
+        this.aimVelocity.y = 0;
+      }
+    } else {
+      // Larger turns keep a short acceleration curve for smoothness, but with
+      // substantially less latency than Build 1.4.
+      const response = 24 + 18 * sensitivity;
+      const maxSpeed = 1400 + 2200 * sensitivity;
+      let desiredVX = errorX * response;
+      let desiredVY = errorY * response;
+      const desiredSpeed = Math.hypot(desiredVX, desiredVY);
+      if (desiredSpeed > maxSpeed) {
+        const scale = maxSpeed / desiredSpeed;
+        desiredVX *= scale;
+        desiredVY *= scale;
+      }
+      const velocityBlend = 1 - Math.exp(-(24 + 10 * sensitivity) * dt);
+      this.aimVelocity.x += (desiredVX - this.aimVelocity.x) * velocityBlend;
+      this.aimVelocity.y += (desiredVY - this.aimVelocity.y) * velocityBlend;
+
+      const previousErrorX = errorX;
+      const previousErrorY = errorY;
+      this.pointer.x = clamp(this.pointer.x + this.aimVelocity.x * dt, 0, innerWidth);
+      this.pointer.y = clamp(this.pointer.y + this.aimVelocity.y * dt, 0, innerHeight);
+      const nextErrorX = this.rawPointer.x - this.pointer.x;
+      const nextErrorY = this.rawPointer.y - this.pointer.y;
+      if (previousErrorX * nextErrorX + previousErrorY * nextErrorY < 0) {
+        this.pointer.x = this.rawPointer.x;
+        this.pointer.y = this.rawPointer.y;
+        this.aimVelocity.x = 0;
+        this.aimVelocity.y = 0;
+      }
+    }
+
+    this.pointer.inside = this.rawPointer.inside;
+  }
+
+  isDown(...codes) { return codes.some((code) => this.down.has(code)); }
+  wasPressed(...codes) { return codes.some((code) => this.pressed.has(code)); }
+
+  axis() {
+    let x = 0;
+    let y = 0;
+    if (this.isDown('KeyA', 'ArrowLeft')) x -= 1;
+    if (this.isDown('KeyD', 'ArrowRight')) x += 1;
+    if (this.isDown('KeyW', 'ArrowUp')) y -= 1;
+    if (this.isDown('KeyS', 'ArrowDown')) y += 1;
+    if (x && y) {
+      x *= Math.SQRT1_2;
+      y *= Math.SQRT1_2;
+    }
+    return { x, y };
+  }
+
+  sprintHeld() { return this.isDown('ShiftLeft', 'ShiftRight'); }
+  dashPressed() { return this.wasPressed('Space'); }
+  reloadPressed() { return this.wasPressed('KeyR'); }
+  slotPrimaryPressed() { return this.wasPressed('Digit1', 'Numpad1') || this.wheelDirection < 0; }
+  slotSecondaryPressed() { return this.wasPressed('Digit2', 'Numpad2') || this.wheelDirection > 0; }
+  fireHeld() { return this.mouseDown.has(0); }
+  firePressed() { return this.mousePressed.has(0); }
+  adsHeld() { return this.mouseDown.has(2); }
+
+  pointerPosition() {
+    this.updateAimPointer();
+    return { ...this.pointer };
+  }
+
+  endFrame() {
+    this.pressed.clear();
+    this.mousePressed.clear();
+    this.wheelDirection = 0;
+  }
 }
