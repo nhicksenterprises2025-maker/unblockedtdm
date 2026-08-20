@@ -41,7 +41,8 @@ function readBoolean(key, fallback) {
 
 function readGameplaySettings() {
   const sensitivity = Math.max(0.35, Math.min(2.5, Number(readStorage('sensitivity', '1')) || 1));
-  const aiDifficulty = AI_MULTIPLIERS[readStorage('aiDifficulty', 'Average')] ? readStorage('aiDifficulty', 'Average') : 'Average';
+  const storedDifficulty = readStorage('aiDifficulty', 'Average');
+  const aiDifficulty = AI_MULTIPLIERS[storedDifficulty] ? storedDifficulty : 'Average';
   const minimapMode = readStorage('minimapMode', 'north-up') === 'rotate' ? 'rotate' : 'north-up';
   return {
     sensitivity,
@@ -192,7 +193,7 @@ camera.x = player.x;
 camera.y = player.y;
 camera.clamp();
 
-const loadoutScreen = new LoadoutScreen(document.getElementById('loadoutScreen'), loadoutStore, ({ primary, secondary, slotIndex, name }) => {
+new LoadoutScreen(document.getElementById('loadoutScreen'), loadoutStore, ({ primary, secondary, slotIndex, name }) => {
   weapons.setLoadout(primary, secondary);
   loadoutStore.setActive(slotIndex);
   matchStarted = true;
@@ -373,7 +374,7 @@ function render(dt, now, isPaused) {
   ctx.restore();
 
   if (matchStarted) {
-    if (gameplaySettings.damageVignette) damageFeedback.drawScreen(player, innerWidth, innerHeight);
+    damageFeedback.drawScreen(player, innerWidth, innerHeight, { vignette: gameplaySettings.damageVignette });
     const pointer = input.pointerPosition();
     combatFeedback.drawCrosshair(pointer, weapons);
     combatFeedback.drawHitmarker(pointer);
@@ -452,7 +453,7 @@ function renderRoundLoadoutPanel() {
 
 roundLoadoutGrid.addEventListener('click', (event) => {
   const button = event.target.closest('[data-round-loadout]');
-  if (!button || match.state !== 'round-break') return;
+  if (!button || !match.canChangeLoadout()) return;
   const saved = loadoutStore.setActive(Number(button.dataset.roundLoadout));
   weapons.setLoadout(saved.primary, saved.secondary);
   renderRoundLoadoutPanel();
@@ -482,7 +483,7 @@ function updateMatchHud() {
         ? 'GET READY'
         : snapshot.state === 'sudden-death' ? 'NEXT CREDITED KILL WINS THE ROUND' : '';
 
-  roundLoadoutPanel.classList.toggle('visible', matchStarted && snapshot.state === 'round-break' && !paused);
+  roundLoadoutPanel.classList.toggle('visible', matchStarted && snapshot.canChangeLoadout && !paused);
   const active = loadoutStore.get();
   document.getElementById('roundLoadoutCurrent').textContent = `SLOT ${String(active.index + 1).padStart(2, '0')} · ${active.name.toUpperCase()} · ${active.primary.shortName} + ${active.secondary.shortName}`;
   document.getElementById('pauseRound').textContent = `${snapshot.round} / 9`;
@@ -529,7 +530,7 @@ function setPaused(value) {
   paused = Boolean(value);
   loop.setPaused(paused);
   pausePanel.classList.toggle('visible', paused);
-  roundLoadoutPanel.classList.toggle('visible', !paused && match.state === 'round-break');
+  roundLoadoutPanel.classList.toggle('visible', !paused && match.canChangeLoadout());
   if (paused) {
     showPauseTab('match');
     updateMatchHud();
