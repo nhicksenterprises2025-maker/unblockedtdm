@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#090b10" />
+  <meta name="description" content="Official UnblockedTDM website. Download the Windows launcher and stay updated with the latest build." />
+  <title>UnblockedTDM — Official Site</title>
+  <style>
+    :root{--bg:#080a0f;--panel:#10141d;--panel2:#0d1118;--text:#f4f7fb;--muted:#9da8b8;--line:#252c38;--accent:#ff3b3b;--accent2:#ff7a45;--ok:#52d88a;--shadow:0 24px 80px rgba(0,0,0,.45)}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 85% 15%,rgba(255,59,59,.12),transparent 26%),radial-gradient(circle at 5% 55%,rgba(255,122,69,.08),transparent 22%),var(--bg);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    .wrap{width:min(1180px,calc(100% - 36px));margin:auto}
+    nav{height:74px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:30;background:rgba(8,10,15,.82);backdrop-filter:blur(16px)}
+    .brand{display:flex;gap:12px;align-items:center;font-weight:900;letter-spacing:.08em}
+    .mark{width:34px;height:34px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,var(--accent),#941717);clip-path:polygon(15% 0,100% 0,85% 100%,0 100%);box-shadow:0 0 30px rgba(255,59,59,.22)}
+    .navlinks{display:flex;gap:26px;color:var(--muted);font-size:14px;font-weight:700}
+    .navlinks a:hover{color:white}
+    .hero{min-height:680px;display:grid;grid-template-columns:1.08fr .92fr;gap:50px;align-items:center;padding:76px 0 54px}
+    .eyebrow{display:inline-flex;gap:9px;align-items:center;padding:8px 12px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(255,255,255,.035);color:#d5dbe6;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 14px rgba(82,216,138,.75)}
+    h1{font-size:clamp(52px,7vw,102px);line-height:.87;letter-spacing:-.065em;margin:22px 0 24px;max-width:760px;text-transform:uppercase}
+    h1 span{display:block;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.55)}
+    .sub{font-size:19px;line-height:1.65;color:var(--muted);max-width:650px}
+    .actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 22px;border-radius:10px;font-weight:900;border:1px solid transparent;transition:.18s transform,.18s background,.18s border-color}
+    .btn:hover{transform:translateY(-2px)}
+    .primary{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 16px 40px rgba(255,59,59,.25)}
+    .secondary{border-color:var(--line);background:rgba(255,255,255,.035);color:#e7ecf4}
+    .meta{display:flex;flex-wrap:wrap;gap:18px;margin-top:22px;color:#7f8a9a;font-size:13px}
+    .meta b{color:#cbd3df}
+    .visual{position:relative;min-height:500px}
+    .arena{position:absolute;inset:26px 10px 26px 0;border:1px solid rgba(255,255,255,.1);border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,255,255,.012)),repeating-linear-gradient(90deg,transparent 0 47px,rgba(255,255,255,.025) 48px),repeating-linear-gradient(0deg,transparent 0 47px,rgba(255,255,255,.025) 48px);box-shadow:var(--shadow);overflow:hidden}
+    .arena:before{content:"";position:absolute;inset:14%;border:1px solid rgba(255,59,59,.18);transform:rotate(-8deg)}
+    .arena:after{content:"";position:absolute;width:340px;height:340px;border-radius:50%;right:-120px;top:-90px;background:radial-gradient(circle,rgba(255,59,59,.22),transparent 66%)}
+    .hud{position:absolute;left:30px;right:30px;top:28px;display:flex;justify-content:space-between;font-weight:900;font-size:12px;letter-spacing:.16em;color:#aeb8c7}
+    .score{position:absolute;top:84px;left:50%;transform:translateX(-50%);font-size:54px;font-weight:950;letter-spacing:-.04em}
+    .score small{font-size:16px;color:#7f8997;margin:0 10px}
+    .map{position:absolute;width:180px;height:180px;border-radius:50%;border:1px solid rgba(255,255,255,.15);right:38px;bottom:40px;background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.06),rgba(255,255,255,.01));box-shadow:inset 0 0 30px rgba(0,0,0,.5)}
+    .map:before,.map:after{content:"";position:absolute;background:rgba(255,255,255,.12)}
+    .map:before{left:50%;top:12%;bottom:12%;width:1px}.map:after{top:50%;left:12%;right:12%;height:1px}
+    .player,.enemy{position:absolute;width:14px;height:14px;border-radius:4px;transform:rotate(45deg);box-shadow:0 0 18px currentColor}
+    .player{left:35%;top:57%;background:#4da4ff;color:#4da4ff}.enemy{left:67%;top:39%;background:var(--accent);color:var(--accent)}
+    .card{position:absolute;left:-12px;bottom:12px;width:285px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(14,18,26,.94);padding:20px;box-shadow:var(--shadow)}
+    .card .label{font-size:11px;letter-spacing:.14em;color:#748093;font-weight:900;text-transform:uppercase}.card strong{display:block;font-size:24px;margin-top:7px}.card p{font-size:13px;color:var(--muted);line-height:1.55;margin:8px 0 0}
+    section{padding:80px 0}
+    .sectionHead{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:30px}.sectionHead h2{font-size:42px;letter-spacing:-.045em;margin:0}.sectionHead p{color:var(--muted);max-width:560px;margin:0;line-height:1.6}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.feature{padding:24px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015))}.feature .num{font-size:11px;color:var(--accent2);font-weight:950;letter-spacing:.12em}.feature h3{font-size:20px;margin:15px 0 8px}.feature p{color:var(--muted);line-height:1.6;font-size:14px;margin:0}
+    .download{border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:38px;background:linear-gradient(135deg,rgba(255,59,59,.11),rgba(255,255,255,.025));display:flex;align-items:center;justify-content:space-between;gap:28px}.download h2{font-size:38px;margin:0 0 8px}.download p{margin:0;color:var(--muted);line-height:1.6}
+    footer{padding:42px 0 55px;color:#768294;font-size:13px;border-top:1px solid rgba(255,255,255,.06)}
+    @media(max-width:900px){.navlinks{display:none}.hero{grid-template-columns:1fr;padding-top:54px}.visual{min-height:440px}.grid{grid-template-columns:1fr}.download{align-items:flex-start;flex-direction:column}.sectionHead{align-items:flex-start;flex-direction:column}.hero{min-height:auto}}
+    @media(max-width:560px){.wrap{width:min(100% - 24px,1180px)}.visual{min-height:360px}.arena{inset:10px 0}.map{width:130px;height:130px}.card{width:235px;left:12px}.score{font-size:40px}.download{padding:26px}.btn{width:100%}}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between">
+      <a class="brand" href="#top"><span class="mark"></span>UNBLOCKEDTDM</a>
+      <div class="navlinks"><a href="#game">GAME</a><a href="#features">FEATURES</a><a href="#download">DOWNLOAD</a></div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <div class="wrap hero" id="game">
+      <div>
+        <div class="eyebrow"><span class="dot"></span><span id="statusText">Latest build available</span></div>
+        <h1>UNBLOCKED<span>TDM</span></h1>
+        <p class="sub">Fast 3v3 top-down team deathmatch built around movement, weapon choice, tactical AI and short rounds. Install once with the official launcher and let it handle future game updates.</p>
+        <div class="actions">
+          <a id="downloadHero" class="btn primary" href="https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.41-v1/UnblockedTDM-Setup-1.41-v1.exe">↓ DOWNLOAD LAUNCHER</a>
+          <a id="releaseLink" class="btn secondary" href="https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/tag/build-1.41-v1" target="_blank" rel="noreferrer">VIEW CURRENT RELEASE</a>
+        </div>
+        <div class="meta"><span><b>Windows</b> PC</span><span><b id="buildText">Build 1.41 — Version 1</b></span><span>Launcher-managed updates</span></div>
+      </div>
+
+      <div class="visual" aria-hidden="true">
+        <div class="arena"><div class="hud"><span>BLUE TEAM</span><span>ROUND 01</span><span>RED TEAM</span></div><div class="score">7 <small>:</small> 5</div><div class="map"><span class="player"></span><span class="enemy"></span></div></div>
+        <div class="card"><span class="label">Current phase</span><strong id="phaseText">Minimap / HUD / Pathfinding</strong><p>Built for fast iteration now, with the road to 2.0 focused on feature completion, balance and final presentation.</p></div>
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="wrap">
+        <div class="sectionHead"><div><h2>Built for repeat fights.</h2></div><p>Short matches, readable combat and an update pipeline that keeps the launcher and game moving forward without making players reinstall manually every build.</p></div>
+        <div class="grid">
+          <div class="feature"><span class="num">01 / COMBAT</span><h3>Eight weapon classes</h3><p>Assault rifle, SMG, sniper, shotgun, LMG, pistol, launcher and melee with distinct ranges and combat behavior.</p></div>
+          <div class="feature"><span class="num">02 / MOVEMENT</span><h3>Sprint + directional dash</h3><p>Fast movement with stamina and directional dash charges designed around aggressive repositioning.</p></div>
+          <div class="feature"><span class="num">03 / AI</span><h3>Four difficulty modes</h3><p>Beginner, Average, Sweat and Pro AI with navigation, targeting, weapon decisions, retreat logic and strafing.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="download">
+      <div class="wrap">
+        <div class="download"><div><h2>Get the official launcher.</h2><p>The launcher installs the game, checks the latest published build, handles updates and supports repair/rollback through your existing distribution manifest.</p></div><a id="downloadBottom" class="btn primary" href="https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.41-v1/UnblockedTDM-Setup-1.41-v1.exe">DOWNLOAD FOR WINDOWS ↓</a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap">© <span id="year"></span> UnblockedTDM. Independent game project.</div></footer>
+
+  <script>
+    const manifestUrl = 'https://raw.githubusercontent.com/nhicksenterprises2025-maker/unblockedtdm/main/distribution/latest.json';
+    const fallbackInstaller = 'https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.41-v1/UnblockedTDM-Setup-1.41-v1.exe';
+    const hero = document.getElementById('downloadHero');
+    const bottom = document.getElementById('downloadBottom');
+    const release = document.getElementById('releaseLink');
+    hero.href = bottom.href = fallbackInstaller;
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    fetch(manifestUrl, { cache: 'no-store' })
+      .then(r => { if (!r.ok) throw new Error('manifest'); return r.json(); })
+      .then(data => {
+        if (data.installerUrl) hero.href = bottom.href = data.installerUrl;
+        if (data.tag) release.href = `https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/tag/${encodeURIComponent(data.tag)}`;
+        if (data.gameVersion && data.build) document.getElementById('buildText').textContent = `Build ${data.gameVersion} — Version ${data.build}`;
+        if (data.phase) document.getElementById('phaseText').textContent = data.phase;
+        document.getElementById('statusText').textContent = 'Latest build available';
+      })
+      .catch(() => { document.getElementById('statusText').textContent = 'Official launcher available'; });
+  </script>
+</body>
+</html>
