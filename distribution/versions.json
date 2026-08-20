@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "UnblockedTDM",
+      "gameVersion": "1.2",
+      "build": 1,
+      "sequence": 8,
+      "phase": "Complete Weapon Roster / Loadout Select",
+      "tag": "build-1.2-v1",
+      "title": "UnblockedTDM Build 1.2 — Version 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.2-v1/UnblockedTDM-1.2-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.2-v1/UnblockedTDM-Setup-1.2-v1.exe",
+      "sha256": "690e85945179c20dd2d75fd2c94175230abe88ab4c733754dc7aeb05b4246b92",
+      "installerSha256": "8ad61cc735b285c318ca204b21e176e7bc8f2af575875726317669617fcca8ee",
+      "publishedAt": "2026-08-20T03:38:04.272Z"
+    },
+    {
+      "product": "UnblockedTDM",
       "gameVersion": "1.13",
       "build": 2,
       "sequence": 7,
