@@ -8,9 +8,10 @@ export const AI_DIFFICULTIES=Object.freeze({Beginner:{label:'Beginner',multiplie
 function preferred(w){switch(w?.id){case'melee':return 1.35;case'shotgun':return 3.4;case'smg':return 5.6;case'pistol':return 6.5;case'assault-rifle':return 8.5;case'launcher':return 9;case'lmg':return 10.5;case'sniper':return 14.5;default:return 8;}}
 function practical(w){switch(w?.id){case'melee':return 2.05;case'shotgun':return 6.5;case'smg':return 11;case'pistol':return 10;case'launcher':return 15;case'sniper':return 25;default:return 18;}}
 function jitterBase(w){return w?.id==='sniper'?5:w?.id==='shotgun'?14:w?.id==='smg'?12:w?.id==='lmg'?10:8;}
+function savedDifficulty(){try{return localStorage.getItem('unblockedtdm.aiDifficulty')||'Average';}catch{return'Average';}}
 
 export class BotController{
-  constructor(player,weaponManager,seed=0,difficulty='Average'){
+  constructor(player,weaponManager,seed=0,difficulty=savedDifficulty()){
     this.player=player;this.weaponManager=weaponManager;this.seed=seed;this.camera=null;this.aimWorld={x:player.x+100,y:player.y};this.moveAxis={x:0,y:0};
     this.fire=false;this.firePulse=false;this.ads=false;this.sprint=false;this.dashPulse=false;this.reloadPulse=false;this.primaryPulse=false;this.secondaryPulse=false;
     this.shotTimer=0;this.dashThinkTimer=.8+seed*.17;this.strafeClock=seed*.71;this.target=null;this.targetDecisionTimer=0;this.targetLockTimer=0;this.lastX=player.x;this.lastY=player.y;this.stuckTimer=0;this.routeFlip=seed%2===0?1:-1;this.setDifficulty(difficulty);
@@ -22,6 +23,7 @@ export class BotController{
   slotScore(slot,distanceTiles){const w=this.weaponManager.loadout[slot];if(!w)return 999;const ammo=this.weaponManager.ammo?.[slot];if(w.magazineSize>0&&ammo&&ammo.magazine<=0&&ammo.reserve<=0)return 999;let s=Math.abs(distanceTiles-preferred(w))/Math.max(1,preferred(w));if(w.id==='launcher'&&distanceTiles<3.2)s+=3;if(w.id==='melee'&&distanceTiles>3)s+=2;return s;}
   maybeSwitch(distanceTiles){if(this.weaponManager.isSwitching()||this.weaponManager.isReloading())return;const cur=this.weaponManager.currentSlot,other=cur==='primary'?'secondary':'primary';if(this.slotScore(other,distanceTiles)+.24<this.slotScore(cur,distanceTiles)){if(other==='primary')this.primaryPulse=true;else this.secondaryPulse=true;}}
   update(dt,{camera,enemies=[],teammates=[],map,targetCounts=new Map()}){
+    const live=savedDifficulty();if(live!==this.difficultyName)this.setDifficulty(live);
     this.resetTransient();this.camera=camera;const skill=this.skillMultiplier;this.shotTimer=Math.max(0,this.shotTimer-dt);this.dashThinkTimer-=dt;this.targetDecisionTimer-=dt;this.strafeClock+=dt;
     if(!this.player.health.alive){this.moveAxis={x:0,y:0};this.sprint=false;this.ads=false;this.target=null;this.targetLockTimer=0;return;}
     if(!this.target?.health?.alive||this.targetDecisionTimer<=0){const next=this.chooseTarget(enemies,targetCounts);if(next!==this.target)this.targetLockTimer=0;this.target=next;this.targetDecisionTimer=clamp(.34/skill,.08,.48);}
