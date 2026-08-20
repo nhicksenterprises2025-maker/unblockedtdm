@@ -9,7 +9,7 @@ const TRACE_STYLE = {
 export class CombatFeedbackRenderer {
   constructor(ctx){
     this.ctx=ctx;this.tracers=[];this.impacts=[];this.damageNumbers=[];this.explosions=[];this.meleeSwings=[];this.sparks=[];this.muzzleSmoke=[];
-    this.hitmarkerTimer=0;this.hitmarkerCrit=false;this.trauma=0;
+    this.hitmarkerTimer=0;this.hitmarkerCrit=false;this.trauma=0;this.suppressHitmarker=false;
   }
   spawnShot({muzzle,end,hit,crit,type}){
     const style=TRACE_STYLE[type]||TRACE_STYLE['assault-rifle'];
@@ -37,6 +37,7 @@ export class CombatFeedbackRenderer {
   }
   spawnMeleeSwing({owner,range,angle}){this.meleeSwings.push({x:owner.x,y:owner.y,range,angle,life:.22,maxLife:.22});this.trauma=Math.max(this.trauma,.035);}
   spawnHit({point,damage,crit}){
+    if(this.suppressHitmarker)return;
     this.damageNumbers.push({x:point.x,y:point.y-8,damage:Math.round(damage),crit,life:.82,maxLife:.82,vx:(Math.random()-.5)*12,vy:-34});
     this.hitmarkerTimer=crit?.19:.12;this.hitmarkerCrit=crit;
     if(crit)this.trauma=Math.max(this.trauma,.065);
