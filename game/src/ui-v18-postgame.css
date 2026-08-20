@@ -1,0 +1,18 @@
+body.ui-v18 .postgame-titlebar{padding:24px 26px 18px;border-bottom:1px solid var(--ut-border);background:transparent}
+body.ui-v18 .postgame-titlebar span{font-family:var(--ut-mono);color:var(--ut-accent)}
+body.ui-v18 .postgame-titlebar h1{letter-spacing:-.025em}
+body.ui-v18 .postgame-final small,body.ui-v18 .postgame-final strong{font-family:var(--ut-mono)}
+body.ui-v18 .postgame-summary{border-bottom:1px solid var(--ut-border)}
+body.ui-v18 .postgame-summary div{border-right:1px solid var(--ut-border);background:transparent}
+body.ui-v18 .postgame-summary span{font-family:var(--ut-mono);color:var(--ut-muted)}
+body.ui-v18 .postgame-scoreboards{gap:12px;padding:18px 26px}
+body.ui-v18 .postgame-team{background:#0b1118;border-top-width:2px}
+body.ui-v18 .postgame-team-title{border-bottom:1px solid var(--ut-border)}
+body.ui-v18 .postgame-row{border-top:1px solid var(--ut-border);font-family:var(--ut-mono)}
+body.ui-v18 .postgame-row.local{background:#101d28;box-shadow:inset 3px 0 var(--ut-accent)}
+body.ui-v18 .postgame-head{padding:9px 10px!important;border-bottom:0!important;background:#0e1720!important;color:#657382!important}
+body.ui-v18 .postgame-rounds{padding:0 26px 18px}
+body.ui-v18 .postgame-rounds>span{font-family:var(--ut-mono);color:var(--ut-muted)}
+body.ui-v18 .postgame-rounds b{border:1px solid var(--ut-border);border-radius:2px;background:#0b1118}
+body.ui-v18 .postgame-actions{padding:16px 26px 22px;border-top:1px solid var(--ut-border)}
+body.postgame-open .round-overlay{opacity:0!important;pointer-events:none!important}
