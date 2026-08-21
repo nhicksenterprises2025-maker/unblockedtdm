@@ -2,15 +2,21 @@
   "name":"unblockedtdm-build-system",
   "private":true,
   "version":"1.0.0",
-  "description":"Build and release tooling for UnblockedTDM",
+  "description":"Build and release tooling for UnblockedTDM and isolated Skirmish Arena 2.0 development",
   "devDependencies":{"electron":"^38.0.0","electron-builder":"^26.0.12"},
   "scripts":{
     "launcher":"electron launcher",
     "game":"electron game",
+    "dev-launcher":"electron dev-launcher",
     "sync:build":"node scripts/sync-build-info.mjs",
+    "sync:dev":"node scripts/sync-dev-build-info.mjs",
     "build:game":"electron-builder --projectDir game --config electron-builder.yml --win portable --x64 --publish never",
     "build:launcher":"electron-builder --projectDir launcher --config electron-builder.yml --win nsis --x64 --publish never",
     "build:windows":"npm run sync:build && npm run build:game && npm run build:launcher",
+    "build:dev-game":"electron-builder --projectDir game --config electron-builder.dev.yml --win portable --x64 --publish never",
+    "build:dev-launcher":"electron-builder --projectDir dev-launcher --config electron-builder.yml --win nsis --x64 --publish never",
+    "build:dev-windows":"npm run sync:dev && npm run build:dev-game && npm run build:dev-launcher",
+    "check:dev":"node --check dev-launcher/src/main.js && node --check dev-launcher/src/preload.js && node --check dev-launcher/src/renderer.js && node --check scripts/sync-dev-build-info.mjs",
     "check":"node --check launcher/src/main.js && node --check launcher/src/preload.js && node --check launcher/src/renderer.js && node --check game/src/main.js && node --check game/src/preload.js && node --check game/src/renderer.js && node --check game/src/debug-tuning.js && node --check game/src/flow-v18.js && node --check game/src/actors/Player.js && node --check game/src/ai/BotController.js && node --check game/src/ai/GridPathfinder.js && node --check game/src/match/MatchManager.js && node --check game/src/combat/HealthState.js && node --check game/src/combat/DamageSystem.js && node --check game/src/combat/Hitscan.js && node --check game/src/combat/ProjectileSystem.js && node --check game/src/combat/WeaponManager.js && node --check game/src/data/weapons.js && node --check game/src/data/LoadoutStore.js && node --check game/src/engine/constants.js && node --check game/src/engine/GameLoop.js && node --check game/src/engine/GameSettings.js && node --check game/src/engine/Input.js && node --check game/src/world/Camera.js && node --check game/src/world/Collision.js && node --check game/src/world/SpawnSystem.js && node --check game/src/world/TileMap.js && node --check game/src/world/map01.js && node --check game/src/render/CombatFeedbackRenderer.js && node --check game/src/render/DamageFeedbackRenderer.js && node --check game/src/render/MinimapRenderer.js && node --check game/src/render/PlayerRenderer.js && node --check game/src/render/WeaponRenderer.js && node --check game/src/render/WorldRenderer.js && node --check game/src/ui/LoadoutScreen.js && node --check game/src/ui/MainMenu.js && node --check game/src/ui/SettingsPanel.js && node --check game/src/ui/PostgameScreen.js && node --check scripts/sync-build-info.mjs && node --check scripts/finalize-release.mjs && node --check scripts/test-build-1.5.mjs && node --check scripts/test-build-1.6.mjs && node --check scripts/test-build-1.7.mjs && node --check scripts/test-build-1.8.mjs && node --check scripts/test-build-1.9.mjs && node --check scripts/test-build-1.9.2.mjs && node scripts/test-build-1.41.mjs && node scripts/test-build-1.5.mjs && node scripts/test-build-1.6.mjs && node scripts/test-build-1.7.mjs && node scripts/test-build-1.8.mjs && node scripts/test-build-1.9.mjs && node scripts/test-build-1.9.2.mjs"
   }
 }
