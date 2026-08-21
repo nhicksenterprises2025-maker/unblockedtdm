@@ -1,0 +1,15 @@
+appId: com.skirmisharena.dev.game
+productName: Skirmish Arena 2.0 Development
+electronVersion: 38.0.0
+asar: true
+files:
+  - src/**/*
+extraMetadata:
+  productName: Skirmish Arena 2.0 Development
+win:
+  target:
+    - portable
+  executableName: SkirmishArena-Dev
+artifactName: SkirmishArena-Dev.exe
+directories:
+  output: ../dist-dev-game
