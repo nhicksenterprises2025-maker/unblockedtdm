@@ -1,4 +1,5 @@
 import { WEAPON_LIST, formatWeaponStats } from '../data/weapons.js';
+import { spreadVisualHtml, statBarsHtml, weaponModelSvg } from './WeaponPresentation.js';
 
 function weaponDescription(weapon) {
   if (weapon.id === 'sniper') return 'Physical high-speed projectile with no piercing. Built around long sightlines and high single-target burst.';
@@ -45,6 +46,8 @@ export class MainMenu {
         }
       }
     });
+
+    window.addEventListener('skirmish:show-menu-home', () => this.show('home'));
   }
 
   show(view = 'home') {
@@ -76,7 +79,10 @@ export class MainMenu {
         <div><span>CANONICAL WEAPON DATA</span><h2>${this.previewWeapon.name}</h2></div>
         <b>${this.previewWeapon.shortName}</b>
       </div>
+      <div class="phase2-weapon-stage">${weaponModelSvg(this.previewWeapon)}</div>
       <p>${weaponDescription(this.previewWeapon)}</p>
+      ${statBarsHtml(this.previewWeapon)}
+      ${spreadVisualHtml(this.previewWeapon)}
       <div class="weapon-info-stats">${stats.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('')}</div>`;
   }
 }
