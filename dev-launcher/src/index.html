@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Skirmish Arena 2.0 Dev Launcher</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">SKIRMISH ARENA 2.0</p>
+        <h1>DEVELOPMENT LAUNCHER</h1>
+      </div>
+      <span class="channel">INTERNAL DEV</span>
+    </header>
+
+    <section class="hero">
+      <div class="copy">
+        <p class="eyebrow">CLEAN 1.9.2 BASELINE</p>
+        <h2>PRIVATE TEST CHANNEL</h2>
+        <p>This launcher is isolated from the public 1.9.2 installation. Future 2.0 development builds install directly inside this launcher.</p>
+      </div>
+
+      <div class="actions">
+        <button id="play" class="primary">PLAY DEV BUILD</button>
+        <button id="update" data-mode="check">CHECK FOR UPDATE</button>
+      </div>
+
+      <div id="progressTrack" class="progress-track">
+        <div class="progress-bar"><i id="progressFill"></i></div>
+        <span id="progressLabel"></span>
+      </div>
+      <div id="status" class="status">INITIALIZING DEVELOPMENT CHANNEL</div>
+    </section>
+
+    <section class="build-grid">
+      <div><span>VERSION</span><strong id="version">2.0-dev</strong></div>
+      <div><span>PHASE</span><strong id="phase">FOUNDATION</strong></div>
+      <div><span>SEQUENCE</span><strong id="sequence">00</strong></div>
+      <div><span>PUBLIC BASELINE</span><strong>1.9.2</strong></div>
+    </section>
+
+    <section class="tools">
+      <div>
+        <p class="eyebrow">ISOLATED DATA</p>
+        <h3>DEVELOPMENT PROFILE</h3>
+        <p>Dev saves and settings use their own application-data directory and never overwrite the public game profile.</p>
+      </div>
+      <div class="tool-actions">
+        <button id="openData">OPEN DEV DATA</button>
+        <button id="resetData">RESET DEV DATA</button>
+        <button id="quit">QUIT</button>
+      </div>
+    </section>
+
+    <footer>
+      <span>dev/skirmish-arena-2.0</span>
+      <span>NO PUBLIC PUBLISHING</span>
+    </footer>
+  </main>
+  <script src="renderer.js"></script>
+</body>
+</html>
