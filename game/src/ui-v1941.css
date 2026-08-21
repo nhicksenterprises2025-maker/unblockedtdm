@@ -1,0 +1,81 @@
+/* Skirmish Arena 1.94.1 — Phase 2 front-end layout.
+   Presentation only: no pointer-event interception and no gameplay geometry. */
+body.ui-v18 .main-menu-shell{grid-template-columns:minmax(410px,42vw) 1fr}
+body.ui-v18 .main-sidebar{display:flex;flex-direction:column;padding:clamp(24px,3.2vh,48px) clamp(24px,2.5vw,48px) clamp(18px,2.5vh,34px);background:#090e14}
+body.ui-v18 .menu-brand{flex:0 0 auto;margin:0 0 clamp(22px,3vh,42px);gap:14px}
+body.ui-v18 .menu-brand .menu-mark{width:52px;height:52px}
+body.ui-v18 .menu-brand strong{font-size:clamp(13px,1.15vw,18px);letter-spacing:.14em}
+body.ui-v18 .menu-brand small{font-size:8px;letter-spacing:.14em}
+body.ui-v18 .main-nav{flex:1;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(128px,1.35fr) minmax(112px,1fr) minmax(112px,1fr);gap:clamp(12px,1.35vw,22px)}
+body.ui-v18 .main-nav button.phase2-nav-button{position:relative;display:flex;align-items:stretch;justify-content:stretch;min-width:0;min-height:0;margin:0!important;padding:0!important;overflow:hidden;text-align:left;border:1px solid #263544!important;border-left:1px solid #263544!important;border-radius:4px!important;background:#0d151e!important;color:#eaf1f7!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.015);transition:transform .13s ease,border-color .13s ease,background .13s ease,box-shadow .13s ease}
+body.ui-v18 .main-nav button.phase2-nav-button:hover,body.ui-v18 .main-nav button.phase2-nav-button.active{transform:translateY(-2px);border-color:#37b8ff!important;background:#111e29!important;box-shadow:inset 0 0 0 1px rgba(55,184,255,.16),0 10px 28px rgba(0,0,0,.22)}
+body.ui-v18 .main-nav button.phase2-play{grid-column:1/3;background:#37b8ff!important;color:#041018!important;border-color:#69caff!important}
+body.ui-v18 .main-nav button.phase2-play:hover{background:#55c4ff!important;border-color:#9bddff!important}
+body.ui-v18 .phase2-button-copy{position:relative;z-index:2;display:flex;flex:1;min-width:0;flex-direction:column;justify-content:flex-end;padding:clamp(18px,2.2vw,34px)}
+body.ui-v18 .phase2-button-copy small{font:800 8px/1 var(--ut-mono);letter-spacing:.18em;color:#718293}
+body.ui-v18 .phase2-play .phase2-button-copy small{color:#0c5f85}
+body.ui-v18 .phase2-button-copy strong{display:block;margin-top:7px;font-size:clamp(22px,2.25vw,38px);line-height:.95;letter-spacing:-.035em}
+body.ui-v18 .phase2-play .phase2-button-copy strong{font-size:clamp(34px,3.4vw,58px)}
+body.ui-v18 .phase2-button-copy em{margin-top:10px;font:700 8px/1.35 var(--ut-mono);font-style:normal;letter-spacing:.08em;color:#80909f}
+body.ui-v18 .phase2-play .phase2-button-copy em{color:#105d7d}
+body.ui-v18 .phase2-nav-icon{position:absolute;right:clamp(14px,1.8vw,28px);top:clamp(14px,1.8vw,28px);width:clamp(42px,4vw,68px);height:clamp(42px,4vw,68px);opacity:.72}
+body.ui-v18 .phase2-nav-icon *{vector-effect:non-scaling-stroke}
+body.ui-v18 .phase2-play .phase2-nav-icon{width:clamp(58px,5.4vw,92px);height:clamp(58px,5.4vw,92px);opacity:.72}
+body.ui-v18 .main-sidebar-foot{flex:0 0 auto;margin-top:clamp(16px,2.3vh,28px);padding-top:12px;font-size:7px}
+body.ui-v18 .main-content{padding:clamp(34px,5vh,72px) clamp(34px,4.5vw,80px);overflow:auto}
+body.ui-v18 .main-content:after{right:-6vw;top:2vh;width:64vw;height:88vh;opacity:.11}
+body.ui-v18 .menu-view{max-width:1100px}
+body.ui-v18 .menu-hero{max-width:900px;padding-top:clamp(42px,10vh,138px)}
+body.ui-v18 .menu-hero h1{font-size:clamp(58px,6.6vw,112px);line-height:.9;margin:12px 0 20px}
+body.ui-v18 .menu-hero p{max-width:760px;font-size:clamp(12px,.95vw,16px);line-height:1.7}
+body.ui-v18 .menu-feature-grid{margin-top:clamp(30px,5vh,64px)}
+body.ui-v18 .menu-feature-grid div{min-height:124px;padding:22px}
+body.ui-v18 .menu-feature-grid div:first-child{padding-left:0}
+body.ui-v18 .menu-feature-grid strong{font-size:clamp(14px,1.1vw,19px)}
+body.ui-v18 .menu-feature-grid small{font-size:9px;line-height:1.55}
+body.ui-v18 .ut-menu-status{margin-top:24px;gap:clamp(14px,2vw,34px);flex-wrap:wrap;font-size:8px}
+body.ui-v18 .settings-title h2,body.ui-v18 .weapon-info-title h2{font-size:clamp(38px,4vw,64px)}
+body.ui-v18 .settings-title p,body.ui-v18 .weapon-info-title p{max-width:720px;font-size:13px;line-height:1.6}
+body.ui-v18 #mainSettingsPanel .settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ui-v18 #mainSettingsPanel .setting-card{min-height:132px;padding:20px}
+body.ui-v18 #mainSettingsPanel .setting-card.phase2-group-start{position:relative;padding-top:36px}
+body.ui-v18 #mainSettingsPanel .setting-card.phase2-group-start:before{content:attr(data-phase2-group);position:absolute;left:18px;top:13px;font:800 8px/1 var(--ut-mono);letter-spacing:.16em;color:#37b8ff}
+body.ui-v18 .bindings-card{margin-top:18px}
+body.ui-v18 .weapon-info-layout{grid-template-columns:minmax(220px,28%) 1fr;min-height:min(620px,70vh)}
+body.ui-v18 .weapon-info-list button{min-height:74px;padding:14px 16px}
+body.ui-v18 .weapon-info-detail{display:flex;flex-direction:column;padding:clamp(22px,2.5vw,38px)}
+body.ui-v18 .phase2-weapon-stage{display:flex;align-items:center;justify-content:center;min-height:150px;margin:12px 0 18px;border-top:1px solid var(--ut-border);border-bottom:1px solid var(--ut-border);background:rgba(5,10,15,.32)}
+body.ui-v18 .phase2-weapon-svg{display:block;width:min(100%,430px);height:118px;fill:none;stroke:#dfeaf2;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+body.ui-v18 .phase2-weapon-svg .accent{stroke:#37b8ff}
+body.ui-v18 .phase2-stat-bars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+body.ui-v18 .phase2-stat-bar{padding:10px;border:1px solid var(--ut-border);background:#0b1118}
+body.ui-v18 .phase2-stat-bar span{display:block;margin-bottom:7px;font:800 7px/1 var(--ut-mono);letter-spacing:.1em;color:#738495}
+body.ui-v18 .phase2-stat-track{height:5px;background:#1c2732;overflow:hidden}
+body.ui-v18 .phase2-stat-track i{display:block;height:100%;background:#37b8ff}
+body.ui-v18 .phase2-spread{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:14px;margin-top:10px;padding:12px;border:1px solid var(--ut-border);background:#0b1118}
+body.ui-v18 .phase2-spread-visual{position:relative;height:62px;overflow:hidden}
+body.ui-v18 .phase2-spread-visual:before{content:"";position:absolute;left:12px;top:30px;width:92px;height:1px;background:#536575}
+body.ui-v18 .phase2-spread-visual i{position:absolute;left:12px;top:30px;width:92px;height:1px;background:#37b8ff;transform-origin:left center}
+body.ui-v18 .phase2-spread-visual i:first-child{transform:rotate(calc(var(--spread-angle) * -1))}
+body.ui-v18 .phase2-spread-visual i:last-child{transform:rotate(var(--spread-angle))}
+body.ui-v18 .phase2-spread strong{display:block;font-size:13px}
+body.ui-v18 .phase2-spread small{display:block;margin-top:5px;font:700 8px/1.4 var(--ut-mono);color:#778899}
+body.ui-v18 .loadout-body{grid-template-columns:minmax(300px,38%) 1fr}
+body.ui-v18 .weapon-card{display:grid;grid-template-columns:74px 1fr auto;grid-template-rows:auto auto;align-items:center;column-gap:12px;min-height:86px;padding:10px 14px}
+body.ui-v18 .weapon-card .phase2-card-model{grid-row:1/3;width:70px;height:44px;display:flex;align-items:center;justify-content:center}
+body.ui-v18 .weapon-card .phase2-card-model .phase2-weapon-svg{width:70px;height:42px;stroke-width:6}
+body.ui-v18 .weapon-card .weapon-class{grid-column:2}
+body.ui-v18 .weapon-card strong{grid-column:2;font-size:14px}
+body.ui-v18 .weapon-card small{grid-column:3;grid-row:1;color:#708090}
+body.ui-v18 .weapon-card i{grid-column:3;grid-row:2}
+body.ui-v18 .weapon-detail .phase2-weapon-stage{min-height:170px;margin:12px 0}
+@media (max-width:1100px){
+ body.ui-v18 .main-menu-shell{grid-template-columns:minmax(370px,46vw) 1fr}
+ body.ui-v18 .main-sidebar{padding:22px}
+ body.ui-v18 .main-nav{gap:10px;grid-template-rows:minmax(112px,1.25fr) minmax(96px,1fr) minmax(96px,1fr)}
+ body.ui-v18 .phase2-button-copy{padding:16px}
+ body.ui-v18 .phase2-button-copy em{display:none}
+ body.ui-v18 .main-content{padding:32px}
+ body.ui-v18 .menu-hero{padding-top:52px}
+ body.ui-v18 .phase2-stat-bars{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
