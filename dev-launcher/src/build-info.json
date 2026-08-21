@@ -1,0 +1,9 @@
+{
+  "product": "Skirmish Arena 2.0 Development",
+  "testVersion": "2.0-dev",
+  "phase": 0,
+  "sequence": 0,
+  "channel": "internal-dev",
+  "branch": "dev/skirmish-arena-2.0",
+  "title": "Skirmish Arena 2.0 Development Bootstrap"
+}
