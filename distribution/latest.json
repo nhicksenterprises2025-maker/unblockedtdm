@@ -1,14 +1,14 @@
 {
-  "product": "UnblockedTDM",
-  "gameVersion": "1.9.2",
+  "product": "Skirmish Arena",
+  "gameVersion": "1.9.3",
   "build": 1,
-  "sequence": 18,
-  "phase": "Loadout UI Hotfix",
-  "tag": "build-1.9.2-v1",
-  "title": "UnblockedTDM Build 1.9.2 — Version 1",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.9.2-v1/UnblockedTDM-1.9.2-v1.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.9.2-v1/UnblockedTDM-Setup-1.9.2-v1.exe",
-  "sha256": "74c49c37827e8521d626071ef86566d828b9c6a0bb740922ab874b227940bb61",
-  "installerSha256": "dbfd4ac5d1259d5d1e8432beb44cbc2961679960dc9f540068f54859fd135600",
-  "publishedAt": "2026-08-20T20:34:00.759Z"
+  "sequence": 20,
+  "phase": "Phase 1 — Rebrand Foundation",
+  "tag": "build-1.9.3-v1",
+  "title": "Skirmish Arena 1.9.3 — Phase 1",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.9.3-v1/UnblockedTDM-1.9.3-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.9.3-v1/UnblockedTDM-Setup-1.9.3-v1.exe",
+  "sha256": "f05b9d04b79a8a77eb4ff607d8f880fa3b8dae92d18fe978e9a85fa5ab5c3b93",
+  "installerSha256": "a425694b9b488e026d8891fe9d9ad27901bd98e56e8aaa41fc5faf3ba16f3cb5",
+  "publishedAt": "2026-08-21T03:01:53.636Z"
 }
