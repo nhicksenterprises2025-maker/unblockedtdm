@@ -146,7 +146,8 @@ export class Player {
 
   updateLocomotion(dt, input, map, axis = input.axis(), blockers = map.blockers) {
     const moving = axis.x !== 0 || axis.y !== 0;
-    const wantsSprint = input.sprintHeld() && !input.adsHeld() && moving && this.stamina > 0;
+    const autoSprint = Boolean(input.settings?.gameplay?.().autoSprint);
+    const wantsSprint = (autoSprint || input.sprintHeld()) && !input.adsHeld() && moving && this.stamina > 0;
     this.sprinting = wantsSprint;
 
     if (this.sprinting) {
