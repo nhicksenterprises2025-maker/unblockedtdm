@@ -11,7 +11,7 @@ function createWindow() {
     minWidth: 960,
     minHeight: 600,
     backgroundColor: '#142b36',
-    title: 'UnblockedTDM',
+    title: 'Skirmish Arena',
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
