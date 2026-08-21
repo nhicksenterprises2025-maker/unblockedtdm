@@ -1,0 +1,57 @@
+name: Skirmish Arena 2.0 Development
+
+on:
+  push:
+    branches:
+      - dev/skirmish-arena-2.0
+    paths:
+      - dev-build-plan.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skirmish-arena-2.0-dev
+  cancel-in-progress: true
+
+jobs:
+  validate-development-build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout 2.0 development branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify isolated development channel
+        shell: pwsh
+        run: |
+          $channel = Get-Content skirmish-dev/channel.json | ConvertFrom-Json
+          $plan = Get-Content dev-build-plan.json | ConvertFrom-Json
+
+          if ($channel.branch -ne 'dev/skirmish-arena-2.0') { throw 'Invalid development branch in channel metadata.' }
+          if ($channel.publicPublishingAllowed -ne $false) { throw 'Public publishing must remain disabled during 2.0 development.' }
+          if ($channel.publicVersion -ne '1.9.2') { throw 'The protected public baseline must remain 1.9.2.' }
+          if ([int]$plan.sequence -lt 1) { throw 'Development sequence must begin at 1.' }
+          if ($plan.channel -ne 'internal-dev') { throw 'Development build plan must use the internal-dev channel.' }
+          if ($plan.branch -ne 'dev/skirmish-arena-2.0') { throw 'Development build plan targets the wrong branch.' }
+
+          Write-Host "Validated Skirmish Arena 2.0 internal development sequence $($plan.sequence)."
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Validate protected 1.9.2 codebase
+        run: npm run check
+
+      - name: Development packaging guard
+        shell: pwsh
+        run: |
+          Write-Host 'Validation passed.'
+          Write-Host 'This workflow intentionally does not publish or package a public build.'
+          Write-Host 'Internal packaging will be enabled only after the new 2.0 test-build architecture is approved.'
