@@ -1,0 +1,15 @@
+{
+  "product": "Skirmish Arena",
+  "channel": "internal-dev",
+  "branch": "dev/skirmish-arena-2.0",
+  "publicBranch": "main",
+  "publicVersion": "1.9.2",
+  "publicTag": "build-1.9.2-v1",
+  "baselineCommit": "f2c4d0e6027f275f19f3beea9ac719c7a30b3851",
+  "activePhase": 0,
+  "lastCompletedPhase": 0,
+  "nextSequence": 1,
+  "status": "FOUNDATION_READY",
+  "publicPublishingAllowed": false,
+  "notes": "Clean 2.0 restart. No prior Skirmish Arena dev sequence is part of this channel. Sequence 1 begins only when Phase 1 is explicitly started."
+}
