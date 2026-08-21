@@ -29,5 +29,6 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   import('./phase1-branding.js')
     .then(()=>import('./flow-v18.js'))
+    .then(()=>import('./phase2-ui.js'))
     .catch((error)=>console.error('Skirmish Arena 2.0 startup runtime failed to load',error));
 })();
