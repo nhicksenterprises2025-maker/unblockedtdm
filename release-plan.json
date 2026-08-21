@@ -1,11 +1,11 @@
 {
-  "product":"UnblockedTDM",
-  "gameVersion":"1.9.2",
+  "product":"Skirmish Arena",
+  "gameVersion":"1.9.3",
   "build":1,
-  "phase":"Loadout UI Hotfix",
-  "tag":"build-1.9.2-v1",
-  "title":"UnblockedTDM Build 1.9.2 — Version 1",
-  "notesFile":"docs/releases/build-1.9.2-v1.md",
-  "sequence":18,
-  "releaseRevision":2
+  "phase":"Phase 1 — Rebrand Foundation",
+  "tag":"build-1.9.3-v1",
+  "title":"Skirmish Arena 1.9.3 — Phase 1",
+  "notesFile":"docs/releases/build-1.9.3-v1.md",
+  "sequence":19,
+  "releaseRevision":1
 }
