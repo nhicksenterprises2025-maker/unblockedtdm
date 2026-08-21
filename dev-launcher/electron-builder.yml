@@ -1,0 +1,24 @@
+appId: com.skirmisharena.dev.launcher
+productName: Skirmish Arena 2.0 Dev Launcher
+electronVersion: 38.0.0
+asar: true
+files:
+  - src/**/*
+extraResources:
+  - from: ../dist-dev-game/SkirmishArena-Dev.exe
+    to: game/SkirmishArena-Dev.exe
+win:
+  target:
+    - nsis
+  executableName: SkirmishArena-Dev-Launcher
+artifactName: SkirmishArena-Dev-Launcher-Setup.exe
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Skirmish Arena 2.0 Dev Launcher
+  uninstallDisplayName: Skirmish Arena 2.0 Dev Launcher
+directories:
+  output: ../dist-dev-launcher
