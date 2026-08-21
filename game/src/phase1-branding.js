@@ -3,12 +3,20 @@
   const replacements = new Map([
     ['UNBLOCKEDTDM', BRAND],
     ['UnblockedTDM', 'Skirmish Arena'],
-    ['UNBLOCKED // TDM', BRAND],
-    ['UNBLOCKED', 'SKIRMISH'],
-    ['TDM //', 'ARENA //']
+    ['UNBLOCKED // TDM', BRAND]
   ]);
 
+  function ensureStyles() {
+    if (document.querySelector('link[data-skirmish-phase1]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'phase1-branding.css';
+    link.dataset.skirmishPhase1 = 'true';
+    document.head.appendChild(link);
+  }
+
   function replaceText(root = document.body) {
+    if (!root) return;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
@@ -20,6 +28,7 @@
   }
 
   function applyBrand() {
+    ensureStyles();
     document.title = 'Skirmish Arena';
     document.documentElement.dataset.product = 'skirmish-arena';
     document.body.classList.add('phase1-skirmish-branding');
@@ -45,9 +54,6 @@
       image.src = 'assets/skirmish-arena-wordmark.svg';
       image.alt = 'Skirmish Arena';
       heroTitle.replaceWith(image);
-    } else if (heroTitle) {
-      heroTitle.textContent = BRAND;
-      heroTitle.classList.add('sa-fallback-title');
     }
 
     const buildLabel = document.getElementById('mainBuildLabel');
@@ -57,10 +63,6 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyBrand, { once: true });
   else applyBrand();
 
-  const observer = new MutationObserver(() => {
-    replaceText();
-    const menuBrand = document.querySelector('.menu-brand strong');
-    if (menuBrand && menuBrand.textContent !== BRAND) menuBrand.textContent = BRAND;
-  });
+  const observer = new MutationObserver(() => replaceText());
   observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
