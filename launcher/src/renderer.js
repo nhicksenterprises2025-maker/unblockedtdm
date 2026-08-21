@@ -42,7 +42,7 @@ function renderState(next) {
   $('#phaseLabel').textContent = (installed.phase || buildInfo.phase || 'CLIENT').toUpperCase();
   $('#launcherBuild').textContent = `v${installedCode}`;
   $('#currentTitle').textContent = `BUILD ${installedCode}`;
-  $('#currentMeta').textContent = installed.phase || buildInfo.phase || 'UnblockedTDM';
+  $('#currentMeta').textContent = installed.phase || buildInfo.phase || 'Skirmish Arena';
   $('#installedBuild').textContent = installedCode;
   $('#latestBuild').textContent = installedCode;
   $('#patchTitle').textContent = `BUILD ${installedCode} // ${(installed.phase || buildInfo.phase || 'CURRENT').toUpperCase()}`;
@@ -64,7 +64,7 @@ async function checkUpdates() {
     const latestCode = buildCode(result.latest || result.installed);
     $('#latestBuild').textContent = latestCode;
     $('#patchTitle').textContent = `BUILD ${latestCode} // ${(result.latest?.phase || result.installed?.phase || 'CURRENT').toUpperCase()}`;
-    $('#patchDetail').textContent = result.latest?.title || result.installed?.title || 'Current UnblockedTDM release.';
+    $('#patchDetail').textContent = result.latest?.title || result.installed?.title || 'Current Skirmish Arena release.';
     if (result.updateAvailable) {
       $('#updateStatus').textContent = 'UPDATE AVAILABLE';
       $('#updateDetail').textContent = `${result.latest.title} is ready.`;
