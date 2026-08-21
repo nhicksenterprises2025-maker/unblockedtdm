@@ -41,6 +41,7 @@ export class MatchManager {
     this.roundElapsed = 0;
     this.roundHistory = [];
     this.stats = new Map(players.map((player) => [player.id, freshStats()]));
+    this.hudBroadcastTimer = 0;
   }
 
   startMatch() {
@@ -52,7 +53,9 @@ export class MatchManager {
     this.roundElapsed = 0;
     this.roundHistory = [];
     this.stats = new Map(this.players.map((player) => [player.id, freshStats()]));
+    this.hudBroadcastTimer = 0;
     this.beginRound();
+    this.broadcastHud();
   }
 
   beginRound() {
@@ -87,6 +90,11 @@ export class MatchManager {
   canChangeLoadout() { return this.state === 'round-break'; }
 
   update(dt) {
+    this.hudBroadcastTimer += dt;
+    if (this.hudBroadcastTimer >= 0.1) {
+      this.hudBroadcastTimer = 0;
+      this.broadcastHud();
+    }
     this.goTimer = Math.max(0, this.goTimer - dt);
     if (this.state !== 'waiting' && this.state !== 'match-over') this.matchElapsed += dt;
     if (this.state === 'countdown' || this.state === 'active' || this.state === 'sudden-death') this.roundElapsed += dt;
@@ -109,6 +117,36 @@ export class MatchManager {
       this.stateTimer = Math.max(0, this.stateTimer - dt);
       if (this.stateTimer <= 0) { this.round += 1; this.beginRound(); }
     }
+  }
+
+  broadcastHud() {
+    try {
+      window.dispatchEvent(new CustomEvent('skirmish:hud', { detail: { ...this.snapshot(), stats: this.statsSnapshot() } }));
+    } catch {}
+  }
+
+  emitKillFeed(creditedKiller, victim, result = {}) {
+    const weapon = creditedKiller?.weaponManager?.currentWeapon?.() || null;
+    let critical = false;
+    if (weapon?.critChance > 0 && Number(result.amount || 0) > 0) {
+      if (weapon.kind === 'shotgun') {
+        const ratio = Number(result.amount) / Math.max(1, weapon.critDamage || 1);
+        critical = Math.abs(ratio - Math.round(ratio)) < 0.001;
+      } else {
+        critical = Number(result.amount) >= Number(weapon.critDamage || Infinity);
+      }
+    }
+    try {
+      window.dispatchEvent(new CustomEvent('skirmish:kill', { detail: {
+        killerId: creditedKiller?.id || null,
+        killerTeam: creditedKiller?.team || null,
+        victimId: victim?.id || null,
+        victimTeam: victim?.team || null,
+        weapon: weapon?.shortName || weapon?.name || 'COMBAT',
+        critical,
+        amount: Number(result.amount || 0)
+      } }));
+    } catch {}
   }
 
   registerCombatPoint(x, y) {
@@ -163,7 +201,9 @@ export class MatchManager {
     const creditedKiller = this.resolveCreditedKiller(attacker, victim, result);
     this.registerCombatPoint(victim.x, victim.y);
     if (!creditedKiller) {
+      this.emitKillFeed(null, victim, result);
       this.onKill?.({ attacker: null, victim, credited: false, suicide: true, snapshot: this.snapshot() });
+      this.broadcastHud();
       return { counted: false, suicide: true };
     }
     const killerStats = this.stats.get(creditedKiller.id);
@@ -173,7 +213,9 @@ export class MatchManager {
     this.registerAssists(victim, creditedKiller, result);
     this.roundKills[creditedKiller.team] += 1;
     const event = { attacker: creditedKiller, victim, credited: true, suicide: creditedKiller.id === victim.id, snapshot: this.snapshot() };
+    this.emitKillFeed(creditedKiller, victim, result);
     this.onKill?.(event);
+    this.broadcastHud();
     if (this.state === 'sudden-death') this.finishRound(creditedKiller.team);
     else if (this.roundKills[creditedKiller.team] >= ROUND_KILL_TARGET) this.finishRound(creditedKiller.team);
     return { counted: true, killer: creditedKiller };
@@ -201,6 +243,7 @@ export class MatchManager {
       this.stateTimer = 0;
       const finalSnapshot = this.postgameSnapshot();
       this.onMatchEnd?.({ winner, snapshot: finalSnapshot });
+      this.broadcastHud();
       try {
         window.dispatchEvent(new CustomEvent('unblockedtdm:match-complete', { detail: finalSnapshot }));
       } catch {}
@@ -208,6 +251,7 @@ export class MatchManager {
     }
     this.state = 'round-break';
     this.stateTimer = ROUND_BREAK_DURATION;
+    this.broadcastHud();
   }
 
   respawnPlayer(player) {

@@ -6,8 +6,8 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const plan = JSON.parse(fs.readFileSync(path.join(root, 'release-plan.json'), 'utf8'));
 const ownerRepo = 'nhicksenterprises2025-maker/unblockedtdm';
-const gameAssetName = `UnblockedTDM-${plan.gameVersion}-v${plan.build}.exe`;
-const installerAssetName = `UnblockedTDM-Setup-${plan.gameVersion}-v${plan.build}.exe`;
+const gameAssetName = `SkirmishArena-${plan.gameVersion}-v${plan.build}.exe`;
+const installerAssetName = `SkirmishArena-Setup-${plan.gameVersion}-v${plan.build}.exe`;
 const gamePath = path.join(root, 'dist-release', gameAssetName);
 const installerPath = path.join(root, 'dist-release', installerAssetName);
 

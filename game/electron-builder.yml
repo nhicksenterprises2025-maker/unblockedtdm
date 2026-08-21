@@ -1,5 +1,5 @@
-appId: com.unblockedtdm.game
-productName: UnblockedTDM
+appId: com.skirmisharena.game
+productName: Skirmish Arena
 electronVersion: 38.0.0
 asar: true
 files:
@@ -7,7 +7,7 @@ files:
 win:
   target:
     - portable
-  executableName: UnblockedTDM
-artifactName: UnblockedTDM.exe
+  executableName: SkirmishArena
+artifactName: SkirmishArena.exe
 directories:
   output: ../dist-game

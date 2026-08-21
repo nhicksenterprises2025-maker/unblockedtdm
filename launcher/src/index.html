@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UnblockedTDM Launcher</title>
-  <link rel="icon" href="assets/unblockedtdm-mark.svg" type="image/svg+xml" />
+  <title>Skirmish Arena Launcher</title>
+  <link rel="icon" href="assets/skirmish-arena-mark.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="launcher-shell">
     <aside class="rail">
       <div class="rail-brand">
-        <img src="assets/unblockedtdm-mark.svg" alt="UT" />
-        <span>UT</span>
+        <img src="assets/skirmish-arena-mark.svg" alt="SA" />
+        <span>SA</span>
       </div>
       <nav class="rail-nav" aria-label="Launcher navigation">
         <button class="nav-button active" data-view="home"><i></i><span>PLAY</span></button>
@@ -29,7 +29,7 @@
 
     <main class="client">
       <header class="client-header">
-        <div class="wordmark"><strong>UNBLOCKED</strong><span>TDM //</span></div>
+        <div class="wordmark"><img src="assets/skirmish-arena-wordmark.svg" alt="Skirmish Arena" style="width:260px;max-width:100%;height:auto;display:block" /></div>
         <div class="header-meta"><span id="viewTitle">MATCH CLIENT // 01</span><b id="connectionBadge"><i class="status-dot"></i> ONLINE</b></div>
       </header>
 
@@ -38,9 +38,9 @@
           <div class="build-art" aria-hidden="true"></div>
           <div class="build-copy">
             <span class="mono-line">[ CURRENT BUILD ]</span>
-            <h1 id="currentTitle">UnblockedTDM</h1>
+            <h1 id="currentTitle">Skirmish Arena</h1>
             <p id="currentMeta">Loading installed build…</p>
-            <div class="build-markers"><span>TRAINING COMPLEX</span><span>3V3</span><span>LOCAL MATCH CLIENT</span></div>
+            <div class="build-markers"><span>TRAINING COMPLEX</span><span>3V3</span><span>TACTICAL ARENA CLIENT</span></div>
           </div>
           <div class="launch-zone">
             <button id="playButton" class="launch-button">LAUNCH GAME</button>
@@ -81,11 +81,11 @@
       </section>
 
       <section id="settings" class="view">
-        <div class="page-title"><div><span class="section-kicker">CLIENT BEHAVIOR</span><h1>SETTINGS</h1><p>Launcher-only preferences. Game controls and graphics live inside UnblockedTDM.</p></div></div>
+        <div class="page-title"><div><span class="section-kicker">CLIENT BEHAVIOR</span><h1>SETTINGS</h1><p>Launcher-only preferences. Game controls and graphics live inside Skirmish Arena.</p></div></div>
         <div class="settings-lines">
           <label class="setting-row"><div><strong>Automatic update checks</strong><span>Query the live build manifest when this launcher opens.</span></div><input id="autoCheckUpdates" type="checkbox" /></label>
           <label class="setting-row"><div><strong>Minimize launcher when playing</strong><span>Keep the launcher available in the taskbar after launch.</span></div><input id="minimizeOnPlay" type="checkbox" /></label>
-          <label class="setting-row"><div><strong>Close launcher after Play</strong><span>Exit the client after UnblockedTDM starts.</span></div><input id="closeAfterPlay" type="checkbox" /></label>
+          <label class="setting-row"><div><strong>Close launcher after Play</strong><span>Exit the client after Skirmish Arena starts.</span></div><input id="closeAfterPlay" type="checkbox" /></label>
         </div>
         <div class="save-row"><button id="saveSettings" class="primary">SAVE SETTINGS</button><span id="settingsStatus"></span></div>
       </section>

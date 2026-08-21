@@ -1,0 +1,19 @@
+body.ui-v40{overflow:hidden}
+body.ui-v40 .main-menu,body.ui-v40 .loadout-screen,body.ui-v40 .pause-panel{font-size:clamp(14px,.78vw,18px)}
+body.ui-v40 .main-menu-shell{width:100vw;height:100vh;min-height:100vh}
+body.ui-v40 .main-content{height:100vh;box-sizing:border-box}
+body.ui-v40 .phase4-settings-holder{display:contents}
+body.ui-v40 .phase4-audio-tag{color:#83ebff;border-bottom-color:rgba(95,231,255,.3)}
+body.ui-v40 .phase4-auto-sprint,body.ui-v40 .phase4-audio-toggle,body.ui-v40 .phase4-master-volume{position:relative}
+body.ui-v40 .phase4-auto-sprint small,body.ui-v40 .phase4-audio-toggle small,body.ui-v40 .phase4-master-volume small{display:block;margin-top:8px;opacity:.55;font-size:.68rem;line-height:1.35}
+body.ui-v40 .phase4-master-volume input[type="range"]{width:100%;accent-color:#5fe7ff}
+body.ui-v40 .settings-grid{grid-template-columns:repeat(3,minmax(220px,1fr));gap:12px}
+body.ui-v40 .setting-card{min-height:116px;box-sizing:border-box}
+body.ui-v40 .loadout-shell{max-height:96vh;height:min(920px,94vh);display:flex;flex-direction:column}
+body.ui-v40 .loadout-body{flex:1;min-height:0;overflow:hidden}
+body.ui-v40 .weapon-list,body.ui-v40 .weapon-detail{overflow:auto}
+body.ui-v40 .weapon-info-detail{max-height:calc(100vh - 190px);overflow:auto}
+body.ui-v40 .skirmish-scoreboard .scoreboard-shell{max-height:90vh;overflow:auto}
+@media(min-width:1800px){body.ui-v40 .main-menu-shell{grid-template-columns:480px minmax(0,1fr)}body.ui-v40 .main-sidebar{padding-inline:54px}body.ui-v40 .main-content{padding:74px 96px}.tactical-scorebar{transform:translateX(-50%) scale(1.08);transform-origin:top center}.tactical-vitals,.tactical-weapon{transform:scale(1.06);transform-origin:bottom left}.tactical-weapon{transform-origin:bottom right}}
+@media(max-width:1350px){body.ui-v40 .settings-grid{grid-template-columns:repeat(2,minmax(220px,1fr))}}
+@media(max-height:760px){body.ui-v40 .main-sidebar{padding-top:88px;padding-bottom:86px}body.ui-v40 .main-nav button{min-height:66px}body.ui-v40 .main-nav [data-phase2-order="play"]{min-height:82px}body.ui-v40 .loadout-shell{padding-block:16px}.tactical-vitals{bottom:16px}.tactical-weapon{bottom:16px}}

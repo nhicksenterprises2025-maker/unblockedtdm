@@ -27,5 +27,10 @@
     sync();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
-  import('./flow-v18.js').catch((error)=>console.error('Build 1.8 flow runtime failed to load',error));
+  import('./phase1-branding.js')
+    .then(()=>import('./flow-v18.js'))
+    .then(()=>import('./phase2-ui.js'))
+    .then(()=>import('./phase3-hud.js'))
+    .then(()=>import('./phase4-runtime.js'))
+    .catch((error)=>console.error('Skirmish Arena 2.0 startup runtime failed to load',error));
 })();
