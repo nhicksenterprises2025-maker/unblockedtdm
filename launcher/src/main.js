@@ -7,49 +7,36 @@ const { spawn } = require('node:child_process');
 const buildInfo = require('./build-info.json');
 
 const RAW_BASE = 'https://raw.githubusercontent.com/nhicksenterprises2025-maker/unblockedtdm/main/distribution';
+const GAME_EXE = 'SkirmishArena.exe';
+const LEGACY_GAME_EXE = 'UnblockedTDM.exe';
 const DEFAULT_SETTINGS = {
   autoCheckUpdates: true,
   minimizeOnPlay: true,
   closeAfterPlay: false
 };
 
+// Preserve the existing launcher profile through the product rename. This keeps
+// update settings, installed manifests and downloaded archives intact.
+app.setPath('userData', path.join(app.getPath('appData'), 'UnblockedTDM Launcher'));
+
 let mainWindow;
 
-function launcherDataDir() {
-  return app.getPath('userData');
-}
-function gameRoot() {
-  return path.join(launcherDataDir(), 'game');
-}
-function currentDir() {
-  return path.join(gameRoot(), 'current');
-}
-function currentGamePath() {
-  return path.join(currentDir(), 'UnblockedTDM.exe');
-}
-function archiveRoot() {
-  return path.join(gameRoot(), 'archive');
-}
-function stagingRoot() {
-  return path.join(gameRoot(), 'staging');
-}
-function backupRoot() {
-  return path.join(gameRoot(), 'backup');
-}
-function installedManifestPath() {
-  return path.join(gameRoot(), 'installed.json');
-}
-function settingsPath() {
-  return path.join(launcherDataDir(), 'launcher-settings.json');
-}
+function launcherDataDir() { return app.getPath('userData'); }
+function gameRoot() { return path.join(launcherDataDir(), 'game'); }
+function currentDir() { return path.join(gameRoot(), 'current'); }
+function currentGamePath() { return path.join(currentDir(), GAME_EXE); }
+function legacyCurrentGamePath() { return path.join(currentDir(), LEGACY_GAME_EXE); }
+function archiveRoot() { return path.join(gameRoot(), 'archive'); }
+function stagingRoot() { return path.join(gameRoot(), 'staging'); }
+function backupRoot() { return path.join(gameRoot(), 'backup'); }
+function installedManifestPath() { return path.join(gameRoot(), 'installed.json'); }
+function settingsPath() { return path.join(launcherDataDir(), 'launcher-settings.json'); }
 function bundledGamePath() {
   return app.isPackaged
-    ? path.join(process.resourcesPath, 'game', 'UnblockedTDM.exe')
-    : path.resolve(__dirname, '../../dist-game/UnblockedTDM.exe');
+    ? path.join(process.resourcesPath, 'game', GAME_EXE)
+    : path.resolve(__dirname, '../../dist-game/SkirmishArena.exe');
 }
-function devGameDir() {
-  return path.resolve(__dirname, '../../game');
-}
+function devGameDir() { return path.resolve(__dirname, '../../game'); }
 
 async function ensureDirectories() {
   await Promise.all([
@@ -61,11 +48,8 @@ async function ensureDirectories() {
 }
 
 async function readJson(file, fallback) {
-  try {
-    return JSON.parse(await fsp.readFile(file, 'utf8'));
-  } catch {
-    return fallback;
-  }
+  try { return JSON.parse(await fsp.readFile(file, 'utf8')); }
+  catch { return fallback; }
 }
 
 async function writeJson(file, value) {
@@ -77,38 +61,51 @@ async function getSettings() {
   return { ...DEFAULT_SETTINGS, ...(await readJson(settingsPath(), {})) };
 }
 
+function bundledManifest() {
+  const asset = `SkirmishArena-${buildInfo.gameVersion}-v${buildInfo.build}.exe`;
+  return {
+    product: buildInfo.product,
+    gameVersion: buildInfo.gameVersion,
+    build: buildInfo.build,
+    sequence: buildInfo.sequence,
+    phase: buildInfo.phase,
+    tag: buildInfo.tag,
+    title: buildInfo.title,
+    gameUrl: `https://github.com/${buildInfo.repository}/releases/download/${buildInfo.tag}/${asset}`,
+    sha256: ''
+  };
+}
+
 async function ensureBootstrapGame() {
   await ensureDirectories();
   const target = currentGamePath();
+  let seededFromBundle = false;
 
   if (!fs.existsSync(target)) {
     const source = bundledGamePath();
     if (fs.existsSync(source)) {
       await fsp.copyFile(source, target);
+      seededFromBundle = true;
+    } else if (!app.isPackaged && fs.existsSync(legacyCurrentGamePath())) {
+      await fsp.copyFile(legacyCurrentGamePath(), target);
     } else if (app.isPackaged) {
-      throw new Error(`Bundled game executable was not found at ${source}`);
+      throw new Error(`Bundled Skirmish Arena executable was not found at ${source}`);
     }
   }
 
   const existing = await readJson(installedManifestPath(), null);
-  if (!existing) {
-    await writeJson(installedManifestPath(), {
-      product: buildInfo.product,
-      gameVersion: buildInfo.gameVersion,
-      build: buildInfo.build,
-      sequence: buildInfo.sequence,
-      phase: buildInfo.phase,
-      tag: buildInfo.tag,
-      title: buildInfo.title,
-      gameUrl: `https://github.com/${buildInfo.repository}/releases/download/${buildInfo.tag}/UnblockedTDM-${buildInfo.gameVersion}-v${buildInfo.build}.exe`,
-      sha256: ''
-    });
+  const bundled = bundledManifest();
+  const bundledSequence = Number(buildInfo.sequence || buildInfo.build || 0);
+  const existingSequence = Number(existing?.sequence || existing?.build || 0);
+
+  if (!existing || (seededFromBundle && bundledSequence > existingSequence)) {
+    await writeJson(installedManifestPath(), bundled);
   }
 }
 
 async function fetchJson(url) {
   const response = await fetch(url, {
-    headers: { 'User-Agent': 'UnblockedTDM-Launcher' },
+    headers: { 'User-Agent': 'Skirmish-Arena-Launcher' },
     cache: 'no-store'
   });
   if (!response.ok) throw new Error(`HTTP ${response.status} while requesting ${url}`);
@@ -116,15 +113,7 @@ async function fetchJson(url) {
 }
 
 async function getInstalled() {
-  return readJson(installedManifestPath(), {
-    product: buildInfo.product,
-    gameVersion: buildInfo.gameVersion,
-    build: buildInfo.build,
-    sequence: buildInfo.sequence,
-    phase: buildInfo.phase,
-    tag: buildInfo.tag,
-    title: buildInfo.title
-  });
+  return readJson(installedManifestPath(), bundledManifest());
 }
 
 function compareBuild(remote, local) {
@@ -132,14 +121,12 @@ function compareBuild(remote, local) {
 }
 
 function sendProgress(payload) {
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.webContents.send('launcher:progress', payload);
-  }
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('launcher:progress', payload);
 }
 
 async function downloadFile(url, destination) {
   const response = await fetch(url, {
-    headers: { 'User-Agent': 'UnblockedTDM-Launcher' },
+    headers: { 'User-Agent': 'Skirmish-Arena-Launcher' },
     redirect: 'follow'
   });
   if (!response.ok || !response.body) throw new Error(`Download failed with HTTP ${response.status}`);
@@ -154,9 +141,7 @@ async function downloadFile(url, destination) {
       const { done, value } = await reader.read();
       if (done) break;
       received += value.byteLength;
-      if (!stream.write(Buffer.from(value))) {
-        await new Promise((resolve) => stream.once('drain', resolve));
-      }
+      if (!stream.write(Buffer.from(value))) await new Promise((resolve) => stream.once('drain', resolve));
       sendProgress({ type: 'download', received, total, percent: total ? Math.round((received / total) * 100) : null });
     }
   } finally {
@@ -185,8 +170,8 @@ async function verifyFile(file, expected) {
 
 async function installRemoteEntry(entry) {
   await ensureDirectories();
-  const staged = path.join(stagingRoot(), `UnblockedTDM-${entry.tag}.exe.part`);
-  const backup = path.join(backupRoot(), `UnblockedTDM-${Date.now()}.exe`);
+  const staged = path.join(stagingRoot(), `SkirmishArena-${entry.tag}.exe.part`);
+  const backup = path.join(backupRoot(), `SkirmishArena-${Date.now()}.exe`);
   sendProgress({ type: 'status', message: `Downloading ${entry.title}` });
   await downloadFile(entry.gameUrl, staged);
   const verification = await verifyFile(staged, entry.sha256);
@@ -233,9 +218,7 @@ async function repairCurrentGame() {
 
   if (fs.existsSync(currentGamePath())) {
     const verification = await verifyFile(currentGamePath(), remote.sha256);
-    if (verification.valid) {
-      return { repaired: false, message: 'Game files verified successfully.' };
-    }
+    if (verification.valid) return { repaired: false, message: 'Game files verified successfully.' };
   }
 
   await installRemoteEntry(remote);
@@ -250,28 +233,17 @@ function spawnGame(executable) {
 
 function spawnDevelopmentGame() {
   const sourceDir = devGameDir();
-  if (!fs.existsSync(path.join(sourceDir, 'package.json'))) {
-    throw new Error(`Development game source was not found at ${sourceDir}`);
-  }
-
+  if (!fs.existsSync(path.join(sourceDir, 'package.json'))) throw new Error(`Development game source was not found at ${sourceDir}`);
   const env = { ...process.env };
   delete env.ELECTRON_RUN_AS_NODE;
-  const child = spawn(process.execPath, [sourceDir], {
-    detached: true,
-    stdio: 'ignore',
-    env
-  });
+  const child = spawn(process.execPath, [sourceDir], { detached: true, stdio: 'ignore', env });
   child.unref();
 }
 
 async function playCurrent() {
   await ensureBootstrapGame();
-
-  if (!app.isPackaged && !fs.existsSync(currentGamePath())) {
-    spawnDevelopmentGame();
-  } else {
-    spawnGame(currentGamePath());
-  }
+  if (!app.isPackaged && !fs.existsSync(currentGamePath())) spawnDevelopmentGame();
+  else spawnGame(currentGamePath());
 
   const settings = await getSettings();
   if (settings.closeAfterPlay) app.quit();
@@ -279,12 +251,18 @@ async function playCurrent() {
   return true;
 }
 
+function archiveExecutablePath(tag) {
+  const dir = path.join(archiveRoot(), tag);
+  const skirmish = path.join(dir, GAME_EXE);
+  const legacy = path.join(dir, LEGACY_GAME_EXE);
+  return fs.existsSync(skirmish) ? skirmish : legacy;
+}
+
 async function listVersions() {
   const data = await fetchJson(`${RAW_BASE}/versions.json?ts=${Date.now()}`);
   const output = [];
   for (const entry of data.versions || []) {
-    const localExe = path.join(archiveRoot(), entry.tag, 'UnblockedTDM.exe');
-    output.push({ ...entry, downloaded: fs.existsSync(localExe) });
+    output.push({ ...entry, downloaded: fs.existsSync(archiveExecutablePath(entry.tag)) });
   }
   return output;
 }
@@ -292,8 +270,10 @@ async function listVersions() {
 async function downloadArchiveVersion(entry) {
   const dir = path.join(archiveRoot(), entry.tag);
   await fsp.mkdir(dir, { recursive: true });
-  const partial = path.join(dir, 'UnblockedTDM.exe.part');
-  const final = path.join(dir, 'UnblockedTDM.exe');
+  const isSkirmish = String(entry.product || '').toLowerCase().includes('skirmish') || String(entry.gameVersion || '').startsWith('2.');
+  const fileName = isSkirmish ? GAME_EXE : LEGACY_GAME_EXE;
+  const partial = path.join(dir, `${fileName}.part`);
+  const final = path.join(dir, fileName);
   await downloadFile(entry.gameUrl, partial);
   const verification = await verifyFile(partial, entry.sha256);
   if (!verification.valid) {
@@ -312,7 +292,7 @@ function createWindow() {
     minWidth: 980,
     minHeight: 650,
     backgroundColor: '#0c1320',
-    title: 'UnblockedTDM Launcher',
+    title: 'Skirmish Arena Launcher',
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -362,8 +342,7 @@ ipcMain.handle('launcher:play-current', playCurrent);
 ipcMain.handle('launcher:list-versions', listVersions);
 ipcMain.handle('launcher:download-version', (_event, entry) => downloadArchiveVersion(entry));
 ipcMain.handle('launcher:play-version', async (_event, tag) => {
-  const executable = path.join(archiveRoot(), tag, 'UnblockedTDM.exe');
-  spawnGame(executable);
+  spawnGame(archiveExecutablePath(tag));
   return true;
 });
 ipcMain.handle('launcher:repair', repairCurrentGame);
