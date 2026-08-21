@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Skirmish Arena SA mark">
+  <rect x="8" y="8" width="112" height="112" rx="12" fill="#080c11" stroke="#5fe7ff" stroke-width="4"/>
+  <path d="M28 38h42v12H42v10h28v30H28V78h30V68H28z" fill="#e7edf1"/>
+  <path d="M78 38h14l22 52H99l-4-11H75l-4 11H56zm1 29h12l-6-16z" fill="#9ba8b2"/>
+  <path d="M18 104h92" stroke="#5fe7ff" stroke-width="4"/>
+</svg>
