@@ -1,0 +1,12 @@
+{
+  "product": "Skirmish Arena 2.0 Development",
+  "testVersion": "2.0-dev",
+  "channel": "internal-dev",
+  "kind": "bootstrap",
+  "phase": 0,
+  "sequence": 0,
+  "branch": "dev/skirmish-arena-2.0",
+  "releaseTag": "skirmish-arena-2.0-dev-seq-0",
+  "launcherBootstrap": true,
+  "title": "Skirmish Arena 2.0 Development — Clean 1.9.2 Bootstrap"
+}
