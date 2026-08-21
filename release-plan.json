@@ -1,11 +1,11 @@
 {
-  "product":"UnblockedTDM",
-  "gameVersion":"1.9.2",
+  "product":"Skirmish Arena",
+  "gameVersion":"2.0.0",
   "build":1,
-  "phase":"Loadout UI Hotfix",
-  "tag":"build-1.9.2-v1",
-  "title":"UnblockedTDM Build 1.9.2 — Version 1",
-  "notesFile":"docs/releases/build-1.9.2-v1.md",
-  "sequence":18,
-  "releaseRevision":2
+  "phase":"Phases 1-4 — Rebrand, Core UI, Tactical HUD, Audio + Fullscreen",
+  "tag":"build-2.0.0-v1",
+  "title":"Skirmish Arena 2.0.0 — Version 1",
+  "notesFile":"docs/releases/build-2.0.0-v1.md",
+  "sequence":19,
+  "releaseRevision":1
 }
