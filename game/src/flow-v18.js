@@ -15,7 +15,8 @@ ensureStyle('ui-v18.css');
 ensureStyle('ui-v18-postgame.css');
 ensureStyle('ui-v19.css');
 ensureStyle('ui-v192.css');
-document.body.classList.add('ui-v18', 'ui-v19');
+ensureStyle('ui-v1941.css');
+document.body.classList.add('ui-v18', 'ui-v19', 'ui-v1941');
 
 function blurUiFocus() {
   const active = document.activeElement;
@@ -38,6 +39,59 @@ function installBranding() {
   if (hudBrand) hudBrand.textContent = 'SKIRMISH ARENA';
   const pauseBrand = document.querySelector('.pause-head p');
   if (pauseBrand) pauseBrand.textContent = 'SKIRMISH ARENA';
+}
+
+const PHASE2_BUTTONS = {
+  play: {
+    eyebrow: 'MATCH',
+    label: 'PLAY',
+    meta: 'ENTER TRAINING COMPLEX',
+    icon: '<svg class="phase2-nav-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="M18 11 52 32 18 53Z" fill="none" stroke="currentColor" stroke-width="3"/></svg>'
+  },
+  loadouts: {
+    eyebrow: 'ARSENAL',
+    label: 'LOADOUTS',
+    meta: '3 DEFAULT · EXPAND TO 25',
+    icon: '<svg class="phase2-nav-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="M10 23h34l10 8-10 8H10zM19 23v-7h15v7M18 39v9h11v-9" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>'
+  },
+  'weapon-info': {
+    eyebrow: 'REFERENCE',
+    label: 'WEAPON INFO',
+    meta: 'EXACT STATS · SPREAD · HANDLING',
+    icon: '<svg class="phase2-nav-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="M10 18h44v28H10zM18 26h17M18 34h28M18 42h12" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>'
+  },
+  settings: {
+    eyebrow: 'SYSTEM',
+    label: 'SETTINGS',
+    meta: 'GAMEPLAY · CONTROLS · DISPLAY',
+    icon: '<svg class="phase2-nav-icon" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M32 9v8M32 47v8M9 32h8M47 32h8M16 16l6 6M42 42l6 6M48 16l-6 6M22 42l-6 6" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>'
+  },
+  quit: {
+    eyebrow: 'CLIENT',
+    label: 'QUIT',
+    meta: 'EXIT SKIRMISH ARENA',
+    icon: '<svg class="phase2-nav-icon" viewBox="0 0 64 64" aria-hidden="true"><path d="M28 12H13v40h15M35 20l12 12-12 12M19 32h28" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>'
+  }
+};
+
+function installPhase2Menu() {
+  const nav = document.querySelector('#mainMenu .main-nav');
+  if (!nav) return;
+
+  nav.querySelector('[data-menu-action="home"]')?.remove();
+  const order = ['play', 'loadouts', 'weapon-info', 'settings', 'quit'];
+  for (const action of order) {
+    const button = nav.querySelector(`[data-menu-action="${action}"]`);
+    if (!button) continue;
+    const copy = PHASE2_BUTTONS[action];
+    button.classList.add('phase2-nav-button', `phase2-${action}`);
+    button.innerHTML = `${copy.icon}<span class="phase2-button-copy"><small>${copy.eyebrow}</small><strong>${copy.label}</strong><em>${copy.meta}</em></span>`;
+    nav.appendChild(button);
+  }
+
+  const cards = [...document.querySelectorAll('#mainSettingsPanel .setting-card')];
+  if (cards[0]) { cards[0].classList.add('phase2-group-start'); cards[0].dataset.phase2Group = 'GAMEPLAY'; }
+  if (cards[3]) { cards[3].classList.add('phase2-group-start'); cards[3].dataset.phase2Group = 'DISPLAY'; }
 }
 
 function readLastMatch() {
@@ -174,7 +228,7 @@ window.addEventListener('keydown', (event) => {
   const activeView = mainMenu.querySelector('[data-menu-view].active');
   if (activeView?.dataset.menuView && activeView.dataset.menuView !== 'home') {
     event.preventDefault();
-    mainMenu.querySelector('[data-menu-action="home"]')?.click();
+    window.dispatchEvent(new CustomEvent('skirmish:show-menu-home'));
     blurUiFocus();
   }
 }, true);
@@ -183,5 +237,6 @@ const loadoutRoot = document.getElementById('loadoutScreen');
 if (loadoutRoot) new MutationObserver(syncLoadoutCopy).observe(loadoutRoot, { childList: true });
 
 installBranding();
+installPhase2Menu();
 syncHomeStatus();
 syncBuildCopy();
