@@ -59,13 +59,16 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Validate protected v1.9.2 baseline
+        run: npm run check
+
       - name: Synchronize development metadata
         run: npm run sync:dev
 
-      - name: Validate stable game plus dev launcher code
+      - name: Validate dev-only runtime and launcher code
         run: |
-          npm run check
           npm run check:dev
+          node --check game/src/main.js
 
       - name: Build isolated development game
         run: npm run build:dev-game
