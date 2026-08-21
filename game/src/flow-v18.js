@@ -23,10 +23,21 @@ function blurUiFocus() {
 }
 
 function installBranding() {
+  document.title = 'Skirmish Arena';
   const mark = document.querySelector('.menu-brand .menu-mark');
-  if (mark && !mark.querySelector('img')) mark.innerHTML = '<img src="assets/unblockedtdm-mark.svg" alt="UT">';
+  if (mark) mark.innerHTML = '<img src="assets/skirmish-arena-mark.svg" alt="SA">';
   const brand = document.querySelector('.menu-brand strong');
-  if (brand) brand.textContent = 'UNBLOCKED // TDM';
+  if (brand) brand.textContent = 'SKIRMISH ARENA';
+  const brandSub = document.querySelector('.menu-brand small');
+  if (brandSub) brandSub.textContent = '3V3 TACTICAL ARENA';
+  const heroTitle = document.querySelector('[data-menu-view="home"] .menu-hero h1');
+  if (heroTitle) heroTitle.textContent = 'SKIRMISH ARENA';
+  const hudMark = document.querySelector('.build-hud .mark');
+  if (hudMark) hudMark.textContent = 'SA';
+  const hudBrand = document.querySelector('.build-hud .brand strong');
+  if (hudBrand) hudBrand.textContent = 'SKIRMISH ARENA';
+  const pauseBrand = document.querySelector('.pause-head p');
+  if (pauseBrand) pauseBrand.textContent = 'SKIRMISH ARENA';
 }
 
 function readLastMatch() {
@@ -67,7 +78,7 @@ function syncHomeStatus() {
 let currentBuild = null;
 function syncLoadoutCopy() {
   const eyebrow = document.querySelector('#loadoutScreen .loadout-head .eyebrow');
-  if (eyebrow) eyebrow.textContent = currentBuild ? `UNBLOCKED // TDM · LOADOUT CLIENT ${currentBuild.gameVersion}.${currentBuild.build}` : 'UNBLOCKED // TDM · LOADOUT CLIENT';
+  if (eyebrow) eyebrow.textContent = currentBuild ? `SKIRMISH ARENA · LOADOUT CLIENT ${currentBuild.gameVersion}.${currentBuild.build}` : 'SKIRMISH ARENA · LOADOUT CLIENT';
 }
 
 async function syncBuildCopy() {
