@@ -27,7 +27,7 @@ body.phase1-skirmish-branding .menu-hero h1.sa-fallback-title {
   color:#d9e0e5;
 }
 body.phase1-skirmish-branding [data-brand-phase]::after {
-  content:'2.0.0 · PHASE 1';
+  content:'2.0.0';
   margin-left:.6rem;
   color:#5fe7ff;
   font-size:.72em;
