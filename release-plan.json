@@ -1,11 +1,11 @@
 {
   "product":"Skirmish Arena",
-  "gameVersion":"1.9.3",
+  "gameVersion":"1.94.1",
   "build":1,
-  "phase":"Phase 1 — Rebrand Foundation",
-  "tag":"build-1.9.3-v1",
-  "title":"Skirmish Arena 1.9.3 — Phase 1",
-  "notesFile":"docs/releases/build-1.9.3-v1.md",
-  "sequence":20,
-  "releaseRevision":2
+  "phase":"Phase 2 — Core UI Redesign",
+  "tag":"build-1.94.1-v1",
+  "title":"Skirmish Arena 1.94.1 — Phase 2",
+  "notesFile":"docs/releases/build-1.94.1-v1.md",
+  "sequence":21,
+  "releaseRevision":1
 }
