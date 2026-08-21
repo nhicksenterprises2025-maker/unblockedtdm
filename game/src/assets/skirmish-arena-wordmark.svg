@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 180" role="img" aria-label="Skirmish Arena wordmark">
+  <rect width="960" height="180" fill="none"/>
+  <g fill="#e7edf1" stroke="#26323b" stroke-width="2">
+    <text x="28" y="112" font-family="Impact, Arial Black, sans-serif" font-size="96" letter-spacing="8">SKIRMISH</text>
+  </g>
+  <g fill="#9ba8b2">
+    <text x="590" y="154" font-family="Arial Black, sans-serif" font-size="44" letter-spacing="10">ARENA</text>
+  </g>
+  <path d="M28 136H555M790 136H930" stroke="#5fe7ff" stroke-width="6"/>
+</svg>
