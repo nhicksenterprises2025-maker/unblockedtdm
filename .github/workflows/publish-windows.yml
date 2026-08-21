@@ -1,4 +1,4 @@
-name: Build and Publish UnblockedTDM
+name: Build and Publish Skirmish Arena
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: unblockedtdm-release
+  group: skirmish-arena-release
   cancel-in-progress: false
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
       - name: Synchronize build metadata
         run: npm run sync:build
 
-      - name: Validate JavaScript
+      - name: Validate JavaScript and regression suite
         run: npm run check
 
       - name: Build game and launcher
@@ -45,10 +45,10 @@ jobs:
         run: |
           $plan = Get-Content release-plan.json | ConvertFrom-Json
           New-Item -ItemType Directory -Force -Path dist-release | Out-Null
-          $gameAsset = "UnblockedTDM-$($plan.gameVersion)-v$($plan.build).exe"
-          $installerAsset = "UnblockedTDM-Setup-$($plan.gameVersion)-v$($plan.build).exe"
-          Copy-Item "dist-game/UnblockedTDM.exe" "dist-release/$gameAsset" -Force
-          Copy-Item "dist-launcher/UnblockedTDM-Setup.exe" "dist-release/$installerAsset" -Force
+          $gameAsset = "SkirmishArena-$($plan.gameVersion)-v$($plan.build).exe"
+          $installerAsset = "SkirmishArena-Setup-$($plan.gameVersion)-v$($plan.build).exe"
+          Copy-Item "dist-game/SkirmishArena.exe" "dist-release/$gameAsset" -Force
+          Copy-Item "dist-launcher/SkirmishArena-Setup.exe" "dist-release/$installerAsset" -Force
           node scripts/finalize-release.mjs
 
       - name: Publish or repair GitHub Release
@@ -58,8 +58,8 @@ jobs:
         run: |
           $plan = Get-Content release-plan.json | ConvertFrom-Json
           $tag = $plan.tag
-          $gameAsset = "dist-release/UnblockedTDM-$($plan.gameVersion)-v$($plan.build).exe"
-          $installerAsset = "dist-release/UnblockedTDM-Setup-$($plan.gameVersion)-v$($plan.build).exe"
+          $gameAsset = "dist-release/SkirmishArena-$($plan.gameVersion)-v$($plan.build).exe"
+          $installerAsset = "dist-release/SkirmishArena-Setup-$($plan.gameVersion)-v$($plan.build).exe"
           $manifestAsset = "dist-release/release-manifest.json"
 
           gh release view $tag *> $null
@@ -85,6 +85,6 @@ jobs:
       - name: Upload CI copy of Windows assets
         uses: actions/upload-artifact@v4
         with:
-          name: UnblockedTDM-Windows
+          name: SkirmishArena-Windows
           path: dist-release/*
           if-no-files-found: error
