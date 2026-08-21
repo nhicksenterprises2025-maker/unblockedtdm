@@ -14,7 +14,7 @@ for (const token of ['--hud-blue:#5ed2ff', '--hud-red:#ff7180', '--hud-green:#62
   assert.ok(hudCss.includes(token), `Build 1.9 visual contract missing ${token}`);
 }
 assert.ok(flow.includes("ensureStyle('ui-v19.css')"), 'Build 1.9 HUD stylesheet must be loaded by the active flow runtime.');
-assert.ok(flow.includes("classList.add('ui-v18', 'ui-v19')"), 'Build 1.9 body marker missing.');
+assert.ok(flow.includes("'ui-v18', 'ui-v19'"), 'Build 1.9 body markers must remain enabled even when later UI classes are added.');
 
 assert.ok(weapons.includes('assaultRifle'), 'Canonical weapons file must remain present.');
 assert.ok(constants.includes('DASH_CHARGES_MAX = 4'), 'Dash charge rule changed unexpectedly.');
