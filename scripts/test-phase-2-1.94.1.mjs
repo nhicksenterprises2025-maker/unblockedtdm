@@ -15,9 +15,10 @@ const match = read('game/src/match/MatchManager.js');
 assert.ok(flow.includes("ensureStyle('ui-v1941.css')"), 'Phase 2 stylesheet must load through the proven front-end flow.');
 assert.ok(flow.includes("nav.querySelector('[data-menu-action=\"home\"]')?.remove()"), 'Phase 2 must remove the visible Home button.');
 assert.ok(flow.includes("const order = ['play', 'loadouts', 'weapon-info', 'settings', 'quit'];"), 'Phase 2 menu order must be Play, Loadouts/Weapon Info, Settings/Quit.');
-for (const action of ['phase2-play', 'phase2-loadouts', 'phase2-weapon-info', 'phase2-settings', 'phase2-quit']) {
-  assert.ok(flow.includes(action), `Missing Phase 2 menu tile: ${action}`);
+for (const action of ['play:', 'loadouts:', "'weapon-info':", 'settings:', 'quit:']) {
+  assert.ok(flow.includes(action), `Missing Phase 2 button definition: ${action}`);
 }
+assert.ok(flow.includes("button.classList.add('phase2-nav-button', `phase2-${action}`)"), 'Phase 2 must decorate the existing working buttons instead of replacing the controller.');
 assert.ok(menu.includes("this.root.addEventListener('click'"), 'Phase 2 must preserve delegated menu click handling.');
 assert.ok(menu.includes("window.addEventListener('skirmish:show-menu-home'"), 'ESC return must use the MainMenu controller instead of a removed Home button.');
 assert.ok(css.includes('grid-template-rows:minmax(128px,1.35fr) minmax(112px,1fr) minmax(112px,1fr)'), 'Phase 2 navigation must use the full-height three-tier hierarchy.');
