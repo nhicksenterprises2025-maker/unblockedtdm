@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Skirmish Arena SA mark">
+  <defs>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3f7fa"/><stop offset="0.42" stop-color="#9ca9b4"/><stop offset="0.62" stop-color="#eef3f6"/><stop offset="1" stop-color="#5d6b77"/></linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#48e6ff"/><stop offset="1" stop-color="#00a9d6"/></linearGradient>
+  </defs>
+  <path d="M27 38h202v180H27z" fill="#0b1117" stroke="#33424f" stroke-width="10"/>
+  <path d="M39 52h178v12H39zM39 192h178v12H39z" fill="url(#cyan)" opacity=".78"/>
+  <path d="M62 77h75l-15 24H79v18h47c22 0 36 13 36 34 0 24-16 38-43 38H59v-27h60c10 0 15-4 15-11 0-6-5-10-15-10H77c-25 0-40-14-40-36 0-14 8-24 25-30Z" fill="url(#steel)"/>
+  <path d="M158 77h31l31 114h-29l-6-25h-35l-7 25h-28l33-114Zm-2 65h23l-11-42-12 42Z" fill="url(#steel)"/>
+</svg>
