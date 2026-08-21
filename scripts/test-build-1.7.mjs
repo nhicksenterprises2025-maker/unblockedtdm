@@ -80,7 +80,7 @@ for (const token of ['YOUR K/D/A', 'YOUR DAMAGE', 'CRITICAL HITS', 'REMATCH', 'M
 const launcherHtml = fs.readFileSync(new URL('../launcher/src/index.html', import.meta.url), 'utf8');
 const launcherCss = fs.readFileSync(new URL('../launcher/src/styles.css', import.meta.url), 'utf8');
 const launcherRenderer = fs.readFileSync(new URL('../launcher/src/renderer.js', import.meta.url), 'utf8');
-for (const token of ['LAUNCH GAME', 'BUILD ARCHIVE', 'assets/unblockedtdm-mark.svg', 'assets/training-complex-art.svg', 'status-strip']) {
+for (const token of ['LAUNCH GAME', 'BUILD ARCHIVE', 'assets/skirmish-arena-mark.svg', 'assets/training-complex-art.svg', 'status-strip']) {
   assert.ok(launcherHtml.includes(token) || launcherCss.includes(token), `Missing launcher redesign contract: ${token}`);
 }
 assert.equal(launcherCss.includes('radial-gradient'), false, 'Launcher must not use the previous decorative radial gradient aesthetic.');
