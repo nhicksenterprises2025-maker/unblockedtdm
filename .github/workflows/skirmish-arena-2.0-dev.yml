@@ -6,16 +6,17 @@ on:
       - dev/skirmish-arena-2.0
     paths:
       - dev-build-plan.json
+  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: skirmish-arena-2.0-dev
   cancel-in-progress: true
 
 jobs:
-  validate-development-build:
+  build-development:
     runs-on: windows-latest
     steps:
       - name: Checkout 2.0 development branch
@@ -23,7 +24,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Verify isolated development channel
+      - name: Validate isolated development channel
+        id: plan
         shell: pwsh
         run: |
           $channel = Get-Content skirmish-dev/channel.json | ConvertFrom-Json
@@ -32,11 +34,22 @@ jobs:
           if ($channel.branch -ne 'dev/skirmish-arena-2.0') { throw 'Invalid development branch in channel metadata.' }
           if ($channel.publicPublishingAllowed -ne $false) { throw 'Public publishing must remain disabled during 2.0 development.' }
           if ($channel.publicVersion -ne '1.9.2') { throw 'The protected public baseline must remain 1.9.2.' }
-          if ([int]$plan.sequence -lt 1) { throw 'Development sequence must begin at 1.' }
-          if ($plan.channel -ne 'internal-dev') { throw 'Development build plan must use the internal-dev channel.' }
+          if ($plan.channel -ne 'internal-dev') { throw 'Development build plan must use internal-dev.' }
           if ($plan.branch -ne 'dev/skirmish-arena-2.0') { throw 'Development build plan targets the wrong branch.' }
 
-          Write-Host "Validated Skirmish Arena 2.0 internal development sequence $($plan.sequence)."
+          $sequence = [int]$plan.sequence
+          $phase = [int]$plan.phase
+          if ($sequence -eq 0) {
+            if ($plan.kind -ne 'bootstrap' -or $phase -ne 0) { throw 'Sequence 0 is reserved only for the clean bootstrap build.' }
+          } elseif ($sequence -lt 1) {
+            throw 'Feature development sequences must begin at 1.'
+          }
+
+          "sequence=$sequence" >> $env:GITHUB_OUTPUT
+          "phase=$phase" >> $env:GITHUB_OUTPUT
+          "release_tag=$($plan.releaseTag)" >> $env:GITHUB_OUTPUT
+          "launcher_bootstrap=$([string]$plan.launcherBootstrap).ToLowerInvariant()" >> $env:GITHUB_OUTPUT
+          Write-Host "Validated Skirmish Arena 2.0 development phase $phase sequence $sequence."
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -46,12 +59,83 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Validate protected 1.9.2 codebase
-        run: npm run check
+      - name: Synchronize development metadata
+        run: npm run sync:dev
 
-      - name: Development packaging guard
+      - name: Validate stable game plus dev launcher code
+        run: |
+          npm run check
+          npm run check:dev
+
+      - name: Build isolated development game
+        run: npm run build:dev-game
+
+      - name: Build one-time development launcher bootstrap
+        if: steps.plan.outputs.launcher_bootstrap == 'true'
+        run: npm run build:dev-launcher
+
+      - name: Stage immutable development game and manifest
         shell: pwsh
         run: |
-          Write-Host 'Validation passed.'
-          Write-Host 'This workflow intentionally does not publish or package a public build.'
-          Write-Host 'Internal packaging will be enabled only after the new 2.0 test-build architecture is approved.'
+          $plan = Get-Content dev-build-plan.json | ConvertFrom-Json
+          $sequence = [int]$plan.sequence
+          $tag = $plan.releaseTag
+          $asset = "SkirmishArena-2.0-Dev-Seq-$sequence.exe"
+          New-Item -ItemType Directory -Force -Path dist-dev-publish | Out-Null
+          Copy-Item "dist-dev-game/SkirmishArena-Dev.exe" "dist-dev-publish/$asset" -Force
+          $sha = (Get-FileHash "dist-dev-publish/$asset" -Algorithm SHA256).Hash.ToLowerInvariant()
+          $gameUrl = "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/$tag/$asset"
+          $manifest = [ordered]@{
+            product = 'Skirmish Arena 2.0 Development'
+            testVersion = $plan.testVersion
+            phase = [int]$plan.phase
+            sequence = $sequence
+            channel = 'internal-dev'
+            branch = 'dev/skirmish-arena-2.0'
+            title = $plan.title
+            tag = $tag
+            gameUrl = $gameUrl
+            sha256 = $sha
+            publishedAt = (Get-Date).ToUniversalTime().ToString('o')
+          }
+          $manifest | ConvertTo-Json -Depth 4 | Set-Content "dist-dev-publish/latest.json" -Encoding UTF8
+
+      - name: Publish immutable development game asset
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $plan = Get-Content dev-build-plan.json | ConvertFrom-Json
+          $sequence = [int]$plan.sequence
+          $tag = $plan.releaseTag
+          $asset = "dist-dev-publish/SkirmishArena-2.0-Dev-Seq-$sequence.exe"
+
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag $asset --clobber
+          } else {
+            gh release create $tag $asset --target $env:GITHUB_SHA --title "Skirmish Arena 2.0 Dev Sequence $sequence" --notes "Internal development channel asset. Not used by the public 1.9.2 launcher." --prerelease
+          }
+
+      - name: Update development channel manifest
+        shell: pwsh
+        run: |
+          Copy-Item "dist-dev-publish/latest.json" "skirmish-dev/latest.json" -Force
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add skirmish-dev/latest.json
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "Publish Skirmish Arena 2.0 dev sequence ${{ steps.plan.outputs.sequence }} manifest [skip ci]"
+            git push origin HEAD:dev/skirmish-arena-2.0
+          }
+
+      - name: Upload one-time dev launcher installer
+        if: steps.plan.outputs.launcher_bootstrap == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SkirmishArena-2.0-Dev-Launcher-Bootstrap
+          path: dist-dev-launcher/SkirmishArena-Dev-Launcher-Setup.exe
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
