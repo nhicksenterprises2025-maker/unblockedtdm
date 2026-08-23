@@ -1,0 +1,42 @@
+name: Build RIFT RUN 1.2.2 plain HTML
+
+on:
+  push:
+    branches: [rift-run-ios]
+    paths:
+      - '.github/workflows/rift12-plain-html.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rift-run-ios
+          fetch-depth: 0
+      - name: Decode TRIALS payload to plain HTML
+        shell: bash
+        run: |
+          cat rift12/p0.txt rift12/p1.txt rift12/p2.txt | base64 -d | gzip -d > rift12/index.html
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('rift12/index.html')
+          s=p.read_text()
+          s=s.replace('<title>RIFT//RUN 1.2</title>','<title>RIFT//RUN 1.2.2</title>')
+          s=s.replace('UPDATE 1.2 · TRIALS','UPDATE 1.2.2 · TRIALS')
+          s=s.replace(' · v1.2',' · v1.2.2')
+          p.write_text(s)
+          assert 'UPDATE 1.2.2 · TRIALS' in s
+          assert 'DecompressionStream' not in s
+          PY
+      - name: Commit plain HTML artifact
+        shell: bash
+        run: |
+          git config user.name 'rift-run-release-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add rift12/index.html
+          git diff --cached --quiet || git commit -m 'RIFT RUN 1.2.2 plain HTML boot artifact'
+          git push origin HEAD:rift-run-ios
