@@ -32,4 +32,5 @@
   import('./phase5-runtime.js').catch((error)=>console.error('Phase 5 fullscreen/VFX runtime failed to load',error));
   import('./phase6-runtime.js').catch((error)=>console.error('Phase 6 front-end runtime failed to load',error));
   import('./phase7-runtime.js').catch((error)=>console.error('Phase 7 map visual runtime failed to load',error));
+  import('./phase8-runtime.js').catch((error)=>console.error('Phase 8 professional HUD runtime failed to load',error));
 })();
