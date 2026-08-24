@@ -108,7 +108,11 @@ async function ensureBootstrapGame() {
 
 async function fetchJson(url) {
   const response = await fetch(url, {
-    headers: { 'User-Agent': 'UnblockedTDM-Launcher' },
+    headers: {
+      'User-Agent': 'SkirmishArena-Launcher',
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache'
+    },
     cache: 'no-store'
   });
   if (!response.ok) throw new Error(`HTTP ${response.status} while requesting ${url}`);
@@ -127,8 +131,26 @@ async function getInstalled() {
   });
 }
 
-function compareBuild(remote, local) {
-  return Number(remote.sequence || remote.build || 0) - Number(local.sequence || local.build || 0);
+function releaseSequence(entry = {}) {
+  const value = Number(entry.sequence ?? entry.build ?? 0);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function normalizedHash(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function manifestNeedsUpdate(remote = {}, local = {}) {
+  const remoteSequence = releaseSequence(remote);
+  const localSequence = releaseSequence(local);
+  if (remoteSequence !== localSequence) return remoteSequence > localSequence;
+
+  const remoteHash = normalizedHash(remote.sha256);
+  const localHash = normalizedHash(local.sha256);
+  if (remoteHash && remoteHash !== localHash) return true;
+
+  if (!localSequence && remote.tag && local.tag && remote.tag !== local.tag) return true;
+  return false;
 }
 
 function sendProgress(payload) {
@@ -139,7 +161,7 @@ function sendProgress(payload) {
 
 async function downloadFile(url, destination) {
   const response = await fetch(url, {
-    headers: { 'User-Agent': 'UnblockedTDM-Launcher' },
+    headers: { 'User-Agent': 'SkirmishArena-Launcher' },
     redirect: 'follow'
   });
   if (!response.ok || !response.body) throw new Error(`Download failed with HTTP ${response.status}`);
@@ -181,6 +203,20 @@ async function verifyFile(file, expected) {
   if (!expected) return { valid: true, hash: await sha256(file), expected: null };
   const hash = await sha256(file);
   return { valid: hash.toLowerCase() === String(expected).toLowerCase(), hash, expected };
+}
+
+async function latestNeedsInstall(latest, installed) {
+  if (manifestNeedsUpdate(latest, installed)) return true;
+
+  const expected = normalizedHash(latest.sha256);
+  if (!expected || !fs.existsSync(currentGamePath())) return Boolean(expected && !fs.existsSync(currentGamePath()));
+
+  try {
+    const verification = await verifyFile(currentGamePath(), expected);
+    return !verification.valid;
+  } catch {
+    return true;
+  }
 }
 
 async function installRemoteEntry(entry) {
@@ -311,8 +347,8 @@ function createWindow() {
     height: 760,
     minWidth: 980,
     minHeight: 650,
-    backgroundColor: '#0c1320',
-    title: 'UnblockedTDM Launcher',
+    backgroundColor: '#080c11',
+    title: 'Skirmish Arena Launcher',
     autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -348,13 +384,13 @@ ipcMain.handle('launcher:check-updates', async () => {
     fetchJson(`${RAW_BASE}/latest.json?ts=${Date.now()}`),
     getInstalled()
   ]);
-  return { latest, installed, updateAvailable: compareBuild(latest, installed) > 0 };
+  return { latest, installed, updateAvailable: await latestNeedsInstall(latest, installed) };
 });
 
 ipcMain.handle('launcher:install-latest', async () => {
   const latest = await fetchJson(`${RAW_BASE}/latest.json?ts=${Date.now()}`);
   const installed = await getInstalled();
-  if (compareBuild(latest, installed) <= 0) return { updated: false, entry: installed };
+  if (!(await latestNeedsInstall(latest, installed))) return { updated: false, entry: installed };
   return { updated: true, entry: await installRemoteEntry(latest) };
 });
 
