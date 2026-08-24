@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "Skirmish Arena",
+      "gameVersion": "1.98.1",
+      "build": 1,
+      "sequence": 26,
+      "phase": "Phase 6 — Front-End Polish + Menu Rebuild",
+      "tag": "build-1.98.1-v1",
+      "title": "Skirmish Arena 1.98.1 — Phase 6",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.98.1-v1/UnblockedTDM-1.98.1-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.98.1-v1/UnblockedTDM-Setup-1.98.1-v1.exe",
+      "sha256": "97b660346199f76129ae756697827dcd1edad87476bb48fa74cd8ad7eeee3681",
+      "installerSha256": "4ac7448341638fee34ecca3c3d6d3db4787d57e4a01d221144276d4741fd78b0",
+      "publishedAt": "2026-08-24T04:12:55.620Z"
+    },
+    {
+      "product": "Skirmish Arena",
       "gameVersion": "1.97.1",
       "build": 1,
       "sequence": 25,
