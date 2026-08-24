@@ -12,12 +12,12 @@ function setView(name) {
   $$('.nav-button').forEach((button) => button.classList.toggle('active', button.dataset.view === name));
   $$('.view').forEach((view) => view.classList.toggle('active', view.id === name));
   const titles = {
-    home: 'MATCH CLIENT // 01',
+    home: 'PLAY',
     archive: 'BUILD ARCHIVE',
-    settings: 'CLIENT SETTINGS',
-    diagnostics: 'CLIENT DIAGNOSTICS'
+    settings: 'SETTINGS',
+    diagnostics: 'DIAGNOSTICS'
   };
-  $('#viewTitle').textContent = titles[name] || 'MATCH CLIENT // 01';
+  $('#viewTitle').textContent = titles[name] || 'PLAY';
   if (name === 'archive') loadArchive();
 }
 
@@ -42,29 +42,29 @@ function renderState(next) {
   $('#phaseLabel').textContent = (installed.phase || buildInfo.phase || 'CLIENT').toUpperCase();
   $('#launcherBuild').textContent = `v${installedCode}`;
   $('#currentTitle').textContent = `BUILD ${installedCode}`;
-  $('#currentMeta').textContent = installed.phase || buildInfo.phase || 'UnblockedTDM';
+  $('#currentMeta').textContent = installed.phase || buildInfo.phase || 'Skirmish Arena';
   $('#installedBuild').textContent = installedCode;
   $('#latestBuild').textContent = installedCode;
-  $('#patchTitle').textContent = `BUILD ${installedCode} // ${(installed.phase || buildInfo.phase || 'CURRENT').toUpperCase()}`;
-  $('#patchDetail').textContent = 'Installed build is ready to launch. Check the release channel for newer builds.';
+  $('#patchTitle').textContent = `BUILD ${installedCode}`;
+  $('#patchDetail').textContent = installed.phase || buildInfo.phase || 'Installed release';
   $('#gamePath').textContent = gamePath;
   $('#autoCheckUpdates').checked = settings.autoCheckUpdates;
   $('#minimizeOnPlay').checked = settings.minimizeOnPlay;
   $('#closeAfterPlay').checked = settings.closeAfterPlay;
   $('#statusReady').textContent = 'READY';
   $('#filesStatus').textContent = 'VERIFIED ✓';
-  $('#launchState').textContent = 'READY // FILES VERIFIED';
+  $('#launchState').textContent = 'READY';
 }
 
 async function checkUpdates() {
-  $('#updateStatus').textContent = 'CHECKING CHANNEL';
-  $('#updateDetail').textContent = 'Reading live release manifest.';
+  $('#updateStatus').textContent = 'CHECKING';
+  $('#updateDetail').textContent = 'Verifying live release.';
   try {
     const result = await window.launcherAPI.checkUpdates();
     const latestCode = buildCode(result.latest || result.installed);
     $('#latestBuild').textContent = latestCode;
-    $('#patchTitle').textContent = `BUILD ${latestCode} // ${(result.latest?.phase || result.installed?.phase || 'CURRENT').toUpperCase()}`;
-    $('#patchDetail').textContent = result.latest?.title || result.installed?.title || 'Current UnblockedTDM release.';
+    $('#patchTitle').textContent = `BUILD ${latestCode}`;
+    $('#patchDetail').textContent = result.latest?.title || result.installed?.title || 'Current Skirmish Arena release.';
     if (result.updateAvailable) {
       $('#updateStatus').textContent = 'UPDATE AVAILABLE';
       $('#updateDetail').textContent = `${result.latest.title} is ready.`;
@@ -72,8 +72,8 @@ async function checkUpdates() {
       $('#updateButton').dataset.mode = 'install';
       $('#statusReady').textContent = 'UPDATE';
     } else {
-      $('#updateStatus').textContent = 'CURRENT';
-      $('#updateDetail').textContent = 'Installed build matches the live channel.';
+      $('#updateStatus').textContent = 'UP TO DATE';
+      $('#updateDetail').textContent = 'Installed files match the live release.';
       $('#updateButton').textContent = 'CHECK FOR UPDATES';
       $('#updateButton').dataset.mode = 'check';
       $('#statusReady').textContent = 'READY';
@@ -105,11 +105,11 @@ async function installLatest() {
 
 async function loadArchive() {
   const list = $('#archiveList');
-  list.innerHTML = '<div class="empty-row">LOADING IMMUTABLE BUILDS…</div>';
+  list.innerHTML = '<div class="empty-row">LOADING RELEASES…</div>';
   try {
     const versions = await window.launcherAPI.listVersions();
     if (!versions.length) {
-      list.innerHTML = '<div class="empty-row">NO PUBLISHED ARCHIVED BUILDS.</div>';
+      list.innerHTML = '<div class="empty-row">NO PUBLISHED BUILDS.</div>';
       return;
     }
     list.innerHTML = '';
@@ -156,19 +156,19 @@ async function init() {
     const button = $('#playButton');
     const stateText = $('#launchState');
     button.disabled = true;
-    button.textContent = 'LAUNCHING…';
-    stateText.textContent = 'STARTING MATCH CLIENT // 01';
+    button.textContent = 'STARTING…';
+    stateText.textContent = 'LAUNCHING';
     try {
       await window.launcherAPI.playCurrent();
-      stateText.textContent = 'GAME PROCESS STARTED';
+      stateText.textContent = 'GAME STARTED';
     } catch (error) {
       alert(error.message);
       stateText.textContent = 'LAUNCH FAILED';
     } finally {
       setTimeout(() => {
         button.disabled = false;
-        button.textContent = 'LAUNCH GAME';
-        if (stateText.textContent !== 'LAUNCH FAILED') stateText.textContent = 'READY // FILES VERIFIED';
+        button.textContent = 'PLAY';
+        if (stateText.textContent !== 'LAUNCH FAILED') stateText.textContent = 'READY';
       }, 900);
     }
   });
@@ -205,7 +205,7 @@ async function init() {
   if (state.settings.autoCheckUpdates) checkUpdates();
   else {
     $('#updateStatus').textContent = 'MANUAL CHECK';
-    $('#updateDetail').textContent = 'Automatic release checks are disabled.';
+    $('#updateDetail').textContent = 'Automatic update checks are disabled.';
   }
 }
 
