@@ -43,7 +43,6 @@ body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button:before{
   inset:0;
   background:linear-gradient(125deg,rgba(255,255,255,.035),transparent 42%);
   opacity:.8;
-  pointer-events:none;
 }
 body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button:after{
   content:attr(data-phase6-index);
