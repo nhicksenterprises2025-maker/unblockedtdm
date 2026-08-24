@@ -1,0 +1,240 @@
+/* Skirmish Arena Phase 6 — front-end command menu rebuild.
+   Presentation only. Existing menu actions/controllers remain canonical. */
+body.ui-phase6{
+  --p6-sidebar:clamp(500px,32vw,660px);
+  --p6-edge:clamp(24px,2.4vw,42px);
+  --p6-gap:clamp(12px,1vw,18px);
+}
+
+body.ui-phase6 #mainMenu .main-menu-shell{
+  grid-template-columns:var(--p6-sidebar) minmax(0,1fr)!important;
+}
+body.ui-phase6 #mainMenu .main-sidebar{
+  width:auto!important;
+  min-width:0!important;
+  padding:clamp(24px,3vh,38px) var(--p6-edge) clamp(18px,2.2vh,28px)!important;
+  border-right:1px solid #253442;
+  box-shadow:18px 0 54px rgba(0,0,0,.2);
+}
+body.ui-phase6 #mainMenu .menu-brand{
+  margin:0 0 clamp(20px,2.5vh,30px)!important;
+}
+body.ui-phase6 #mainMenu .menu-brand .menu-mark{width:54px!important;height:54px!important}
+body.ui-phase6 #mainMenu .menu-brand strong{font-size:clamp(15px,1vw,19px)!important}
+body.ui-phase6 #mainMenu .menu-brand small{font-size:8px!important}
+
+/* Preserve Play -> middle pair -> bottom pair while giving every card enough authored width. */
+body.ui-phase6 #mainMenu .main-nav{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:minmax(170px,1.32fr) minmax(140px,1fr) minmax(140px,1fr)!important;
+  gap:var(--p6-gap)!important;
+}
+body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button{
+  position:relative;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  border-radius:3px!important;
+  isolation:isolate;
+}
+body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(125deg,rgba(255,255,255,.035),transparent 42%);
+  opacity:.8;
+  pointer-events:none;
+}
+body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button:after{
+  content:attr(data-phase6-index);
+  position:absolute;
+  right:14px;
+  bottom:11px;
+  z-index:3;
+  font:800 7px/1 var(--ut-mono);
+  letter-spacing:.14em;
+  color:#5f7283;
+}
+body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button:hover,
+body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button.active{
+  transform:translateY(-1px)!important;
+  box-shadow:inset 0 0 0 1px rgba(55,184,255,.16),0 12px 28px rgba(0,0,0,.2)!important;
+}
+body.ui-phase6 #mainMenu .main-nav button.phase2-play{
+  grid-column:1/3!important;
+}
+body.ui-phase6 #mainMenu .main-nav button.phase2-play:after{color:#0b668f}
+body.ui-phase6 #mainMenu .phase2-button-copy{
+  padding:clamp(20px,1.7vw,30px)!important;
+  max-width:calc(100% - 78px);
+  overflow:visible;
+}
+body.ui-phase6 #mainMenu .phase2-button-copy small{
+  font-size:8px!important;
+  letter-spacing:.17em!important;
+}
+body.ui-phase6 #mainMenu .phase2-button-copy strong{
+  max-width:100%;
+  margin-top:8px!important;
+  font-size:clamp(23px,1.65vw,34px)!important;
+  line-height:.94!important;
+  letter-spacing:-.035em!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+body.ui-phase6 #mainMenu .phase2-loadouts .phase2-button-copy strong,
+body.ui-phase6 #mainMenu .phase2-settings .phase2-button-copy strong,
+body.ui-phase6 #mainMenu .phase2-quit .phase2-button-copy strong{
+  white-space:nowrap!important;
+}
+body.ui-phase6 #mainMenu .phase2-weapon-info .phase2-button-copy strong{
+  max-width:180px;
+}
+body.ui-phase6 #mainMenu .phase2-play .phase2-button-copy{
+  max-width:70%;
+  padding:clamp(25px,2vw,38px)!important;
+}
+body.ui-phase6 #mainMenu .phase2-play .phase2-button-copy strong{
+  font-size:clamp(44px,3vw,62px)!important;
+  white-space:nowrap!important;
+}
+body.ui-phase6 #mainMenu .phase2-button-copy em{
+  max-width:220px;
+  margin-top:9px!important;
+  font-size:8px!important;
+  line-height:1.45!important;
+}
+body.ui-phase6 #mainMenu .phase2-nav-icon{
+  right:clamp(16px,1.25vw,24px)!important;
+  top:clamp(16px,1.25vw,24px)!important;
+  width:clamp(44px,3vw,58px)!important;
+  height:clamp(44px,3vw,58px)!important;
+}
+body.ui-phase6 #mainMenu .phase2-play .phase2-nav-icon{
+  width:clamp(66px,4vw,84px)!important;
+  height:clamp(66px,4vw,84px)!important;
+}
+body.ui-phase6 #mainMenu .main-sidebar-foot{
+  margin-top:clamp(14px,1.8vh,22px)!important;
+  padding-top:12px!important;
+  line-height:1.7!important;
+}
+
+/* Right-side home composition: less dead space, smaller hero, wider information rail. */
+body.ui-phase6 #mainMenu .main-content{
+  min-width:0!important;
+  padding:clamp(34px,4.2vh,58px) clamp(46px,4.4vw,86px)!important;
+}
+body.ui-phase6 #mainMenu .main-content:after{
+  right:-4vw!important;
+  top:4vh!important;
+  width:62vw!important;
+  height:84vh!important;
+  opacity:.085!important;
+}
+body.ui-phase6 #mainMenu [data-phase6-home]{
+  width:min(1180px,100%);
+  min-height:calc(100vh - clamp(68px,8.4vh,116px));
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:clamp(28px,3.2vh,44px);
+}
+body.ui-phase6 #mainMenu [data-phase6-home] .menu-hero{
+  max-width:980px!important;
+  padding-top:0!important;
+}
+body.ui-phase6 #mainMenu [data-phase6-home] .menu-hero h1{
+  margin:10px 0 17px!important;
+  font-size:clamp(60px,5vw,94px)!important;
+  line-height:.9!important;
+}
+body.ui-phase6 #mainMenu [data-phase6-home] .menu-hero p{
+  max-width:850px!important;
+  font-size:clamp(12px,.9vw,15px)!important;
+  line-height:1.68!important;
+}
+body.ui-phase6 #mainMenu .ut-menu-status{
+  display:grid!important;
+  grid-template-columns:repeat(4,max-content);
+  gap:0!important;
+  width:max-content;
+  max-width:100%;
+  margin-top:22px!important;
+  border-top:1px solid #263543;
+  border-bottom:1px solid #263543;
+}
+body.ui-phase6 #mainMenu .ut-menu-status span{
+  padding:11px clamp(14px,1.4vw,24px) 11px 0;
+  margin-right:clamp(14px,1.4vw,24px);
+  border-right:1px solid #263543;
+  white-space:nowrap;
+}
+body.ui-phase6 #mainMenu .ut-menu-status span:last-child{border-right:0;margin-right:0;padding-right:0}
+body.ui-phase6 #mainMenu .menu-feature-grid{
+  width:100%;
+  max-width:1120px;
+  margin-top:0!important;
+  border:1px solid #263543!important;
+  background:rgba(8,14,20,.38);
+}
+body.ui-phase6 #mainMenu .menu-feature-grid div{
+  min-height:136px!important;
+  padding:22px!important;
+  border-right:1px solid #263543!important;
+}
+body.ui-phase6 #mainMenu .menu-feature-grid div:first-child{padding-left:22px!important}
+body.ui-phase6 #mainMenu .menu-feature-grid div:last-child{border-right:0!important}
+body.ui-phase6 #mainMenu .menu-feature-grid strong{
+  margin-top:8px;
+  font-size:clamp(15px,1vw,19px)!important;
+}
+body.ui-phase6 #mainMenu .menu-feature-grid small{
+  margin-top:8px;
+  max-width:280px;
+  font-size:9px!important;
+  line-height:1.55!important;
+}
+
+/* Settings and weapon info keep the same left command rail but start near the top. */
+body.ui-phase6 #mainMenu .menu-view:not([data-menu-view="home"]){
+  width:min(1180px,100%);
+  max-width:1180px!important;
+}
+
+@media (max-width:1550px){
+  body.ui-phase6{--p6-sidebar:clamp(460px,34vw,540px);--p6-edge:24px}
+  body.ui-phase6 #mainMenu .main-nav{grid-template-rows:minmax(145px,1.25fr) minmax(118px,1fr) minmax(118px,1fr)!important}
+  body.ui-phase6 #mainMenu .phase2-button-copy{max-width:calc(100% - 66px);padding:18px!important}
+  body.ui-phase6 #mainMenu .phase2-button-copy strong{font-size:clamp(22px,1.8vw,29px)!important}
+  body.ui-phase6 #mainMenu .phase2-play .phase2-button-copy strong{font-size:clamp(40px,3.4vw,52px)!important}
+  body.ui-phase6 #mainMenu .phase2-button-copy em{font-size:7px!important}
+  body.ui-phase6 #mainMenu .main-content{padding:32px 40px!important}
+  body.ui-phase6 #mainMenu [data-phase6-home] .menu-hero h1{font-size:clamp(54px,5.4vw,78px)!important}
+  body.ui-phase6 #mainMenu .ut-menu-status{grid-template-columns:repeat(2,max-content)}
+  body.ui-phase6 #mainMenu .ut-menu-status span:nth-child(2){border-right:0}
+}
+
+@media (max-width:1280px){
+  body.ui-phase6{--p6-sidebar:440px;--p6-gap:10px}
+  body.ui-phase6 #mainMenu .phase2-button-copy strong{font-size:22px!important}
+  body.ui-phase6 #mainMenu .phase2-play .phase2-button-copy strong{font-size:40px!important}
+  body.ui-phase6 #mainMenu .phase2-button-copy em{display:none!important}
+  body.ui-phase6 #mainMenu .menu-feature-grid{grid-template-columns:1fr!important}
+  body.ui-phase6 #mainMenu .menu-feature-grid div{min-height:92px!important;border-right:0!important;border-bottom:1px solid #263543!important}
+  body.ui-phase6 #mainMenu .menu-feature-grid div:last-child{border-bottom:0!important}
+}
+
+@media (max-height:800px){
+  body.ui-phase6 #mainMenu .main-sidebar{padding-top:16px!important;padding-bottom:12px!important}
+  body.ui-phase6 #mainMenu .menu-brand{margin-bottom:12px!important}
+  body.ui-phase6 #mainMenu .main-nav{grid-template-rows:minmax(112px,1.2fr) minmax(88px,1fr) minmax(88px,1fr)!important;gap:9px!important}
+  body.ui-phase6 #mainMenu .phase2-button-copy{padding:15px!important}
+  body.ui-phase6 #mainMenu .phase2-button-copy strong{font-size:21px!important}
+  body.ui-phase6 #mainMenu .phase2-play .phase2-button-copy strong{font-size:38px!important}
+  body.ui-phase6 #mainMenu .phase2-button-copy em{display:none!important}
+  body.ui-phase6 #mainMenu .main-sidebar-foot{margin-top:8px!important}
+  body.ui-phase6 #mainMenu [data-phase6-home]{justify-content:flex-start;min-height:0;padding-top:20px;gap:20px}
+  body.ui-phase6 #mainMenu [data-phase6-home] .menu-hero h1{font-size:clamp(50px,5vw,72px)!important}
+  body.ui-phase6 #mainMenu .menu-feature-grid div{min-height:104px!important;padding:16px!important}
+}
