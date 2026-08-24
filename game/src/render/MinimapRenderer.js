@@ -130,6 +130,85 @@ export class MinimapRenderer {
     ctx.shadowBlur = 0;
   }
 
+  drawFullMap(canvas, { players, localPlayer }) {
+    if (!canvas || !localPlayer) return;
+    const ctx = canvas.getContext('2d');
+    const nowSeconds = performance.now() / 1000;
+    this.observeEnemyFire(players, localPlayer, nowSeconds);
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const padding = 28;
+    const scale = Math.min((width - padding * 2) / this.map.width, (height - padding * 2) / this.map.height);
+    const drawWidth = this.map.width * scale;
+    const drawHeight = this.map.height * scale;
+    const left = (width - drawWidth) / 2;
+    const top = (height - drawHeight) / 2;
+    const point = (x, y) => ({ x: left + x * scale, y: top + y * scale });
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = '#071018';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#132632';
+    ctx.fillRect(left, top, drawWidth, drawHeight);
+
+    ctx.strokeStyle = 'rgba(90,137,158,.10)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= this.map.width; x += TILE_SIZE * 4) {
+      const a = point(x, 0), b = point(x, this.map.height);
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    for (let y = 0; y <= this.map.height; y += TILE_SIZE * 4) {
+      const a = point(0, y), b = point(this.map.width, y);
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+
+    for (const rect of this.map.blockers) {
+      const a = point(rect.x, rect.y);
+      const b = point(rect.x + rect.w, rect.y + rect.h);
+      ctx.fillStyle = rect.kind === 'tall' ? '#536b79' : '#385260';
+      ctx.fillRect(a.x, a.y, Math.max(2, b.x - a.x), Math.max(2, b.y - a.y));
+      ctx.strokeStyle = 'rgba(211,234,243,.18)';
+      ctx.strokeRect(a.x + .5, a.y + .5, Math.max(1, b.x - a.x - 1), Math.max(1, b.y - a.y - 1));
+    }
+
+    for (const actor of players) {
+      if (!actor.health?.alive) continue;
+      const enemy = actor !== localPlayer && actor.team !== localPlayer.team;
+      if (enemy && !this.isEnemyRevealed(actor, nowSeconds)) continue;
+      const p = point(actor.x, actor.y);
+      if (actor === localPlayer) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(actor.aimAngle);
+        ctx.beginPath();
+        ctx.moveTo(12, 0); ctx.lineTo(-8, -7); ctx.lineTo(-4, 0); ctx.lineTo(-8, 7); ctx.closePath();
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = 'rgba(255,255,255,.65)';
+        ctx.fill();
+        ctx.restore();
+      } else {
+        const friendly = actor.team === localPlayer.team;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, friendly ? 7 : 8, 0, Math.PI * 2);
+        ctx.fillStyle = friendly ? '#61cfff' : '#ff6273';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = friendly ? 'rgba(97,207,255,.65)' : 'rgba(255,98,115,.8)';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    ctx.strokeStyle = 'rgba(97,207,255,.45)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(left, top, drawWidth, drawHeight);
+    ctx.fillStyle = '#dbeaf1';
+    ctx.font = '900 16px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('N', width / 2, Math.max(20, top - 8));
+  }
+
   draw({ players, localPlayer }) {
     if (!this.canvas || !localPlayer) return;
     const nowSeconds = performance.now() / 1000;
