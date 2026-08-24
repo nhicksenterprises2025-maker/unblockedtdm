@@ -1,0 +1,211 @@
+/* Skirmish Arena Phase 8 — professional match HUD pass.
+   Presentation only: no gameplay geometry or input interception. */
+body.ui-phase8.match-started{
+  --p8-edge:clamp(22px,1.75vw,34px);
+  --p8-panel:rgba(5,11,16,.74);
+  --p8-panel-soft:rgba(5,11,16,.54);
+  --p8-line:rgba(174,205,219,.20);
+  --p8-line-strong:rgba(174,205,219,.34);
+  --p8-text:#eef4f7;
+  --p8-muted:#8c9da9;
+  --p8-cyan:#55c8ff;
+}
+
+/* Global HUD treatment: flatter, quieter, less "debug panel". */
+body.ui-phase8.match-started .health-hud,
+body.ui-phase8.match-started .stamina-hud,
+body.ui-phase8.match-started .dash-hud,
+body.ui-phase8.match-started .weapon-hud{
+  border:0!important;
+  border-radius:2px!important;
+  background:linear-gradient(90deg,var(--p8-panel),rgba(5,11,16,.48))!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(4px)!important;
+}
+
+/* Compact match score strip. */
+body.ui-phase8.match-started .match-hud{
+  top:18px!important;
+  min-width:0!important;
+  width:auto!important;
+  grid-template-columns:74px 58px 132px 58px 74px!important;
+  border:1px solid rgba(174,205,219,.16)!important;
+  border-radius:2px!important;
+  background:rgba(4,10,15,.72)!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(5px)!important;
+}
+body.ui-phase8.match-started .match-hud>div{min-height:45px!important;padding:7px 10px!important}
+body.ui-phase8.match-started .match-hud span{font-size:7px!important;letter-spacing:.08em!important;color:#7f919e!important}
+body.ui-phase8.match-started .match-hud strong{font-size:17px!important}
+body.ui-phase8.match-started .match-hud .clock strong{font-size:20px!important}
+
+/* Minimap: smaller and lower-contrast so it informs without dominating. */
+body.ui-phase8.match-started .minimap-shell{
+  left:var(--p8-edge)!important;
+  top:var(--p8-edge)!important;
+  width:clamp(156px,9.5vw,184px)!important;
+  height:clamp(156px,9.5vw,184px)!important;
+  border:1px solid rgba(112,184,216,.32)!important;
+  border-radius:50%!important;
+  background:rgba(4,10,15,.74)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.18)!important;
+}
+
+/* Bottom-left player state becomes one compact visual stack. */
+body.ui-phase8.match-started .health-hud{
+  left:var(--p8-edge)!important;
+  bottom:68px!important;
+  width:246px!important;
+  min-height:48px!important;
+  padding:9px 11px 8px!important;
+  border-left:2px solid rgba(85,200,255,.72)!important;
+}
+body.ui-phase8.match-started .stamina-hud{
+  left:var(--p8-edge)!important;
+  bottom:var(--p8-edge)!important;
+  width:246px!important;
+  min-height:34px!important;
+  padding:7px 11px!important;
+  border-left:2px solid rgba(85,200,255,.36)!important;
+}
+body.ui-phase8.match-started .health-copy,
+body.ui-phase8.match-started .stamina-copy{align-items:center!important}
+body.ui-phase8.match-started .health-copy span,
+body.ui-phase8.match-started .stamina-copy span{
+  font-size:7px!important;
+  letter-spacing:.12em!important;
+  color:var(--p8-muted)!important;
+}
+body.ui-phase8.match-started #healthStatus{display:none!important}
+body.ui-phase8.match-started #healthValue{font-size:19px!important;color:var(--p8-text)!important}
+body.ui-phase8.match-started #staminaValue{font-size:13px!important;color:var(--p8-text)!important}
+body.ui-phase8.match-started .health-track{height:5px!important;margin-top:7px!important;background:rgba(150,178,190,.13)!important}
+body.ui-phase8.match-started .stamina-track{height:3px!important;margin-top:5px!important;background:rgba(150,178,190,.12)!important}
+
+/* Bottom-right weapon panel: keep only useful combat data. */
+body.ui-phase8.match-started .weapon-hud{
+  right:var(--p8-edge)!important;
+  bottom:var(--p8-edge)!important;
+  width:276px!important;
+  min-height:108px!important;
+  padding:11px 13px 10px!important;
+  border-right:2px solid rgba(85,200,255,.58)!important;
+}
+body.ui-phase8.match-started .weapon-title span,
+body.ui-phase8.match-started .weapon-title small{
+  font-size:7px!important;
+  letter-spacing:.10em!important;
+  color:var(--p8-muted)!important;
+}
+body.ui-phase8.match-started .weapon-title strong{font-size:17px!important;letter-spacing:-.01em!important}
+body.ui-phase8.match-started .ammo-line{margin-top:7px!important;justify-content:flex-end!important}
+body.ui-phase8.match-started .ammo-line strong{font-size:30px!important;line-height:1!important}
+body.ui-phase8.match-started .ammo-line b{font-size:12px!important;color:#9dafba!important}
+body.ui-phase8.match-started .weapon-slots{margin-top:7px!important;gap:6px!important}
+body.ui-phase8.match-started .weapon-slots span{
+  min-height:22px!important;
+  padding:5px 8px!important;
+  border:1px solid rgba(128,157,171,.18)!important;
+  border-radius:2px!important;
+  background:rgba(17,30,40,.45)!important;
+  font-size:7px!important;
+}
+body.ui-phase8.match-started .weapon-slots span.active{
+  border-color:rgba(85,200,255,.42)!important;
+  background:rgba(28,89,116,.24)!important;
+}
+body.ui-phase8.match-started .weapon-controls{display:none!important}
+
+/* Dash becomes a thin availability strip instead of a separate large card. */
+body.ui-phase8.match-started .dash-hud{
+  right:var(--p8-edge)!important;
+  bottom:142px!important;
+  width:190px!important;
+  min-height:34px!important;
+  padding:7px 10px!important;
+  border-right:2px solid rgba(85,200,255,.30)!important;
+}
+body.ui-phase8.match-started .dash-copy span{font-size:7px!important;letter-spacing:.12em!important;color:var(--p8-muted)!important}
+body.ui-phase8.match-started .dash-copy strong{font-size:12px!important}
+body.ui-phase8.match-started .dash-pips{gap:4px!important;margin-top:5px!important}
+body.ui-phase8.match-started .dash-pips i{height:3px!important;border-radius:1px!important}
+
+/* Kill feed: narrow strips, not stacked debug cards. */
+body.ui-phase8 .phase3-kill-feed{
+  right:var(--p8-edge)!important;
+  top:72px!important;
+  width:min(330px,25vw)!important;
+  gap:3px!important;
+}
+body.ui-phase8 .phase3-feed-row{
+  min-height:29px!important;
+  gap:6px!important;
+  padding:5px 8px!important;
+  border:0!important;
+  border-right:2px solid rgba(136,166,180,.28)!important;
+  border-radius:1px!important;
+  background:rgba(4,10,15,.66)!important;
+  box-shadow:none!important;
+  font-size:8px!important;
+}
+body.ui-phase8 .phase3-feed-row span{padding:2px 5px!important;background:rgba(31,51,64,.58)!important}
+body.ui-phase8 .phase3-feed-row.critical{
+  border-right-color:#ffd95c!important;
+  box-shadow:none!important;
+}
+
+/* Respawn overlay: readable but does not block half the combat view. */
+body.ui-phase8.match-started .respawn-panel{
+  width:auto!important;
+  min-width:250px!important;
+  max-width:320px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:2px!important;
+  background:rgba(4,10,15,.78)!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(5px)!important;
+}
+body.ui-phase8.match-started .respawn-panel>div{padding:13px 20px 14px!important}
+body.ui-phase8.match-started .respawn-panel span{font-size:7px!important;letter-spacing:.16em!important;color:#ff7987!important}
+body.ui-phase8.match-started .respawn-panel strong{margin-top:5px!important;font-size:30px!important;line-height:1!important}
+body.ui-phase8.match-started .respawn-panel small{display:none!important}
+
+/* Tactical shortcut hint: one restrained line. */
+body.ui-phase8 .phase3-tactical-legend{
+  bottom:12px!important;
+  gap:10px!important;
+  padding:5px 9px!important;
+  border:0!important;
+  border-radius:2px!important;
+  background:rgba(4,10,15,.58)!important;
+  box-shadow:none!important;
+  font-size:7px!important;
+  color:#7f919e!important;
+}
+
+/* Keep scoreboard/map overlays professional and flat. */
+body.ui-phase8 .phase3-scoreboard-shell,
+body.ui-phase8 .phase3-map-shell{
+  border:1px solid rgba(164,193,207,.22)!important;
+  border-radius:2px!important;
+  background:rgba(7,13,19,.97)!important;
+  box-shadow:0 22px 70px rgba(0,0,0,.42)!important;
+}
+body.ui-phase8 #phase3MapCanvas{border-color:rgba(164,193,207,.18)!important;box-shadow:none!important}
+
+@media (max-width:1400px){
+  body.ui-phase8.match-started{--p8-edge:20px}
+  body.ui-phase8.match-started .minimap-shell{width:150px!important;height:150px!important}
+  body.ui-phase8.match-started .health-hud,body.ui-phase8.match-started .stamina-hud{width:220px!important}
+  body.ui-phase8.match-started .weapon-hud{width:250px!important}
+  body.ui-phase8 .phase3-kill-feed{width:min(300px,29vw)!important}
+}
+
+@media (max-height:800px){
+  body.ui-phase8.match-started .minimap-shell{width:142px!important;height:142px!important}
+  body.ui-phase8.match-started .dash-hud{bottom:128px!important}
+  body.ui-phase8.match-started .weapon-hud{min-height:96px!important}
+  body.ui-phase8.match-started .health-hud{bottom:62px!important}
+}
