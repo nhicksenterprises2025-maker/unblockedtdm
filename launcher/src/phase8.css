@@ -1,0 +1,72 @@
+/* Skirmish Arena Phase 8 — final launcher presentation pass. */
+:root{
+  --p8-bg:#070b10;
+  --p8-surface:#0b1118;
+  --p8-surface-2:#0e1620;
+  --p8-line:#1e2b36;
+  --p8-text:#f3f6f8;
+  --p8-muted:#7f8d99;
+  --p8-accent:#4fc4ff;
+}
+body{background:var(--p8-bg)}
+.launcher-shell{grid-template-columns:104px minmax(0,1fr)}
+.rail{background:#060a0e;border-right:1px solid #17222c}
+.rail-brand{height:96px;border-bottom:1px solid #141e27;gap:6px}
+.rail-brand img{width:44px;height:44px}
+.rail-brand>span{display:none}
+.rail-nav{margin-top:14px;gap:2px}
+.nav-button{height:54px;color:#6f7e8b;font-size:8px;letter-spacing:.10em}
+.nav-button:hover,.nav-button.active{background:#0a1117;color:#eef3f6}
+.nav-button i{top:14px;bottom:14px;width:2px}
+.rail-footer{padding:15px 9px 18px;border-top:1px solid #141e27}
+.rail-footer>small{font-size:6px;line-height:1.45}
+.client{padding:0 34px 34px;background:linear-gradient(135deg,#080d12 0%,#070b10 58%,#080d12 100%)}
+.client-header{height:72px;border-bottom:1px solid #18242e}
+.wordmark{gap:7px}.wordmark strong{font-size:16px;letter-spacing:.08em}.wordmark span{font-size:11px;color:var(--p8-accent)}
+.header-meta>span{font-size:8px;color:#758491}
+.view{padding-top:26px}
+
+.build-focus{
+  min-height:360px;
+  grid-template-columns:minmax(420px,1fr) 300px;
+  align-items:center;
+  padding:42px 40px;
+  border:1px solid #1c2a35;
+  background:#0a1016;
+}
+.build-art{inset:0 0 0 46%;opacity:.17;filter:saturate(.62) contrast(1.04)}
+.build-art::after{background:linear-gradient(90deg,#0a1016 0%,rgba(10,16,22,.84) 22%,rgba(8,13,18,.35) 68%,rgba(8,13,18,.62) 100%)}
+.mono-line,.section-kicker{font-size:7px;letter-spacing:.15em;color:#6fbddd}
+.build-copy h1{margin:11px 0 10px;font-size:42px;line-height:1;letter-spacing:-.035em}
+.build-copy p{max-width:560px;color:#93a2ae;font-family:inherit;font-size:12px;line-height:1.55}
+.build-markers{margin-top:24px;gap:18px}
+.build-markers span{padding:0;border:0;color:#71818d;font-size:7px;letter-spacing:.10em}
+.build-markers span:first-child{color:#b5c2ca}
+.launch-zone{gap:8px}
+.launch-button{height:62px;border-radius:2px;background:var(--p8-accent);border-color:var(--p8-accent);font-size:15px;letter-spacing:.10em;box-shadow:none}
+.launch-button:hover{background:#70cfff}
+.launch-state{font-size:7px;color:#72818d}
+
+.status-strip{height:58px;border:1px solid #1b2833;border-top:0;background:#090f15}
+.status-strip>div{border-right:1px solid #192630;padding:0 15px}
+.status-strip span{font-size:7px;color:#6d7b87}.status-strip strong{font-size:9px}
+.update-line{grid-template-columns:minmax(0,1fr) 290px;gap:36px;padding:26px 4px 22px;border-bottom:1px solid #192630}
+.update-copy h2{margin:8px 0 7px;font-size:20px}.update-copy p{font-size:11px;max-width:650px}
+.update-actions>strong{font-size:10px}.update-actions>span{font-size:7px}
+button{border-radius:2px;background:#0d151d;border-color:#293846;font-size:8px;padding:9px 13px}
+button:hover{background:#111c25;border-color:#3c5060}.primary{background:var(--p8-accent);border-color:var(--p8-accent)}
+
+.page-title{padding-bottom:20px}.page-title h1{font-size:31px}.page-title p{font-size:11px}
+.table-head{font-size:7px}.archive-item{min-height:64px}.archive-item>strong{font-size:11px}.archive-item .phase{font-size:9px}
+.setting-row{min-height:82px}.setting-row strong{font-size:12px}.setting-row span{font-size:10px}
+.diag-lines{padding:24px 6px;gap:34px}.diag-lines section>p{font-size:10px}
+
+.progress-track{height:3px}.progress-bar{background:var(--p8-accent)}
+.status-dot{width:5px;height:5px;box-shadow:none}
+
+@media(max-width:1180px){
+  .client{padding-left:26px;padding-right:26px}
+  .build-focus{grid-template-columns:1fr 260px;padding:34px 30px}
+  .build-copy h1{font-size:36px}
+  .update-line{grid-template-columns:1fr 260px}
+}
