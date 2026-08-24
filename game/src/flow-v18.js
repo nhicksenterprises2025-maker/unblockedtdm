@@ -16,7 +16,9 @@ ensureStyle('ui-v18-postgame.css');
 ensureStyle('ui-v19.css');
 ensureStyle('ui-v192.css');
 ensureStyle('ui-v1941.css');
-document.body.classList.add('ui-v18', 'ui-v19', 'ui-v1941');
+ensureStyle('ui-phase3.css');
+document.body.classList.add('ui-v18', 'ui-v19');
+document.body.classList.add('ui-v1941', 'ui-phase3');
 
 function blurUiFocus() {
   const active = document.activeElement;
@@ -240,3 +242,4 @@ installBranding();
 installPhase2Menu();
 syncHomeStatus();
 syncBuildCopy();
+import('./phase3-runtime.js').catch((error) => console.error('Phase 3 tactical HUD failed to initialize', error));
