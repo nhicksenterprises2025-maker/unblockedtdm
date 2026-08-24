@@ -6,6 +6,7 @@
   <title>Skirmish Arena Launcher</title>
   <link rel="icon" href="assets/skirmish-arena-mark.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="phase8.css" />
 </head>
 <body>
   <div class="launcher-shell">
@@ -29,22 +30,22 @@
 
     <main class="client">
       <header class="client-header">
-        <div class="wordmark"><strong>SKIRMISH</strong><span>ARENA //</span></div>
-        <div class="header-meta"><span id="viewTitle">MATCH CLIENT // 01</span><b id="connectionBadge"><i class="status-dot"></i> ONLINE</b></div>
+        <div class="wordmark"><strong>SKIRMISH</strong><span>ARENA</span></div>
+        <div class="header-meta"><span id="viewTitle">PLAY</span><b id="connectionBadge"><i class="status-dot"></i> ONLINE</b></div>
       </header>
 
       <section id="home" class="view active">
         <article class="build-focus">
           <div class="build-art" aria-hidden="true"></div>
           <div class="build-copy">
-            <span class="mono-line">[ CURRENT BUILD ]</span>
+            <span class="mono-line">CURRENT BUILD</span>
             <h1 id="currentTitle">Skirmish Arena</h1>
             <p id="currentMeta">Loading installed build…</p>
-            <div class="build-markers"><span>TRAINING COMPLEX</span><span>3V3</span><span>LOCAL MATCH CLIENT</span></div>
+            <div class="build-markers"><span>TRAINING COMPLEX</span><span>3V3</span><span>WINDOWS</span></div>
           </div>
           <div class="launch-zone">
-            <button id="playButton" class="launch-button">LAUNCH GAME</button>
-            <span id="launchState" class="launch-state">READY // FILES VERIFIED</span>
+            <button id="playButton" class="launch-button">PLAY</button>
+            <span id="launchState" class="launch-state">READY</span>
           </div>
         </article>
 
@@ -57,9 +58,9 @@
 
         <section class="update-line">
           <div class="update-copy">
-            <span class="section-kicker">LATEST PATCH</span>
+            <span class="section-kicker">LATEST UPDATE</span>
             <h2 id="patchTitle">Checking release channel…</h2>
-            <p id="patchDetail">Current build information will appear here when the launcher checks GitHub.</p>
+            <p id="patchDetail">Current release information appears here after the launcher checks the live channel.</p>
           </div>
           <div class="update-actions">
             <strong id="updateStatus">Checking…</strong>
@@ -75,26 +76,26 @@
       </section>
 
       <section id="archive" class="view">
-        <div class="page-title"><div><span class="section-kicker">IMMUTABLE BUILDS</span><h1>BUILD ARCHIVE</h1><p>Published versions install separately and never replace the current game unless you explicitly update.</p></div><button id="refreshArchive" class="secondary">REFRESH</button></div>
+        <div class="page-title"><div><span class="section-kicker">RELEASE HISTORY</span><h1>BUILD ARCHIVE</h1><p>Published versions install separately and never replace the current game unless you explicitly update.</p></div><button id="refreshArchive" class="secondary">REFRESH</button></div>
         <div class="table-head"><span>BUILD</span><span>PHASE</span><span>TAG</span><span>ACTION</span></div>
         <div id="archiveList" class="archive-list"></div>
       </section>
 
       <section id="settings" class="view">
-        <div class="page-title"><div><span class="section-kicker">CLIENT BEHAVIOR</span><h1>SETTINGS</h1><p>Launcher-only preferences. Game controls and graphics live inside Skirmish Arena.</p></div></div>
+        <div class="page-title"><div><span class="section-kicker">LAUNCHER</span><h1>SETTINGS</h1><p>Launcher preferences. Game controls and display options remain inside Skirmish Arena.</p></div></div>
         <div class="settings-lines">
-          <label class="setting-row"><div><strong>Automatic update checks</strong><span>Query the live build manifest when this launcher opens.</span></div><input id="autoCheckUpdates" type="checkbox" /></label>
+          <label class="setting-row"><div><strong>Automatic update checks</strong><span>Check the live release channel whenever the launcher opens.</span></div><input id="autoCheckUpdates" type="checkbox" /></label>
           <label class="setting-row"><div><strong>Minimize launcher when playing</strong><span>Keep the launcher available in the taskbar after launch.</span></div><input id="minimizeOnPlay" type="checkbox" /></label>
-          <label class="setting-row"><div><strong>Close launcher after Play</strong><span>Exit the client after Skirmish Arena starts.</span></div><input id="closeAfterPlay" type="checkbox" /></label>
+          <label class="setting-row"><div><strong>Close launcher after Play</strong><span>Exit the launcher after Skirmish Arena starts.</span></div><input id="closeAfterPlay" type="checkbox" /></label>
         </div>
         <div class="save-row"><button id="saveSettings" class="primary">SAVE SETTINGS</button><span id="settingsStatus"></span></div>
       </section>
 
       <section id="diagnostics" class="view">
-        <div class="page-title"><div><span class="section-kicker">CLIENT DIAGNOSTICS</span><h1>DIAGNOSTICS</h1><p>Only the information needed to verify or repair the local install.</p></div></div>
+        <div class="page-title"><div><span class="section-kicker">INSTALL HEALTH</span><h1>DIAGNOSTICS</h1><p>Verify the installed executable or restore it from the immutable release archive.</p></div></div>
         <div class="diag-lines">
           <section><span>GAME EXECUTABLE</span><code id="gamePath">Loading…</code><button id="openGameFolder" class="secondary">OPEN GAME FOLDER</button></section>
-          <section><span>INTEGRITY</span><strong>SHA-256 VERIFIED DISTRIBUTION</strong><p>Repair compares your current executable against the immutable release asset.</p><button id="repairButton" class="secondary">VERIFY / REPAIR GAME</button></section>
+          <section><span>INTEGRITY</span><strong>SHA-256 VERIFIED DISTRIBUTION</strong><p>Repair compares the installed executable against the published release asset.</p><button id="repairButton" class="secondary">VERIFY / REPAIR GAME</button></section>
         </div>
         <div id="diagnosticStatus" class="diagnostic-status">DIAGNOSTICS READY</div>
       </section>
