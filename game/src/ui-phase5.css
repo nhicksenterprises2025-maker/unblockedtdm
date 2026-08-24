@@ -1,0 +1,172 @@
+/* Skirmish Arena Phase 5 — true fullscreen reflow and combat-safe HUD zones.
+   This layer deliberately resets inherited left/right coordinates that conflicted in Phase 4. */
+body.ui-phase5{
+  --p5-safe-x:clamp(26px,2.1vw,44px);
+  --p5-safe-y:clamp(22px,2.4vh,38px);
+  --p5-panel-gap:clamp(12px,1vw,18px);
+  --p5-sidebar:clamp(420px,27vw,520px);
+  overflow:hidden;
+}
+
+/* Main menu: fixed authored sidebar + flexible content, no inherited 42vw conflict. */
+body.ui-phase5 .main-menu-shell{
+  width:100vw!important;
+  height:100vh!important;
+  grid-template-columns:var(--p5-sidebar) minmax(0,1fr)!important;
+}
+body.ui-phase5 .main-sidebar{
+  width:auto!important;
+  min-width:0!important;
+  height:100vh;
+  padding:clamp(24px,3.1vh,42px) clamp(24px,2vw,38px) clamp(18px,2.4vh,32px)!important;
+}
+body.ui-phase5 .menu-brand{margin-bottom:clamp(18px,2.4vh,32px)!important}
+body.ui-phase5 .main-nav{
+  min-height:0;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:minmax(150px,1.28fr) minmax(118px,1fr) minmax(118px,1fr)!important;
+  gap:var(--p5-panel-gap)!important;
+}
+body.ui-phase5 .main-nav button.phase2-nav-button{min-width:0!important;min-height:0!important}
+body.ui-phase5 .phase2-button-copy{padding:clamp(18px,1.65vw,28px)!important}
+body.ui-phase5 .phase2-nav-icon{right:clamp(15px,1.25vw,24px)!important;top:clamp(15px,1.25vw,24px)!important}
+body.ui-phase5 .main-sidebar-foot{margin-top:clamp(13px,1.8vh,22px)!important}
+
+body.ui-phase5 .main-content{
+  min-width:0!important;
+  height:100vh;
+  padding:clamp(34px,4.2vh,62px) clamp(42px,4.2vw,82px)!important;
+  overflow:auto!important;
+}
+body.ui-phase5 .menu-view{width:100%;max-width:1180px!important;margin-right:auto}
+body.ui-phase5 .menu-hero{max-width:900px!important;padding-top:clamp(48px,8.5vh,112px)!important}
+body.ui-phase5 .menu-hero h1{font-size:clamp(64px,6vw,108px)!important}
+body.ui-phase5 .menu-feature-grid{max-width:1080px;margin-top:clamp(30px,4.2vh,54px)!important}
+body.ui-phase5 #mainSettingsPanel .settings-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+body.ui-phase5 #mainSettingsPanel .setting-card{min-height:118px!important;padding:18px!important}
+body.ui-phase5 .settings-title,body.ui-phase5 .weapon-info-title{max-width:980px}
+body.ui-phase5 .bindings-card{max-width:1180px}
+body.ui-phase5 .weapon-info-layout{width:100%;min-height:0!important;height:min(720px,72vh);grid-template-columns:minmax(230px,26%) minmax(0,1fr)!important}
+body.ui-phase5 .weapon-info-list,body.ui-phase5 .weapon-info-detail{min-height:0;overflow:auto}
+
+/* Loadouts: true viewport shell with a bounded body instead of stretching panels off-screen. */
+body.ui-phase5 .loadout-screen:not(.hidden){padding:0!important}
+body.ui-phase5 .loadout-shell{
+  width:100vw!important;
+  height:100vh!important;
+  max-width:none!important;
+  max-height:none!important;
+  display:flex;
+  flex-direction:column;
+}
+body.ui-phase5 .loadout-head{flex:0 0 auto;padding:clamp(20px,2.5vh,30px) var(--p5-safe-x) 16px!important}
+body.ui-phase5 .loadout-presets,body.ui-phase5 .loadout-name-row,body.ui-phase5 .slot-tabs{flex:0 0 auto;padding-left:var(--p5-safe-x)!important;padding-right:var(--p5-safe-x)!important}
+body.ui-phase5 .loadout-body{
+  flex:1 1 auto;
+  min-height:0!important;
+  overflow:hidden!important;
+  padding:18px var(--p5-safe-x)!important;
+  grid-template-columns:minmax(330px,34%) minmax(0,1fr)!important;
+}
+body.ui-phase5 .weapon-list,body.ui-phase5 .weapon-detail{min-height:0!important;overflow:auto!important}
+body.ui-phase5 .loadout-foot{flex:0 0 auto;padding:14px var(--p5-safe-x)!important}
+
+/* Pause/postgame centered within a fullscreen safe area. */
+body.ui-phase5 .pause-shell{width:min(1100px,calc(100vw - var(--p5-safe-x)*2))!important;max-height:calc(100vh - var(--p5-safe-y)*2)!important;overflow:auto!important}
+body.ui-phase5 .postgame-shell{width:min(1180px,calc(100vw - var(--p5-safe-x)*2))!important;max-height:calc(100vh - var(--p5-safe-y)*2)!important}
+
+/* Match HUD: each element owns one anchor only. */
+body.ui-phase5.match-started .match-hud{
+  top:var(--p5-safe-y)!important;
+  left:50%!important;
+  right:auto!important;
+  width:auto!important;
+  min-width:0!important;
+  transform:translateX(-50%)!important;
+  grid-template-columns:clamp(88px,5.5vw,112px) clamp(72px,4.2vw,86px) clamp(156px,9vw,182px) clamp(72px,4.2vw,86px) clamp(88px,5.5vw,112px)!important;
+}
+body.ui-phase5.match-started .minimap-shell{
+  left:var(--p5-safe-x)!important;
+  right:auto!important;
+  top:var(--p5-safe-y)!important;
+  bottom:auto!important;
+  width:clamp(184px,11.5vw,226px)!important;
+  height:clamp(184px,11.5vw,226px)!important;
+}
+body.ui-phase5.match-started .health-hud{
+  left:var(--p5-safe-x)!important;
+  right:auto!important;
+  bottom:calc(var(--p5-safe-y) + 74px)!important;
+  width:clamp(238px,15.5vw,286px)!important;
+}
+body.ui-phase5.match-started .stamina-hud{
+  left:var(--p5-safe-x)!important;
+  right:auto!important;
+  bottom:var(--p5-safe-y)!important;
+  width:clamp(238px,15.5vw,286px)!important;
+}
+body.ui-phase5.match-started .weapon-hud{
+  left:auto!important;
+  right:var(--p5-safe-x)!important;
+  bottom:var(--p5-safe-y)!important;
+  width:clamp(270px,17vw,316px)!important;
+}
+body.ui-phase5.match-started .dash-hud{
+  left:auto!important;
+  right:var(--p5-safe-x)!important;
+  bottom:calc(var(--p5-safe-y) + 166px)!important;
+  width:clamp(172px,11vw,202px)!important;
+}
+body.ui-phase5.match-started .combat-banner{top:clamp(108px,12vh,138px)!important}
+body.ui-phase5.match-started .streak-banner{top:clamp(154px,17vh,194px)!important}
+
+/* Phase 3 tactical overlays / kill feed are moved into the same safe-zone system. */
+body.ui-phase5 .phase3-kill-feed{right:var(--p5-safe-x)!important;top:clamp(112px,12vh,142px)!important;width:min(390px,28vw)!important}
+body.ui-phase5 .phase3-tactical-legend{bottom:var(--p5-safe-y)!important}
+body.ui-phase5 .phase3-scoreboard-shell,body.ui-phase5 .phase3-map-shell{width:min(1220px,calc(100vw - var(--p5-safe-x)*2))!important;max-height:calc(100vh - var(--p5-safe-y)*2)!important}
+body.ui-phase5 #phase3MapCanvas{width:min(1020px,82vw)!important;max-height:64vh!important}
+
+/* Between-round selector stays in the center lane so it does not cover left/right HUD stacks. */
+body.ui-phase5 .round-loadout-panel{
+  left:50%!important;
+  right:auto!important;
+  bottom:var(--p5-safe-y)!important;
+  width:min(880px,54vw)!important;
+  max-width:none!important;
+  transform:translateX(-50%)!important;
+}
+
+/* Full HD / ultrawide keeps content from drifting too far toward the outer bezel. */
+@media (min-width:1700px) and (min-height:900px){
+  body.ui-phase5{--p5-safe-x:clamp(34px,2.2vw,52px);--p5-safe-y:clamp(28px,2.7vh,44px);--p5-sidebar:clamp(440px,26vw,520px)}
+  body.ui-phase5 .main-content{padding-left:clamp(56px,4.4vw,92px)!important;padding-right:clamp(56px,4.6vw,96px)!important}
+  body.ui-phase5 .main-nav{grid-template-rows:minmax(170px,1.3fr) minmax(130px,1fr) minmax(130px,1fr)!important}
+}
+
+/* 1280/1366-class displays still fit without reverting to tiny UI. */
+@media (max-width:1450px){
+  body.ui-phase5{--p5-sidebar:clamp(360px,31vw,430px);--p5-safe-x:24px;--p5-safe-y:22px}
+  body.ui-phase5 .main-content{padding:30px 34px!important}
+  body.ui-phase5 .main-nav{grid-template-rows:minmax(118px,1.22fr) minmax(98px,1fr) minmax(98px,1fr)!important}
+  body.ui-phase5 .phase2-button-copy em{display:none!important}
+  body.ui-phase5 #mainSettingsPanel .settings-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.ui-phase5 .weapon-info-layout{height:min(650px,70vh)}
+  body.ui-phase5 .phase3-kill-feed{width:min(350px,32vw)!important}
+  body.ui-phase5 .round-loadout-panel{width:min(760px,58vw)!important}
+}
+
+@media (max-height:780px){
+  body.ui-phase5{--p5-safe-y:16px}
+  body.ui-phase5 .main-sidebar{padding-top:16px!important;padding-bottom:12px!important}
+  body.ui-phase5 .menu-brand{margin-bottom:12px!important}
+  body.ui-phase5 .main-nav{grid-template-rows:minmax(94px,1.15fr) minmax(78px,1fr) minmax(78px,1fr)!important;gap:9px!important}
+  body.ui-phase5 .main-sidebar-foot{margin-top:8px!important}
+  body.ui-phase5 .main-content{padding-top:22px!important;padding-bottom:22px!important}
+  body.ui-phase5 .menu-hero{padding-top:24px!important}
+  body.ui-phase5 .menu-feature-grid{margin-top:22px!important}
+  body.ui-phase5.match-started .minimap-shell{width:168px!important;height:168px!important}
+  body.ui-phase5.match-started .health-hud{bottom:82px!important}
+  body.ui-phase5.match-started .stamina-hud{bottom:16px!important}
+  body.ui-phase5.match-started .weapon-hud{bottom:16px!important}
+  body.ui-phase5.match-started .dash-hud{bottom:174px!important}
+}
