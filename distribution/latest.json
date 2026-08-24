@@ -1,14 +1,14 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "1.94.1",
+  "gameVersion": "1.95",
   "build": 1,
-  "sequence": 22,
-  "phase": "Phase 2 — Core UI Redesign",
-  "tag": "build-1.94.1-v1",
-  "title": "Skirmish Arena 1.94.1 — Phase 2",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.94.1-v1/UnblockedTDM-1.94.1-v1.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.94.1-v1/UnblockedTDM-Setup-1.94.1-v1.exe",
-  "sha256": "5957159b8afb290da327cce23c7a45627e492ee2d338e2ba921c8b8148fea1e3",
-  "installerSha256": "1ec7efd56c714388f32183e9059a6b4e5d42f5224b140f1bed9175b7113ceb24",
-  "publishedAt": "2026-08-21T03:33:14.374Z"
+  "sequence": 23,
+  "phase": "Phase 3 — Tactical HUD",
+  "tag": "build-1.95-v1",
+  "title": "Skirmish Arena 1.95 — Phase 3",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.95-v1/UnblockedTDM-1.95-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.95-v1/UnblockedTDM-Setup-1.95-v1.exe",
+  "sha256": "ac41bc3333acddea1ed663823275085a43349d4360239b16f56b9f0420909aea",
+  "installerSha256": "d828e9960f0da4d4c54b65c23a7c09a361ea8c71fe6f5f9ef0eb8d30db016116",
+  "publishedAt": "2026-08-24T02:34:44.725Z"
 }
