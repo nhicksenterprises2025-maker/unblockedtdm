@@ -27,7 +27,8 @@ for (const token of [
 ]) assert.ok(flow.includes(token), `Missing Phase 1 branding contract: ${token}`);
 
 assert.ok(gameMain.includes("title: 'Skirmish Arena'"), 'Game window must use the Skirmish Arena title.');
-assert.ok(launcher.includes('<strong>SKIRMISH</strong><span>ARENA //</span>'), 'Launcher must show Skirmish Arena branding.');
+assert.ok(launcher.includes('<title>Skirmish Arena Launcher</title>'), 'Launcher document must use Skirmish Arena branding.');
+assert.match(launcher, /<div class="wordmark"><strong>SKIRMISH<\/strong><span>ARENA(?:\s*\/\/)?<\/span><\/div>/, 'Launcher must show the Skirmish Arena wordmark.');
 assert.ok(launcher.includes('assets/skirmish-arena-mark.svg'), 'Launcher must use the SA mark.');
 
 assert.equal(flow.includes('pointerEvents'), false, 'Phase 1 flow must not manipulate pointer events.');
