@@ -1,11 +1,11 @@
 {
   "product":"Skirmish Arena",
-  "gameVersion":"1.97.1",
+  "gameVersion":"1.98.1",
   "build":1,
-  "phase":"Phase 5 — Fullscreen UI + Combat VFX",
-  "tag":"build-1.97.1-v1",
-  "title":"Skirmish Arena 1.97.1 — Phase 5",
-  "notesFile":"docs/releases/build-1.97.1-v1.md",
-  "sequence":25,
-  "releaseRevision":4
+  "phase":"Phase 6 — Front-End Polish + Menu Rebuild",
+  "tag":"build-1.98.1-v1",
+  "title":"Skirmish Arena 1.98.1 — Phase 6",
+  "notesFile":"docs/releases/build-1.98.1-v1.md",
+  "sequence":26,
+  "releaseRevision":1
 }
