@@ -13,17 +13,22 @@ const minimap = read('game/src/render/MinimapRenderer.js');
 assert.ok(debug.includes("import('./phase7-runtime.js')"), 'Phase 7 visual runtime must load after the established phases.');
 for (const token of [
   'WorldRenderer',
-  'MinimapRenderer',
   'createRadialGradient',
+  'drawFloorPass',
+  'drawArenaDecals',
+  'drawStructurePass',
+  '__phase7Visuals'
+]) assert.ok(runtime.includes(token), `Phase 7 visual layer missing ${token}.`);
+
+for (const prototypeLabel of [
+  'TC // MID',
   'BLUE SPAWN',
   'RED SPAWN',
   'NORTH WAREHOUSE',
   'SOUTH WAREHOUSE',
-  'SKIRMISH ARENA',
-  'TC // MID',
-  '__phase7Visuals',
-  '__phase7Landmarks'
-]) assert.ok(runtime.includes(token), `Phase 7 visual layer missing ${token}.`);
+  'SA // TRAINING',
+  "fillText('SKIRMISH ARENA'"
+]) assert.equal(runtime.includes(prototypeLabel), false, `Phase 7 must not render prototype-style world label: ${prototypeLabel}`);
 
 for (const forbidden of [
   "from './data/weapons.js'",
@@ -32,7 +37,8 @@ for (const forbidden of [
   "from './match/MatchManager.js'",
   "from './world/SpawnSystem.js'",
   "from './world/TileMap.js'",
-  "from './world/map01.js'"
+  "from './world/map01.js'",
+  "from './render/MinimapRenderer.js'"
 ]) assert.equal(runtime.includes(forbidden), false, `Phase 7 must not import gameplay/geometry module ${forbidden}.`);
 
 for (const geometry of [
@@ -58,4 +64,4 @@ for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12
   assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
 }
 
-console.log('Phase 7 checks passed: Training Complex material/landmark pass, tactical-map matching, preserved geometry, and unchanged gameplay contracts.');
+console.log('Phase 7 checks passed: restrained Training Complex material pass, no prototype world labels, preserved geometry, and unchanged gameplay contracts.');
