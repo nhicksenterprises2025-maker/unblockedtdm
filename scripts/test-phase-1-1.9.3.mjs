@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
 const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
-const exists = (path) => fs.existsSync(new URL(`../${path}`, import.meta.url));
 
 const index = read('game/src/index.html');
 const flow = read('game/src/flow-v18.js');
@@ -31,15 +30,13 @@ assert.ok(gameMain.includes("title: 'Skirmish Arena'"), 'Game window must use th
 assert.ok(launcher.includes('<strong>SKIRMISH</strong><span>ARENA //</span>'), 'Launcher must show Skirmish Arena branding.');
 assert.ok(launcher.includes('assets/skirmish-arena-mark.svg'), 'Launcher must use the SA mark.');
 
-assert.equal(flow.includes('pointerEvents'), false, 'Phase 1 must not manipulate pointer events.');
-assert.equal(flow.includes('pointer-events'), false, 'Phase 1 must not inject pointer-event CSS.');
-assert.equal(exists('game/src/phase2-ui.js'), false, 'Phase 2 runtime must not exist in 1.9.3.');
-assert.equal(exists('game/src/phase3-hud.js'), false, 'Phase 3 runtime must not exist in 1.9.3.');
-assert.equal(exists('game/src/phase4-runtime.js'), false, 'Phase 4 runtime must not exist in 1.9.3.');
-assert.equal(exists('game/src/audio/AudioSystem.js'), false, 'Phase 4 audio framework must not exist in 1.9.3.');
+assert.equal(flow.includes('pointerEvents'), false, 'Phase 1 flow must not manipulate pointer events.');
+assert.equal(flow.includes('pointer-events'), false, 'Phase 1 flow must not inject pointer-event CSS.');
 
+// This is a compatibility regression, not a historical snapshot test. Later phases
+// may add isolated modules as long as the Phase 1 branding/front-end/gameplay contracts above remain intact.
 for (const token of ['assaultRifle', 'launcher', 'melee']) assert.ok(weapons.includes(token), `Canonical weapon data missing ${token}`);
 for (const token of ['DASH_CHARGES_MAX = 4', 'DASH_DISTANCE_TILES = 3', 'PLAYER_SPEED_TILES = 5']) assert.ok(constants.includes(token), `Canonical movement rule changed: ${token}`);
 for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12;', 'const ROUND_WINS_TO_MATCH = 5;']) assert.ok(match.includes(token), `Canonical match rule changed: ${token}`);
 
-console.log('1.9.3 Phase 1 checks passed: Skirmish Arena branding applied while the proven 1.9.2 front end and gameplay contracts remain intact.');
+console.log('1.9.3 Phase 1 compatibility checks passed: Skirmish Arena branding and proven gameplay/front-end contracts remain intact with additive later phases.');
