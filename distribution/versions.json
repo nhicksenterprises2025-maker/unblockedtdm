@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "Skirmish Arena",
+      "gameVersion": "1.99.1",
+      "build": 1,
+      "sequence": 28,
+      "phase": "Phase 7 — Map Visual Overhaul",
+      "tag": "build-1.99.1-v1",
+      "title": "Skirmish Arena 1.99.1 — Phase 7",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.99.1-v1/UnblockedTDM-1.99.1-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.99.1-v1/UnblockedTDM-Setup-1.99.1-v1.exe",
+      "sha256": "132cc7f9af7de6851cddea5287137ec41529f0c4c263449c4c2d33b89424422a",
+      "installerSha256": "2a1276470c3cc8a94ab3646d85620c796c903a03e7d35019d72cc06c575eb708",
+      "publishedAt": "2026-08-24T04:34:22.229Z"
+    },
+    {
+      "product": "Skirmish Arena",
       "gameVersion": "1.98.1",
       "build": 1,
       "sequence": 27,
