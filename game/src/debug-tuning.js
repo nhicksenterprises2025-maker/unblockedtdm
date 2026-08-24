@@ -30,4 +30,5 @@
   import('./flow-v18.js').catch((error)=>console.error('Build 1.8 flow runtime failed to load',error));
   import('./phase4-runtime.js').catch((error)=>console.error('Phase 4 interaction runtime failed to load',error));
   import('./phase5-runtime.js').catch((error)=>console.error('Phase 5 fullscreen/VFX runtime failed to load',error));
+  import('./phase6-runtime.js').catch((error)=>console.error('Phase 6 front-end runtime failed to load',error));
 })();
