@@ -29,20 +29,37 @@ jobs:
           node-version: 22
 
       - name: Install build dependencies
-        run: npm install --no-audit --no-fund
+        shell: pwsh
+        run: |
+          "install" | Set-Content release-failure-stage.txt
+          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath install.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Synchronize build metadata
-        run: npm run sync:build
+        shell: pwsh
+        run: |
+          "sync-build" | Set-Content release-failure-stage.txt
+          npm run sync:build 2>&1 | Tee-Object -FilePath sync-build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Validate JavaScript
-        run: npm run check
+        shell: pwsh
+        run: |
+          "validate" | Set-Content release-failure-stage.txt
+          npm run check 2>&1 | Tee-Object -FilePath validate.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Build game and launcher
-        run: npm run build:windows
+        shell: pwsh
+        run: |
+          "build-windows" | Set-Content release-failure-stage.txt
+          npm run build:windows 2>&1 | Tee-Object -FilePath build-windows.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Prepare immutable release assets
         shell: pwsh
         run: |
+          "prepare-assets" | Set-Content release-failure-stage.txt
           $plan = Get-Content release-plan.json | ConvertFrom-Json
           New-Item -ItemType Directory -Force -Path dist-release | Out-Null
           $gameAsset = "UnblockedTDM-$($plan.gameVersion)-v$($plan.build).exe"
@@ -56,6 +73,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          "publish-release" | Set-Content release-failure-stage.txt
           $plan = Get-Content release-plan.json | ConvertFrom-Json
           $tag = $plan.tag
           $gameAsset = "dist-release/UnblockedTDM-$($plan.gameVersion)-v$($plan.build).exe"
@@ -68,10 +86,12 @@ jobs:
           } else {
             gh release create $tag $gameAsset $installerAsset $manifestAsset --target $env:GITHUB_SHA --title $plan.title --notes-file $plan.notesFile
           }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Publish live update manifests
         shell: pwsh
         run: |
+          "publish-manifests" | Set-Content release-failure-stage.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add distribution/latest.json distribution/versions.json
@@ -79,6 +99,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             $plan = Get-Content release-plan.json | ConvertFrom-Json
             git commit -m "Publish $($plan.title) distribution manifests [skip ci]"
+            git pull --rebase origin main
             git push origin HEAD:main
           }
 
@@ -88,3 +109,31 @@ jobs:
           name: UnblockedTDM-Windows
           path: dist-release/*
           if-no-files-found: error
+
+      - name: Persist release failure diagnostics
+        if: failure()
+        shell: pwsh
+        run: |
+          $stage = if (Test-Path release-failure-stage.txt) { Get-Content release-failure-stage.txt -Raw } else { "unknown" }
+          $lines = @(
+            "Skirmish Arena release failure diagnostic",
+            "runId=$env:GITHUB_RUN_ID",
+            "sha=$env:GITHUB_SHA",
+            "stage=$($stage.Trim())",
+            "timestamp=$([DateTime]::UtcNow.ToString('o'))",
+            ""
+          )
+          foreach ($log in @('install.log','sync-build.log','validate.log','build-windows.log')) {
+            if (Test-Path $log) {
+              $lines += "===== $log ====="
+              $lines += Get-Content $log
+              $lines += ""
+            }
+          }
+          $lines | Set-Content distribution/last-release-failure.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add distribution/last-release-failure.txt
+          git commit -m "Record release failure diagnostic [skip ci]" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
