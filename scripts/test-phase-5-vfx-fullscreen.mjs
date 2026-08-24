@@ -26,13 +26,13 @@ for (const token of [
   '.round-loadout-panel'
 ]) assert.ok(css.includes(token), `Phase 5 fullscreen reflow missing ${token}.`);
 
-for (const token of [
-  '.dash-hud{\n  left:auto!important;',
-  '.weapon-hud{\n  left:auto!important;',
-  '.health-hud{\n  left:var(--p5-safe-x)!important;',
-  '.stamina-hud{\n  left:var(--p5-safe-x)!important;',
-  '.minimap-shell{\n  left:var(--p5-safe-x)!important;'
-]) assert.ok(css.includes(token), `Phase 5 must reset conflicting fullscreen anchor: ${token}`);
+for (const [name, pattern] of [
+  ['dash HUD', /\.dash-hud\s*\{[^}]*left\s*:\s*auto!important;[^}]*right\s*:\s*var\(--p5-safe-x\)!important;/s],
+  ['weapon HUD', /\.weapon-hud\s*\{[^}]*left\s*:\s*auto!important;[^}]*right\s*:\s*var\(--p5-safe-x\)!important;/s],
+  ['health HUD', /\.health-hud\s*\{[^}]*left\s*:\s*var\(--p5-safe-x\)!important;[^}]*right\s*:\s*auto!important;/s],
+  ['stamina HUD', /\.stamina-hud\s*\{[^}]*left\s*:\s*var\(--p5-safe-x\)!important;[^}]*right\s*:\s*auto!important;/s],
+  ['minimap', /\.minimap-shell\s*\{[^}]*left\s*:\s*var\(--p5-safe-x\)!important;[^}]*right\s*:\s*auto!important;/s]
+]) assert.match(css, pattern, `Phase 5 must reset conflicting fullscreen anchor for ${name}.`);
 assert.equal(css.includes('pointer-events:none'), false, 'Phase 5 fullscreen layer must not block UI pointer input.');
 
 for (const token of [
