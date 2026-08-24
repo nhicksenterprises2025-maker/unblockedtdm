@@ -10,7 +10,10 @@ export const GAMEPLAY_DEFAULTS = Object.freeze({
   aiDifficulty: 'Average',
   minimapMode: 'north-up',
   screenShake: true,
-  damageVignette: true
+  damageVignette: true,
+  autoSprint: true,
+  audioEnabled: true,
+  masterVolume: 0.75
 });
 
 export const DEFAULT_BINDINGS = Object.freeze({
@@ -90,12 +93,16 @@ export class GameSettings {
 
   gameplay() {
     const storedDifficulty = this.readRaw('aiDifficulty', GAMEPLAY_DEFAULTS.aiDifficulty);
+    const storedVolume = Number(this.readRaw('masterVolume', String(GAMEPLAY_DEFAULTS.masterVolume)));
     return {
       sensitivity: clamp(Number(this.readRaw('sensitivity', '1')) || 1, 0.35, 2.5),
       aiDifficulty: AI_MULTIPLIERS[storedDifficulty] ? storedDifficulty : GAMEPLAY_DEFAULTS.aiDifficulty,
       minimapMode: this.readRaw('minimapMode', GAMEPLAY_DEFAULTS.minimapMode) === 'rotate' ? 'rotate' : 'north-up',
       screenShake: this.readRaw('screenShake', 'true') !== 'false',
-      damageVignette: this.readRaw('damageVignette', 'true') !== 'false'
+      damageVignette: this.readRaw('damageVignette', 'true') !== 'false',
+      autoSprint: this.readRaw('autoSprint', 'true') !== 'false',
+      audioEnabled: this.readRaw('audioEnabled', 'true') !== 'false',
+      masterVolume: clamp(Number.isFinite(storedVolume) ? storedVolume : GAMEPLAY_DEFAULTS.masterVolume, 0, 1)
     };
   }
 
@@ -103,9 +110,13 @@ export class GameSettings {
     if (!(key in GAMEPLAY_DEFAULTS)) return this.gameplay();
     let normalized = value;
     if (key === 'sensitivity') normalized = clamp(Number(value) || 1, 0.35, 2.5).toFixed(2);
+    if (key === 'masterVolume') {
+      const numeric = Number(value);
+      normalized = clamp(Number.isFinite(numeric) ? numeric : GAMEPLAY_DEFAULTS.masterVolume, 0, 1).toFixed(2);
+    }
     if (key === 'aiDifficulty') normalized = AI_MULTIPLIERS[value] ? value : GAMEPLAY_DEFAULTS.aiDifficulty;
     if (key === 'minimapMode') normalized = value === 'rotate' ? 'rotate' : 'north-up';
-    if (key === 'screenShake' || key === 'damageVignette') normalized = Boolean(value);
+    if (['screenShake', 'damageVignette', 'autoSprint', 'audioEnabled'].includes(key)) normalized = Boolean(value);
     try { this.storage.setItem(`unblockedtdm.${key}`, String(normalized)); } catch {}
     const gameplay = this.gameplay();
     emitChange({ gameplay, bindings: this.bindings() });
