@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - release-plan.json
+      - launcher-release-plan.json
   workflow_dispatch:
 
 permissions:
@@ -16,6 +17,7 @@ concurrency:
 
 jobs:
   windows-release:
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[launcher-only]') }}
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -135,5 +137,162 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add distribution/last-release-failure.txt
           git commit -m "Record release failure diagnostic [skip ci]" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+  launcher-release:
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[launcher-only]') }}
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install build dependencies
+        shell: pwsh
+        run: |
+          "install" | Set-Content launcher-failure-stage.txt
+          npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath launcher-install.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate launcher rebrand
+        shell: pwsh
+        run: |
+          "validate" | Set-Content launcher-failure-stage.txt
+          node --check launcher/src/boot.js
+          node --check launcher/src/main.js
+          node --check launcher/src/preload.js
+          node --check launcher/src/renderer.js
+          node scripts/test-launcher-rebrand.mjs 2>&1 | Tee-Object -FilePath launcher-validate.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Restore immutable 1.99.3 game bundle
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          "game-bundle" | Set-Content launcher-failure-stage.txt
+          $plan = Get-Content launcher-release-plan.json | ConvertFrom-Json
+          New-Item -ItemType Directory -Force -Path dist-game | Out-Null
+          New-Item -ItemType Directory -Force -Path dist-game-source | Out-Null
+          gh release download $plan.gameTag --pattern $plan.gameAsset --dir dist-game-source --clobber
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item "dist-game-source/$($plan.gameAsset)" "dist-game/UnblockedTDM.exe" -Force
+
+          $buildInfo = [ordered]@{
+            product = 'Skirmish Arena'
+            gameVersion = $plan.gameVersion
+            build = $plan.gameBuild
+            sequence = $plan.gameSequence
+            phase = $plan.gamePhase
+            tag = $plan.gameTag
+            title = $plan.gameTitle
+            repository = 'nhicksenterprises2025-maker/unblockedtdm'
+          }
+          $buildInfo | ConvertTo-Json | Set-Content launcher/src/build-info.json
+
+      - name: Build Skirmish Arena Launcher
+        shell: pwsh
+        run: |
+          "build-launcher" | Set-Content launcher-failure-stage.txt
+          npm run build:launcher 2>&1 | Tee-Object -FilePath launcher-build.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Prepare branded installer
+        shell: pwsh
+        run: |
+          "prepare-installer" | Set-Content launcher-failure-stage.txt
+          $plan = Get-Content launcher-release-plan.json | ConvertFrom-Json
+          New-Item -ItemType Directory -Force -Path dist-release | Out-Null
+          $asset = "SkirmishArena-Setup-$($plan.launcherVersion).exe"
+          Copy-Item "dist-launcher/SkirmishArena-Setup.exe" "dist-release/$asset" -Force
+
+      - name: Publish launcher release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          "publish-launcher" | Set-Content launcher-failure-stage.txt
+          $plan = Get-Content launcher-release-plan.json | ConvertFrom-Json
+          $asset = "dist-release/SkirmishArena-Setup-$($plan.launcherVersion).exe"
+          gh release view $plan.tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $plan.tag $asset --clobber
+          } else {
+            gh release create $plan.tag $asset --target $env:GITHUB_SHA --title $plan.title --notes-file $plan.notesFile
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Restore public RC channel and publish launcher manifest
+        shell: pwsh
+        run: |
+          "publish-launcher-manifest" | Set-Content launcher-failure-stage.txt
+          $plan = Get-Content launcher-release-plan.json | ConvertFrom-Json
+          $versions = Get-Content distribution/versions.json -Raw | ConvertFrom-Json
+          $rc = $versions.versions | Where-Object { $_.tag -eq $plan.gameTag } | Select-Object -First 1
+          if (-not $rc) { throw "Could not find $($plan.gameTag) in distribution/versions.json" }
+
+          $rc | ConvertTo-Json -Depth 20 | Set-Content distribution/latest.json
+          $versions.versions = @($versions.versions | Where-Object { $_.tag -ne 'build-2.0-v1' })
+          $versions | ConvertTo-Json -Depth 20 | Set-Content distribution/versions.json
+
+          $installer = "dist-release/SkirmishArena-Setup-$($plan.launcherVersion).exe"
+          $hash = (Get-FileHash $installer -Algorithm SHA256).Hash.ToLower()
+          $launcherManifest = [ordered]@{
+            product = 'Skirmish Arena Launcher'
+            launcherVersion = $plan.launcherVersion
+            tag = $plan.tag
+            title = $plan.title
+            installerUrl = "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/$($plan.tag)/SkirmishArena-Setup-$($plan.launcherVersion).exe"
+            sha256 = $hash
+            publishedAt = [DateTime]::UtcNow.ToString('o')
+          }
+          $launcherManifest | ConvertTo-Json | Set-Content distribution/launcher-latest.json
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add distribution/latest.json distribution/versions.json distribution/launcher-latest.json
+          git commit -m "Publish Skirmish Arena Launcher $($plan.launcherVersion) [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Upload launcher installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Skirmish-Arena-Launcher-1.0.1
+          path: dist-release/SkirmishArena-Setup-1.0.1.exe
+          if-no-files-found: error
+
+      - name: Persist launcher failure diagnostics
+        if: failure()
+        shell: pwsh
+        run: |
+          $stage = if (Test-Path launcher-failure-stage.txt) { Get-Content launcher-failure-stage.txt -Raw } else { "unknown" }
+          $lines = @(
+            "Skirmish Arena launcher release failure diagnostic",
+            "runId=$env:GITHUB_RUN_ID",
+            "sha=$env:GITHUB_SHA",
+            "stage=$($stage.Trim())",
+            "timestamp=$([DateTime]::UtcNow.ToString('o'))",
+            ""
+          )
+          foreach ($log in @('launcher-install.log','launcher-validate.log','launcher-build.log')) {
+            if (Test-Path $log) {
+              $lines += "===== $log ====="
+              $lines += Get-Content $log
+              $lines += ""
+            }
+          }
+          $lines | Set-Content distribution/last-launcher-failure.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add distribution/last-launcher-failure.txt
+          git commit -m "Record launcher release failure [skip ci]" || exit 0
           git pull --rebase origin main
           git push origin HEAD:main
