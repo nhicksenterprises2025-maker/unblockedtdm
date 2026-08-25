@@ -11,7 +11,7 @@ win:
   target:
     - nsis
   executableName: Skirmish Arena Launcher
-artifactName: UnblockedTDM-Setup.exe
+artifactName: SkirmishArena-Setup.exe
 directories:
   output: ../dist-launcher
 nsis:
