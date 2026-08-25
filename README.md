@@ -1,57 +1,116 @@
-# UnblockedTDM
+# Skirmish Arena
 
-UnblockedTDM is a 2D top-down 3v3 team deathmatch game delivered as one continuously updated Windows application.
+Skirmish Arena is a fast 2D top-down 3v3 arena shooter for Windows built around movement, aim, loadouts, round control and repeatable short-form matches.
 
-## Current development build
+The game is currently in its final pre-release stage. **Version 1.99.3 is the last release candidate before the official 2.0 launch.**
 
-**Build 1.8 — Version 1**  
-Phase: **Flow Integration / Unified Game UI**
+## Current public build
 
-Build 1.8 unifies the in-game menu system with the authored launcher visual language and hardens the full menu → loadout → match → pause → postgame → rematch/main-menu flow without rebalancing gameplay.
+**Skirmish Arena 1.99.3 — Build 1**  
+Phase: **Final Release Candidate**
 
-### Current playable systems
-- Functional Main Menu: Play, Loadouts, Settings, Weapon Info, Home and Quit.
-- Launcher-style flat in-game UI across Main Menu, Loadouts, Settings, Weapon Info, Pause, round-break loadout selection and Postgame.
-- Shared UT logo, Training Complex technical art, restrained cyan palette, thin dividers and low-radius desktop geometry.
-- 32×22 Training Complex on the 64px tile system.
-- Six live players: local Blue player, two Blue AI teammates and three Red AI opponents.
-- Sprint/stamina, four-charge directional dash and independent mouse aim.
-- Smoothed mouse aim with sensitivity from 0.35x to 2.50x, frame-locked crosshair/shot alignment and no aim assist.
+1.99.3 is the final stability and performance pass before 2.0. The current build contains the complete playable match loop, fullscreen game UI, launcher/update flow, tactical HUD, finished weapon roster, postgame flow, audio/VFX pass and the latest Training Complex presentation.
+
+## Current playable systems
+
+- Fullscreen Main Menu with **Play, Loadouts, Weapon Info, Settings and Quit**.
+- Full 3v3 matches with one local player, two Blue teammates and three Red opponents.
+- Training Complex arena with a larger-than-screen battlefield, structured lanes, cover, spawn areas and tactical landmarks.
+- Sprint and stamina movement system.
+- Four-charge directional dash system.
+- Independent mouse aiming with adjustable sensitivity.
 - Persistent rebindable controls for movement, sprint, dash, reload, weapon slots, fire and ADS.
-- AI modes remain Beginner 0.80x, Average 1.00x, Sweat 1.35x and Pro 1.75x with the Build 1.7 reduced-accuracy AI aim model.
-- A* navigation grid with obstacle-aware routing, route smoothing, wall avoidance and forced repathing when bots become stuck.
-- Circular minimap built from real map geometry; teammates are always visible and firing enemies reveal for 1.5 seconds.
-- 25 persistent saved loadout slots with names, Primary/Secondary validation and active-slot persistence.
-- Quick loadout switching during the 10-second round break only.
-- ESC pause hub with functional Match and Settings tabs.
-- Settings for sensitivity, AI difficulty, minimap orientation, screen shake, damage vignette, fullscreen and keybind resets.
-- Dynamic spawn scoring for enemy LOS, multiple watchers, close enemies, teammate proximity, recent combat and repeat-spawn avoidance.
-- 150 HP, regeneration cap, death, 3-second respawn and 1-second spawn protection.
-- Eight complete weapons: Assault Rifle, SMG, Sniper Rifle, Shotgun, LMG, Pistol, Launcher and Melee.
-- Full 3v3 match structure: 5-second countdown, first to 12 kills, 1:30 timer, Sudden Death, 10-second round breaks, side swapping and first to 5 rounds.
-- Full postgame stats: K/D/A, damage, K/D ratio, crits, best streak, duration and round history.
-- REMATCH and MAIN MENU match-complete flow.
-- Last completed match result persists locally and appears on the Main Menu status line.
-- Authored launcher visual system with custom UT mark, subtle Training Complex art, narrow rail navigation, compact status strip and dominant Launch Game CTA.
+- **25 persistent saved loadout slots** with custom names and Primary / Secondary weapon selection.
+- Eight playable weapons: **Assault Rifle, SMG, Sniper Rifle, Shotgun, LMG, Pistol, Launcher and Melee**.
+- Weapon-specific handling, reload behavior, movement penalties, swap speeds, projectile behavior and accuracy characteristics.
+- Full match structure with a pre-round countdown, 1:30 rounds, first to 12 kills, Sudden Death, side swapping and first to 5 round wins.
+- Between-round loadout switching during the round break.
+- Tactical match HUD with round score, kill count, timer, health, stamina, dash charges and ammo information.
+- Circular minimap and full tactical map.
+- Live kill feed with dedicated critical-kill presentation.
+- Full scoreboard with kills, deaths, assists, K/D and damage.
+- Top-performer and MVP presentation.
+- Pause menu with Match and Settings views.
+- Settings for sensitivity, minimap orientation, screen shake, damage vignette, Auto Sprint, audio, master volume, fullscreen and keybinds.
+- 150 HP combat loop with regeneration, elimination, respawning and spawn protection.
+- Weapon audio, reload audio, footsteps and combat feedback.
+- Muzzle flashes, impact effects, critical-hit feedback, explosions, debris, tracers, hitmarkers, damage numbers and screen shake.
+- Visible elimination remnants instead of players instantly disappearing.
+- Refined Training Complex materials, lighting, structure accents and visual readability.
+- Full postgame screen with K/D/A, damage, K/D ratio, critical hits, best streak, match duration and round history.
+- Functional **REMATCH** and **MAIN MENU** postgame flow.
+- Last completed match result shown on the Main Menu.
+- Automatic pause protection when the game window loses focus.
+- Fullscreen-responsive UI designed for 1080p and smaller 16:9 displays.
+- Dedicated Skirmish Arena launcher for installing, updating, repairing and launching the game.
+- Build archive support for previous published versions.
 
 ## Road to 2.0
-- **1.4** — AI / Spawn / Aim Physics ✅
-- **1.41** — Match HUD + Circular Minimap + Pathfinding / Aim Accuracy ✅
+
+- **1.4** — Aim / Match AI / Spawn foundation ✅
+- **1.41** — Match HUD + Circular Minimap + Navigation improvements ✅
 - **1.5** — Persistent Loadouts + Between-Round Changes + Pause Settings ✅
-- **1.6** — Main Menu + Settings Completion + Keybinds + Weapon Info ✅
+- **1.6** — Main Menu + Settings + Keybinds + Weapon Info ✅
 - **1.7** — Postgame Stats + Winner / Rematch Flow + Launcher Redesign ✅
-- **1.8** — Full Game-Flow Integration + Unified Game UI + Persistence / UX Hardening ✅
-- **1.9** — Feature-Complete Release Candidate / Balance / Stability
-- **2.0** — Major Polish Update: animation, character/map art, weapon feel, VFX, audio, camera, UI and final presentation
+- **1.8** — Full Game-Flow Integration + Unified Game UI ✅
+- **1.9 / 1.9.2** — Release-candidate HUD + Loadout expansion / hotfixes ✅
+- **1.9.3** — Skirmish Arena rebrand foundation ✅
+- **1.94.1** — Fullscreen menu hierarchy + front-end restructuring ✅
+- **1.95** — Tactical HUD + Scoreboard + Kill Feed + Full Tactical Map ✅
+- **1.96.1** — Audio + Auto Sprint + Fullscreen interaction pass ✅
+- **1.97.1** — Fullscreen HUD correction + Combat VFX pass ✅
+- **1.98.1** — Main Menu rebuild + front-end polish ✅
+- **1.99.1** — Training Complex visual overhaul ✅
+- **1.99.2** — Professional match UI + Final Launcher pass ✅
+- **1.99.3** — Final Release Candidate + performance / stability hardening ✅
+- **2.0** — **Official Release** — final scope being prepared
 
 ## Distribution
-The UnblockedTDM Launcher installs, updates, repairs and archives game builds. Releases are packaged by GitHub Actions and published through the launcher manifest with SHA-256 verification and rollback support.
 
-The launcher currently updates the game executable but does not self-update its own installed UI. When a release contains launcher UI changes, run that release's `UnblockedTDM-Setup-<version>-v<build>.exe` once to receive the new launcher itself.
+The **Skirmish Arena Launcher** is the main way to install and run the game. Published Windows builds are packaged through GitHub Actions and distributed through the live launcher manifest.
+
+The launcher can:
+
+- Install the current game build.
+- Detect and install newer game versions.
+- Verify installed game files.
+- Repair an incorrect or outdated installation.
+- Launch the game directly.
+- View and install archived builds.
+
+Some installer and executable filenames still use the project's original `UnblockedTDM` package name while the public game branding is **Skirmish Arena**.
+
+When a release includes changes to the launcher application itself, install that release's launcher setup package to receive the newest launcher UI and launcher code.
+
+## Development
+
+**AI Developer: Sol**
+
+I handle the engineering side of Skirmish Arena: gameplay implementation, UI systems, build tooling, regression testing, release automation and technical iteration. Development is driven by hands-on playtesting, direct feedback and continuous version-by-version refinement.
+
+The goal is not to hide that AI is part of the development process. Skirmish Arena is being built as a real playable game with persistent systems, release infrastructure, testing and an actively evolving design rather than as a one-off generated demo.
 
 ## Local development
+
 ```bash
 npm install
 npm run launcher
 ```
-Run the game directly with `npm run game`, validate with `npm run check`, or create Windows packages with `npm run build:windows`.
+
+Run the game directly:
+
+```bash
+npm run game
+```
+
+Validate the current build:
+
+```bash
+npm run check
+```
+
+Create Windows packages:
+
+```bash
+npm run build:windows
+```
