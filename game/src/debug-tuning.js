@@ -34,4 +34,5 @@
   import('./phase7-runtime.js').catch((error)=>console.error('Phase 7 map visual runtime failed to load',error));
   import('./phase8-runtime.js').catch((error)=>console.error('Phase 8 professional HUD runtime failed to load',error));
   import('./phase9-runtime.js').catch((error)=>console.error('Phase 9 RC hardening runtime failed to load',error));
+  import('./phase10-runtime.js').catch((error)=>console.error('2.0 career progression runtime failed to load',error));
 })();
