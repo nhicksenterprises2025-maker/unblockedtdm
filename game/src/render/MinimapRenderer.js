@@ -1,6 +1,7 @@
 import { TILE_SIZE } from '../engine/constants.js';
 
 const ENEMY_REVEAL_SECONDS = 1.5;
+const MINIMAP_FRAME_MS = 1000 / 30;
 
 function readMode() {
   try {
@@ -211,7 +212,11 @@ export class MinimapRenderer {
 
   draw({ players, localPlayer }) {
     if (!this.canvas || !localPlayer) return;
-    const nowSeconds = performance.now() / 1000;
+    const nowMs = performance.now();
+    if (nowMs - this.lastDrawTime < MINIMAP_FRAME_MS) return;
+    this.lastDrawTime = nowMs;
+
+    const nowSeconds = nowMs / 1000;
     this.observeEnemyFire(players, localPlayer, nowSeconds);
     const mode = readMode() === 'rotate' ? 'rotate' : 'north-up';
     const ctx = this.ctx;
