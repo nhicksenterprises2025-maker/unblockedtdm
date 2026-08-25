@@ -99,14 +99,19 @@ export function nextTitleForLevel(level) {
 }
 
 export function calculateMatchXp({ won = false, kills = 0, assists = 0, damage = 0, criticals = 0, bestStreak = 0 } = {}) {
+  const safeKills = Math.floor(safeNumber(kills));
+  const safeAssists = Math.floor(safeNumber(assists));
+  const safeDamage = Math.floor(safeNumber(damage));
+  const safeCriticals = Math.floor(safeNumber(criticals));
+  const safeStreak = Math.floor(safeNumber(bestStreak));
   const breakdown = {
     completion: 200,
     victory: won ? 175 : 0,
-    kills: Math.max(0, Math.floor(kills)) * 22,
-    assists: Math.max(0, Math.floor(assists)) * 12,
-    damage: Math.min(220, Math.floor(Math.max(0, damage) / 18)),
-    criticals: Math.max(0, Math.floor(criticals)) * 8,
-    streak: Math.min(100, Math.max(0, Math.floor(bestStreak)) * 10)
+    kills: safeKills * 22,
+    assists: safeAssists * 12,
+    damage: Math.min(220, Math.floor(safeDamage / 18)),
+    criticals: safeCriticals * 8,
+    streak: Math.min(100, safeStreak * 10)
   };
   return { total: Object.values(breakdown).reduce((sum, value) => sum + value, 0), breakdown };
 }
@@ -159,22 +164,29 @@ export class ProgressionStore {
       bestStreak: local.bestStreak
     });
 
+    const safeKills = Math.floor(safeNumber(local.kills));
+    const safeDeaths = Math.floor(safeNumber(local.deaths));
+    const safeAssists = Math.floor(safeNumber(local.assists));
+    const safeDamage = Math.floor(safeNumber(local.damage));
+    const safeCriticals = Math.floor(safeNumber(local.criticals));
+    const safeStreak = Math.floor(safeNumber(local.bestStreak));
+
     this.profile.totalXp += xp.total;
     this.profile.matches += 1;
     this.profile.wins += won ? 1 : 0;
     this.profile.losses += won ? 0 : 1;
-    this.profile.kills += Math.max(0, Math.floor(local.kills || 0));
-    this.profile.deaths += Math.max(0, Math.floor(local.deaths || 0));
-    this.profile.assists += Math.max(0, Math.floor(local.assists || 0));
-    this.profile.damage += Math.max(0, Math.floor(local.damage || 0));
-    this.profile.criticals += Math.max(0, Math.floor(local.criticals || 0));
-    this.profile.bestStreak = Math.max(this.profile.bestStreak, Math.max(0, Math.floor(local.bestStreak || 0)));
+    this.profile.kills += safeKills;
+    this.profile.deaths += safeDeaths;
+    this.profile.assists += safeAssists;
+    this.profile.damage += safeDamage;
+    this.profile.criticals += safeCriticals;
+    this.profile.bestStreak = Math.max(this.profile.bestStreak, safeStreak);
     this.profile.recent.unshift({
       won: Boolean(won),
-      kills: Math.max(0, Math.floor(local.kills || 0)),
-      deaths: Math.max(0, Math.floor(local.deaths || 0)),
-      assists: Math.max(0, Math.floor(local.assists || 0)),
-      damage: Math.max(0, Math.floor(local.damage || 0)),
+      kills: safeKills,
+      deaths: safeDeaths,
+      assists: safeAssists,
+      damage: safeDamage,
       xp: xp.total,
       durationLabel: String(durationLabel || '0:00'),
       completedAt: Date.now()
