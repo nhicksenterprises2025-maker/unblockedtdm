@@ -37,4 +37,5 @@
   import('./phase10-runtime.js').catch((error)=>console.error('2.0 career progression runtime failed to load',error));
   import('./phase2011-runtime.js').catch((error)=>console.error('2.01.1 gameplay weapon model UI failed to load',error));
   import('./phase2012-runtime.js').catch((error)=>console.error('2.01.2 crosshair/weapon info UI failed to load',error));
+  import('./phase2013-runtime.js').catch((error)=>console.error('2.01.3 loadout one-page UI failed to load',error));
 })();
