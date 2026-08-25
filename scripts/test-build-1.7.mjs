@@ -80,14 +80,19 @@ for (const token of ['YOUR K/D/A', 'YOUR DAMAGE', 'CRITICAL HITS', 'REMATCH', 'M
 const launcherHtml = fs.readFileSync(new URL('../launcher/src/index.html', import.meta.url), 'utf8');
 const launcherCss = fs.readFileSync(new URL('../launcher/src/styles.css', import.meta.url), 'utf8');
 const launcherRenderer = fs.readFileSync(new URL('../launcher/src/renderer.js', import.meta.url), 'utf8');
-for (const token of ['LAUNCH GAME', 'BUILD ARCHIVE', 'assets/skirmish-arena-mark.svg', 'assets/training-complex-art.svg', 'status-strip']) {
+for (const token of ['BUILD ARCHIVE', 'assets/skirmish-arena-mark.svg', 'assets/training-complex-art.svg', 'status-strip']) {
   assert.ok(launcherHtml.includes(token) || launcherCss.includes(token), `Missing launcher redesign contract: ${token}`);
 }
+assert.ok(launcherHtml.includes('id="playButton"'), 'Launcher must preserve the primary Play CTA.');
+assert.ok(launcherHtml.includes('>PLAY</button>'), 'Launcher primary CTA must remain clearly labeled PLAY.');
 assert.equal(launcherCss.includes('radial-gradient'), false, 'Launcher must not use the previous decorative radial gradient aesthetic.');
 assert.equal(launcherCss.includes('linear-gradient'), false, 'Launcher must not use large decorative gradients.');
 for (const forbidden of ['border-radius:10px', 'border-radius:14px', 'border-radius:16px', 'border-radius:999px']) {
   assert.equal(launcherCss.includes(forbidden), false, `Launcher still contains oversized repeated rounding: ${forbidden}`);
 }
-assert.ok(launcherRenderer.includes("button.textContent = 'LAUNCHING…'"), 'Launch CTA must expose an actual launching state.');
+assert.ok(
+  launcherRenderer.includes("button.textContent = 'STARTING…'") || launcherRenderer.includes("button.textContent = 'LAUNCHING…'"),
+  'Launch CTA must expose an actual launching state.'
+);
 
 console.log('Build 1.7 bind fix, bot accuracy, postgame stats and authored launcher checks passed.');
