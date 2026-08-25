@@ -1,0 +1,44 @@
+/* Skirmish Arena 2.01.4 — Weapon Info scroll repair.
+   Presentation only. Loadouts remain one-page/no-scroll. */
+
+/*
+  2.01.3 restored overflow:auto, but left main-content at height:auto.
+  Weapon Info can therefore grow beyond the fixed menu shell and be clipped
+  instead of creating a real scroll container. Constrain the content column
+  to the shell and let it own vertical scrolling.
+*/
+body.ui-2014.weapon-info-open .main-content{
+  box-sizing:border-box!important;
+  height:100%!important;
+  max-height:100vh!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+
+body.ui-2014.weapon-info-open [data-menu-view="weapon-info"].active{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:min-content!important;
+  overflow:visible!important;
+  padding-bottom:24px;
+}
+
+body.ui-2014.weapon-info-open .weapon-info-layout,
+body.ui-2014.weapon-info-open .weapon-info-list,
+body.ui-2014.weapon-info-open .weapon-info-detail{
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+
+/* Keep the 2.01.3 Loadouts contract untouched. */
+body.ui-2014 .loadout-screen:not(.hidden),
+body.ui-2014 .loadout-screen:not(.hidden) .loadout-shell,
+body.ui-2014 .loadout-screen:not(.hidden) .loadout-shell-v16,
+body.ui-2014 .loadout-screen:not(.hidden) .loadout-body{
+  overflow:hidden!important;
+}
