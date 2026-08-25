@@ -9,6 +9,12 @@ export class GameLoop {
     this.lastTime = 0;
     this.raf = 0;
     this.frame = this.frame.bind(this);
+    this.onVisibilityChange = this.onVisibilityChange.bind(this);
+    if (globalThis.document?.addEventListener) document.addEventListener('visibilitychange', this.onVisibilityChange);
+  }
+
+  onVisibilityChange() {
+    this.lastTime = performance.now();
   }
 
   start() {
@@ -30,6 +36,11 @@ export class GameLoop {
 
   frame(now) {
     if (!this.running) return;
+    if (globalThis.document?.hidden) {
+      this.lastTime = now;
+      this.raf = requestAnimationFrame(this.frame);
+      return;
+    }
     const dt = Math.min((now - this.lastTime) / 1000, MAX_DT);
     this.lastTime = now;
     if (!this.paused) this.update(dt, now);
