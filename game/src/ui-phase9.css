@@ -1,0 +1,60 @@
+/* Skirmish Arena Phase 9 — release-candidate hardening.
+   Presentation/performance only. No gameplay geometry or input interception. */
+
+body.ui-phase9:not(.debug-visible) .debug-chrome,
+body.ui-phase9:not(.debug-visible) #debugPanel{
+  display:none!important;
+}
+
+body.ui-phase9.match-started .health-hud,
+body.ui-phase9.match-started .stamina-hud,
+body.ui-phase9.match-started .dash-hud,
+body.ui-phase9.match-started .weapon-hud,
+body.ui-phase9.match-started .match-hud,
+body.ui-phase9.match-started .minimap-shell,
+body.ui-phase9.match-started .respawn-panel{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+
+body.ui-phase9.match-started .health-hud,
+body.ui-phase9.match-started .stamina-hud,
+body.ui-phase9.match-started .dash-hud,
+body.ui-phase9.match-started .weapon-hud{
+  background:rgba(5,11,16,.72)!important;
+}
+
+body.ui-phase9.match-started .match-hud{
+  background:rgba(4,10,15,.78)!important;
+}
+
+body.ui-phase9.match-started .minimap-shell{
+  background:rgba(4,10,15,.80)!important;
+  box-shadow:0 6px 18px rgba(0,0,0,.16)!important;
+}
+
+body.ui-phase9.match-started .respawn-panel{
+  background:rgba(4,10,15,.84)!important;
+}
+
+body.ui-phase9 #gameCanvas,
+body.ui-phase9 .minimap-shell,
+body.ui-phase9 .match-hud,
+body.ui-phase9 .health-hud,
+body.ui-phase9 .stamina-hud,
+body.ui-phase9 .dash-hud,
+body.ui-phase9 .weapon-hud{
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+body.ui-phase9.match-started .phase3-feed-row{
+  transition:opacity .12s linear,transform .12s ease-out!important;
+}
+
+@media (max-width:1280px){
+  body.ui-phase9.match-started .phase3-kill-feed{width:min(276px,28vw)!important}
+  body.ui-phase9.match-started .weapon-hud{width:236px!important}
+  body.ui-phase9.match-started .health-hud,
+  body.ui-phase9.match-started .stamina-hud{width:208px!important}
+}
