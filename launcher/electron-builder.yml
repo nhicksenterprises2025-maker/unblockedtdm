@@ -1,5 +1,5 @@
 appId: com.unblockedtdm.launcher
-productName: UnblockedTDM Launcher
+productName: Skirmish Arena Launcher
 electronVersion: 38.0.0
 asar: true
 files:
@@ -10,7 +10,7 @@ extraResources:
 win:
   target:
     - nsis
-  executableName: UnblockedTDM Launcher
+  executableName: Skirmish Arena Launcher
 artifactName: UnblockedTDM-Setup.exe
 directories:
   output: ../dist-launcher
@@ -20,6 +20,6 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: always
   createStartMenuShortcut: true
-  shortcutName: UnblockedTDM
-  uninstallDisplayName: UnblockedTDM
+  shortcutName: Skirmish Arena
+  uninstallDisplayName: Skirmish Arena Launcher
   deleteAppDataOnUninstall: false
