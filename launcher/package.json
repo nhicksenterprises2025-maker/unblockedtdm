@@ -2,6 +2,6 @@
   "name": "unblockedtdm-launcher",
   "productName": "Skirmish Arena Launcher",
   "version": "1.0.0",
-  "main": "src/main.js",
+  "main": "src/boot.js",
   "private": true
 }
