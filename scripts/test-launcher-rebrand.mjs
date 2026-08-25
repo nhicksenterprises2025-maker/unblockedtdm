@@ -9,7 +9,7 @@ const index = read('launcher/src/index.html');
 const renderer = read('launcher/src/renderer.js');
 
 assert.equal(pkg.productName, 'Skirmish Arena Launcher');
-assert.equal(pkg.version, '1.0.1');
+assert.equal(pkg.version, '1.0.2');
 assert.equal(pkg.main, 'src/boot.js');
 
 for (const token of [
@@ -28,4 +28,11 @@ assert.ok(index.includes('<strong>SKIRMISH</strong><span>ARENA</span>'), 'Launch
 assert.equal(index.includes('UnblockedTDM'), false, 'Legacy project branding must not appear in visible launcher HTML.');
 assert.equal(renderer.includes('UnblockedTDM'), false, 'Legacy project branding must not appear in visible launcher renderer copy.');
 
-console.log('Launcher rebrand checks passed: same launcher identity/data, Skirmish Arena Windows branding, and no visible legacy branding.');
+for (const token of [
+  'async function ensureNewestInstalled()',
+  'await ensureNewestInstalled();',
+  "button.textContent = 'CHECKING…'",
+  "stateText.textContent = 'VERIFYING LATEST BUILD'"
+]) assert.ok(renderer.includes(token), `Launcher 1.0.2 newest-build guard missing: ${token}`);
+
+console.log('Launcher 1.0.2 checks passed: same identity/data, Skirmish Arena branding, and newest-build auto-install/play guard.');
