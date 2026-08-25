@@ -1,0 +1,15 @@
+{
+  "product": "Skirmish Arena Launcher",
+  "launcherVersion": "1.0.1",
+  "tag": "launcher-1.0.1",
+  "title": "Skirmish Arena Launcher 1.0.1 — Branding Refresh",
+  "notesFile": "docs/releases/launcher-1.0.1.md",
+  "gameVersion": "1.99.3",
+  "gameBuild": 1,
+  "gameSequence": 31,
+  "gamePhase": "Phase 9 — Final Release Candidate",
+  "gameTag": "build-1.99.3-v1",
+  "gameTitle": "Skirmish Arena 1.99.3 — Phase 9",
+  "gameAsset": "UnblockedTDM-1.99.3-v1.exe",
+  "releaseRevision": 1
+}
