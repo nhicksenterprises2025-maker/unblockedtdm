@@ -1,11 +1,11 @@
 {
   "product":"Skirmish Arena",
-  "gameVersion":"2.01.2",
+  "gameVersion":"2.01.3",
   "build":1,
-  "phase":"2.01.2 — Crosshair Spread + One-Page Weapon Info",
-  "tag":"build-2.01.2-v1",
-  "title":"Skirmish Arena 2.01.2",
-  "notesFile":"docs/releases/build-2.01.2-v1.md",
-  "sequence":35,
+  "phase":"2.01.3 — Main Menu Scroll + One-Page Loadouts",
+  "tag":"build-2.01.3-v1",
+  "title":"Skirmish Arena 2.01.3",
+  "notesFile":"docs/releases/build-2.01.3-v1.md",
+  "sequence":36,
   "releaseRevision":1
 }
