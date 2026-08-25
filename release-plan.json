@@ -1,11 +1,11 @@
 {
   "product":"Skirmish Arena",
-  "gameVersion":"1.99.2",
+  "gameVersion":"1.99.3",
   "build":1,
-  "phase":"Phase 8 — Professional UI + Final Launcher",
-  "tag":"build-1.99.2-v1",
-  "title":"Skirmish Arena 1.99.2 — Phase 8",
-  "notesFile":"docs/releases/build-1.99.2-v1.md",
-  "sequence":30,
-  "releaseRevision":3
+  "phase":"Phase 9 — Final Release Candidate",
+  "tag":"build-1.99.3-v1",
+  "title":"Skirmish Arena 1.99.3 — Phase 9",
+  "notesFile":"docs/releases/build-1.99.3-v1.md",
+  "sequence":31,
+  "releaseRevision":1
 }
