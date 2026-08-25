@@ -64,7 +64,7 @@ assert.ok(debug.includes("import('./phase10-runtime.js')"), '2.0 progression run
 for (const token of [
   'ProgressionStore',
   'unblockedtdm:match-complete',
-  'data-career-strip',
+  'dataset.careerStrip',
   'career-postgame',
   'MATCH XP',
   'NEXT TITLE'
