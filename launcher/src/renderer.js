@@ -78,10 +78,12 @@ async function checkUpdates() {
       $('#updateButton').dataset.mode = 'check';
       $('#statusReady').textContent = 'READY';
     }
+    return result;
   } catch (error) {
     $('#updateStatus').textContent = 'CHANNEL ERROR';
     $('#updateDetail').textContent = error.message;
     $('#statusReady').textContent = 'OFFLINE';
+    return null;
   }
 }
 
@@ -94,13 +96,23 @@ async function installLatest() {
     renderState(state);
     await checkUpdates();
     $('#progressPanel').classList.add('hidden');
+    return result;
   } catch (error) {
     $('#updateStatus').textContent = 'UPDATE FAILED';
     $('#updateDetail').textContent = error.message;
     $('#statusReady').textContent = 'ERROR';
+    throw error;
   } finally {
     $('#updateButton').disabled = false;
   }
+}
+
+async function ensureNewestInstalled() {
+  const result = await checkUpdates();
+  if (!result?.updateAvailable) return result;
+  $('#updateDetail').textContent = 'Installing newest Skirmish Arena build automatically.';
+  await installLatest();
+  return checkUpdates();
 }
 
 async function loadArchive() {
@@ -156,9 +168,12 @@ async function init() {
     const button = $('#playButton');
     const stateText = $('#launchState');
     button.disabled = true;
-    button.textContent = 'STARTING…';
-    stateText.textContent = 'LAUNCHING';
+    button.textContent = 'CHECKING…';
+    stateText.textContent = 'VERIFYING LATEST BUILD';
     try {
+      await ensureNewestInstalled();
+      button.textContent = 'STARTING…';
+      stateText.textContent = 'LAUNCHING';
       await window.launcherAPI.playCurrent();
       stateText.textContent = 'GAME STARTED';
     } catch (error) {
@@ -202,8 +217,13 @@ async function init() {
     }
   });
 
-  if (state.settings.autoCheckUpdates) checkUpdates();
-  else {
+  if (state.settings.autoCheckUpdates) {
+    try {
+      await ensureNewestInstalled();
+    } catch {
+      // The update panel already exposes the actionable error. Keep the launcher usable offline.
+    }
+  } else {
     $('#updateStatus').textContent = 'MANUAL CHECK';
     $('#updateDetail').textContent = 'Automatic update checks are disabled.';
   }
