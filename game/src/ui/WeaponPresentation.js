@@ -1,3 +1,16 @@
+import { WeaponRenderer } from '../render/WeaponRenderer.js';
+
+const PREVIEW_METHODS = Object.freeze({
+  'assault-rifle': 'drawAR',
+  smg: 'drawSMG',
+  sniper: 'drawSniper',
+  shotgun: 'drawShotgun',
+  lmg: 'drawLMG',
+  pistol: 'drawPistol',
+  launcher: 'drawLauncher',
+  melee: 'drawMelee'
+});
+
 function modelShape(id) {
   const shapes = {
     'assault-rifle': '<path d="M18 42h40l10-9h54l14 7h34v8h-36l-13 8H78l-9 14H55l5-20H18z"/><path class="accent" d="M93 33v-8h28v8M118 48l7 17h-17l-5-17"/>',
@@ -13,7 +26,46 @@ function modelShape(id) {
 }
 
 export function weaponModelSvg(weapon, className = '') {
+  const safeId = String(weapon?.id || 'assault-rifle').replace(/[^a-z0-9-]/gi, '');
+  const safeName = String(weapon?.name || 'Weapon').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  return `<canvas class="phase2-weapon-svg phase2011-weapon-canvas ${className}" width="660" height="220" data-game-weapon-model="${safeId}" role="img" aria-label="${safeName} in-game model"></canvas>`;
+}
+
+export function legacyWeaponModelSvg(weapon, className = '') {
   return `<svg class="phase2-weapon-svg ${className}" viewBox="0 0 220 88" role="img" aria-label="${weapon.name} model">${modelShape(weapon.id)}</svg>`;
+}
+
+export function paintGameplayWeaponModel(canvas) {
+  if (!(canvas instanceof HTMLCanvasElement)) return false;
+  const weaponId = canvas.dataset.gameWeaponModel;
+  const method = PREVIEW_METHODS[weaponId];
+  if (!method) return false;
+
+  const ctx = canvas.getContext('2d', { alpha: true });
+  if (!ctx) return false;
+
+  const renderer = new WeaponRenderer(ctx);
+  const state = { firing: false, reloading: false };
+  const scale = Math.min(canvas.width / 142, canvas.height / 58);
+  const centerX = weaponId === 'sniper' ? 33 : weaponId === 'melee' ? 21 : 25;
+  const centerY = weaponId === 'lmg' ? 5 : weaponId === 'launcher' ? 5 : 2;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(canvas.width / 2 - centerX * scale, canvas.height / 2 - centerY * scale);
+  ctx.scale(scale, scale);
+  renderer[method](ctx, state, 0);
+  ctx.restore();
+  canvas.dataset.weaponHydrated = 'true';
+  return true;
+}
+
+export function hydrateWeaponModelCanvases(root = document) {
+  const canvases = root instanceof HTMLCanvasElement
+    ? [root]
+    : [...root.querySelectorAll?.('canvas[data-game-weapon-model]') || []];
+  for (const canvas of canvases) paintGameplayWeaponModel(canvas);
+  return canvases.length;
 }
 
 function clamp(value, min = 0, max = 1) { return Math.min(max, Math.max(min, value)); }
