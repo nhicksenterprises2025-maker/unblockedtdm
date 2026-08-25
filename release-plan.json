@@ -1,11 +1,11 @@
 {
   "product":"Skirmish Arena",
-  "gameVersion":"2.01.1",
+  "gameVersion":"2.01.2",
   "build":1,
-  "phase":"2.01.1 — Gameplay Weapon Models in UI",
-  "tag":"build-2.01.1-v1",
-  "title":"Skirmish Arena 2.01.1",
-  "notesFile":"docs/releases/build-2.01.1-v1.md",
-  "sequence":34,
+  "phase":"2.01.2 — Crosshair Spread + One-Page Weapon Info",
+  "tag":"build-2.01.2-v1",
+  "title":"Skirmish Arena 2.01.2",
+  "notesFile":"docs/releases/build-2.01.2-v1.md",
+  "sequence":35,
   "releaseRevision":1
 }
