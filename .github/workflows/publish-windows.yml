@@ -10,14 +10,50 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: unblockedtdm-release
   cancel-in-progress: false
 
 jobs:
+  detect-release-type:
+    runs-on: ubuntu-latest
+    outputs:
+      game: ${{ steps.detect.outputs.game }}
+      launcher: ${{ steps.detect.outputs.launcher }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed release plan
+        id: detect
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "game=true" >> "$GITHUB_OUTPUT"
+            echo "launcher=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          files="$(git diff-tree --no-commit-id --name-only -r HEAD)"
+          if printf '%s\n' "$files" | grep -Fxq 'release-plan.json'; then
+            echo "game=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "game=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if printf '%s\n' "$files" | grep -Fxq 'launcher-release-plan.json'; then
+            echo "launcher=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "launcher=false" >> "$GITHUB_OUTPUT"
+          fi
+
   windows-release:
-    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[launcher-only]') }}
+    needs: detect-release-type
+    if: ${{ needs.detect-release-type.outputs.game == 'true' }}
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -141,7 +177,8 @@ jobs:
           git push origin HEAD:main
 
   launcher-release:
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[launcher-only]') }}
+    needs: detect-release-type
+    if: ${{ needs.detect-release-type.outputs.launcher == 'true' }}
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -161,7 +198,7 @@ jobs:
           npm install --no-audit --no-fund 2>&1 | Tee-Object -FilePath launcher-install.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Validate launcher rebrand
+      - name: Validate launcher
         shell: pwsh
         run: |
           "validate" | Set-Content launcher-failure-stage.txt
@@ -172,7 +209,7 @@ jobs:
           node scripts/test-launcher-rebrand.mjs 2>&1 | Tee-Object -FilePath launcher-validate.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Restore immutable 1.99.3 game bundle
+      - name: Restore immutable bootstrap game
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -229,19 +266,29 @@ jobs:
           }
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Restore public RC channel and publish launcher manifest
+      - name: Restore canonical 2.0 release assets
+        if: ${{ success() }}
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $plan = Get-Content launcher-release-plan.json | ConvertFrom-Json
+          if ($plan.launcherVersion -ne '1.0.2') { exit 0 }
+          New-Item -ItemType Directory -Force -Path canonical-2.0 | Out-Null
+          gh run download 32860482653 --name UnblockedTDM-Windows --dir canonical-2.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $game = Get-ChildItem canonical-2.0 -Recurse -Filter 'UnblockedTDM-2.0-v1.exe' | Select-Object -First 1
+          $installer = Get-ChildItem canonical-2.0 -Recurse -Filter 'UnblockedTDM-Setup-2.0-v1.exe' | Select-Object -First 1
+          $manifest = Get-ChildItem canonical-2.0 -Recurse -Filter 'release-manifest.json' | Select-Object -First 1
+          if (-not $game -or -not $installer -or -not $manifest) { throw 'Canonical 2.0 artifact is incomplete.' }
+          gh release upload build-2.0-v1 $game.FullName $installer.FullName $manifest.FullName --clobber
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Publish launcher manifest and repair game channel metadata
         shell: pwsh
         run: |
           "publish-launcher-manifest" | Set-Content launcher-failure-stage.txt
           $plan = Get-Content launcher-release-plan.json | ConvertFrom-Json
-          $versions = Get-Content distribution/versions.json -Raw | ConvertFrom-Json
-          $rc = $versions.versions | Where-Object { $_.tag -eq $plan.gameTag } | Select-Object -First 1
-          if (-not $rc) { throw "Could not find $($plan.gameTag) in distribution/versions.json" }
-
-          $rc | ConvertTo-Json -Depth 20 | Set-Content distribution/latest.json
-          $versions.versions = @($versions.versions | Where-Object { $_.tag -ne 'build-2.0-v1' })
-          $versions | ConvertTo-Json -Depth 20 | Set-Content distribution/versions.json
-
           $installer = "dist-release/SkirmishArena-Setup-$($plan.launcherVersion).exe"
           $hash = (Get-FileHash $installer -Algorithm SHA256).Hash.ToLower()
           $launcherManifest = [ordered]@{
@@ -255,18 +302,43 @@ jobs:
           }
           $launcherManifest | ConvertTo-Json | Set-Content distribution/launcher-latest.json
 
+          if ($plan.launcherVersion -eq '1.0.2') {
+            $canonical = [ordered]@{
+              product = 'Skirmish Arena'
+              gameVersion = '2.0'
+              build = 1
+              sequence = 33
+              phase = '2.0 — Career Progression'
+              tag = 'build-2.0-v1'
+              title = 'Skirmish Arena 2.0'
+              gameUrl = 'https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.0-v1/UnblockedTDM-2.0-v1.exe'
+              installerUrl = 'https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.0-v1/UnblockedTDM-Setup-2.0-v1.exe'
+              sha256 = '1ad1dc04b5ea4c2cee3f399a3b559f686b3cd92bca3e14237c25fef4a83ac610'
+              installerSha256 = '60ef9afce64785a22059bbcba1bc95a9a5af325ca07bf2670441423fffe7d7bb'
+              publishedAt = '2026-08-25T14:41:38.219Z'
+            }
+            $canonical | ConvertTo-Json -Depth 20 | Set-Content distribution/latest.json
+            $versions = Get-Content distribution/versions.json -Raw | ConvertFrom-Json
+            $remaining = @($versions.versions | Where-Object { $_.tag -ne 'build-2.0-v1' })
+            $versions.versions = @([pscustomobject]$canonical) + $remaining
+            $versions | ConvertTo-Json -Depth 20 | Set-Content distribution/versions.json
+          }
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add distribution/latest.json distribution/versions.json distribution/launcher-latest.json
-          git commit -m "Publish Skirmish Arena Launcher $($plan.launcherVersion) [skip ci]"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git add distribution/launcher-latest.json distribution/latest.json distribution/versions.json
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "Publish Skirmish Arena Launcher $($plan.launcherVersion) [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          }
 
       - name: Upload launcher installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Skirmish-Arena-Launcher-1.0.1
-          path: dist-release/SkirmishArena-Setup-1.0.1.exe
+          name: Skirmish-Arena-Launcher
+          path: dist-release/SkirmishArena-Setup-*.exe
           if-no-files-found: error
 
       - name: Persist launcher failure diagnostics
