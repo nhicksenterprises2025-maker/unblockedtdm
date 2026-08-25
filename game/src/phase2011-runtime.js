@@ -1,4 +1,5 @@
 import { LoadoutStore } from './data/LoadoutStore.js';
+import { WEAPON_LIST } from './data/weapons.js';
 import { hydrateWeaponModelCanvases, weaponModelSvg } from './ui/WeaponPresentation.js';
 
 function ensureStyle(href) {
@@ -18,9 +19,25 @@ function scheduleRefresh() {
   scheduled = true;
   queueMicrotask(() => {
     scheduled = false;
-    hydrateWeaponModelCanvases(document);
+    enhanceWeaponInfoList();
     enhanceRoundLoadoutSwitcher();
+    hydrateWeaponModelCanvases(document);
   });
+}
+
+function enhanceWeaponInfoList() {
+  const list = document.querySelector('[data-weapon-info-list]');
+  if (!list) return;
+
+  for (const button of list.querySelectorAll('[data-weapon-info]')) {
+    const weapon = WEAPON_LIST.find((entry) => entry.id === button.dataset.weaponInfo);
+    if (!weapon || button.querySelector('.phase2011-list-model')) continue;
+    const model = document.createElement('span');
+    model.className = 'phase2011-list-model';
+    model.innerHTML = weaponModelSvg(weapon, 'phase2011-list-canvas');
+    button.prepend(model);
+    hydrateWeaponModelCanvases(model);
+  }
 }
 
 function enhanceRoundLoadoutSwitcher() {
