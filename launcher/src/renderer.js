@@ -37,7 +37,7 @@ function setProgress(payload) {
 
 function renderState(next) {
   state = next;
-  const { buildInfo, installed, settings, gamePath } = next;
+  const { buildInfo, installed, settings } = next;
   const installedCode = buildCode(installed?.gameVersion ? installed : buildInfo);
   $('#phaseLabel').textContent = (installed.phase || buildInfo.phase || 'CLIENT').toUpperCase();
   $('#launcherBuild').textContent = `v${installedCode}`;
@@ -47,7 +47,7 @@ function renderState(next) {
   $('#latestBuild').textContent = installedCode;
   $('#patchTitle').textContent = `BUILD ${installedCode}`;
   $('#patchDetail').textContent = installed.phase || buildInfo.phase || 'Installed release';
-  $('#gamePath').textContent = gamePath;
+  $('#gamePath').textContent = 'MANAGED INSTALL · OPEN FOLDER TO VIEW FILES';
   $('#autoCheckUpdates').checked = settings.autoCheckUpdates;
   $('#minimizeOnPlay').checked = settings.minimizeOnPlay;
   $('#closeAfterPlay').checked = settings.closeAfterPlay;
