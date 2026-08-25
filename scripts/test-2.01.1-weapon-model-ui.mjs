@@ -15,6 +15,9 @@ assert.ok(debug.includes("import('./phase2011-runtime.js')"), '2.01.1 runtime mu
 assert.ok(presentation.includes("import { WeaponRenderer } from '../render/WeaponRenderer.js';"), 'UI previews must reuse the gameplay WeaponRenderer.');
 assert.ok(presentation.includes('canvas[data-game-weapon-model]') || presentation.includes('data-game-weapon-model'), 'Weapon UI must emit gameplay-model canvas targets.');
 assert.ok(presentation.includes('renderer[method](ctx, state, 0)'), 'Weapon UI previews must invoke the real gameplay renderer methods.');
+assert.equal(presentation.includes('legacyWeaponModelSvg'), false, '2.01.1 must not retain a fake SVG weapon fallback.');
+assert.equal(presentation.includes('function modelShape'), false, '2.01.1 must not retain separate authored SVG weapon silhouettes.');
+assert.equal(presentation.includes('<svg class="phase2-weapon-svg'), false, '2.01.1 previews must be gameplay-rendered canvases, not SVG drawings.');
 
 for (const method of ['drawAR', 'drawSMG', 'drawSniper', 'drawShotgun', 'drawLMG', 'drawPistol', 'drawLauncher', 'drawMelee']) {
   assert.ok(presentation.includes(`'${method}'`) || presentation.includes(`: '${method}'`), `2.01.1 preview mapping missing ${method}.`);
@@ -51,4 +54,4 @@ for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12
   assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
 }
 
-console.log('Skirmish Arena 2.01.1 checks passed: weapon info, loadouts and round-break switcher reuse the actual gameplay weapon models with unchanged gameplay contracts.');
+console.log('Skirmish Arena 2.01.1 checks passed: weapon info, loadouts and round-break switcher reuse the actual gameplay weapon models, fake SVG previews are forbidden, and gameplay contracts are unchanged.');
