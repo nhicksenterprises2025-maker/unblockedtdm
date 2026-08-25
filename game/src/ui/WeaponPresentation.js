@@ -1,3 +1,4 @@
+import { CombatFeedbackRenderer } from '../render/CombatFeedbackRenderer.js';
 import { WeaponRenderer } from '../render/WeaponRenderer.js';
 
 const PREVIEW_METHODS = Object.freeze({
@@ -50,6 +51,36 @@ export function hydrateWeaponModelCanvases(root = document) {
   return canvases.length;
 }
 
+export function paintGameplayCrosshairPreview(canvas) {
+  if (!(canvas instanceof HTMLCanvasElement)) return false;
+  const spread = Number(canvas.dataset.gameCrosshairSpread || 0);
+  const kind = String(canvas.dataset.gameCrosshairKind || 'hitscan');
+  const ads = canvas.dataset.gameCrosshairAds === 'true';
+  const ctx = canvas.getContext('2d', { alpha: true });
+  if (!ctx) return false;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const renderer = new CombatFeedbackRenderer(ctx);
+  renderer.drawCrosshair(
+    { x: canvas.width / 2, y: canvas.height / 2 },
+    {
+      currentWeapon: () => ({ kind }),
+      currentSpreadDegrees: () => spread,
+      isFullyADS: () => ads
+    }
+  );
+  canvas.dataset.crosshairHydrated = 'true';
+  return true;
+}
+
+export function hydrateGameplayCrosshairCanvases(root = document) {
+  const canvases = root instanceof HTMLCanvasElement
+    ? [root]
+    : [...root.querySelectorAll?.('canvas[data-game-crosshair-spread]') || []];
+  for (const canvas of canvases) paintGameplayCrosshairPreview(canvas);
+  return canvases.length;
+}
+
 function clamp(value, min = 0, max = 1) { return Math.min(max, Math.max(min, value)); }
 
 export function weaponBarData(weapon) {
@@ -72,6 +103,17 @@ export function statBarsHtml(weapon) {
 export function spreadVisualHtml(weapon) {
   const base = Number(weapon.baseSpreadDegrees || 0);
   const moving = Number(weapon.movingSpreadDegrees || 0);
-  const angle = Math.min(28, moving * 2.4);
-  return `<div class="phase2-spread"><div class="phase2-spread-visual" style="--spread-angle:${angle}deg"><i></i><i></i></div><div><strong>SPREAD VISUALIZER</strong><small>${base}° BASE · ${moving}° MOVING${weapon.adsSpreadMultiplier != null ? ` · ${Math.round(weapon.adsSpreadMultiplier * 100)}% ADS` : ''}</small></div></div>`;
+  const adsMultiplier = Number.isFinite(Number(weapon.adsSpreadMultiplier)) ? Number(weapon.adsSpreadMultiplier) : 1;
+  const ads = base * adsMultiplier;
+  const kind = String(weapon.kind || 'hitscan').replace(/[^a-z0-9-]/gi, '');
+  const states = [
+    ['BASE', base, false],
+    ['MOVING', moving, false],
+    ['ADS', ads, true]
+  ];
+
+  return `<div class="phase2-spread phase2012-spread">
+    <div class="phase2012-spread-copy"><strong>IN-GAME CROSSHAIR SPREAD</strong><small>Same reticle renderer used during live gameplay.</small></div>
+    <div class="phase2012-crosshair-states">${states.map(([label, spread, isAds]) => `<div class="phase2012-crosshair-state"><canvas width="140" height="70" data-game-crosshair-spread="${spread}" data-game-crosshair-kind="${kind}" data-game-crosshair-ads="${isAds}" role="img" aria-label="${label} crosshair at ${spread.toFixed(2)} degrees"></canvas><span>${label}</span><small>${spread.toFixed(2)}°</small></div>`).join('')}</div>
+  </div>`;
 }
