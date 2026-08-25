@@ -1,11 +1,11 @@
 {
   "product":"Skirmish Arena",
-  "gameVersion":"2.01.3",
+  "gameVersion":"2.01.4",
   "build":1,
-  "phase":"2.01.3 — Main Menu Scroll + One-Page Loadouts",
-  "tag":"build-2.01.3-v1",
-  "title":"Skirmish Arena 2.01.3",
-  "notesFile":"docs/releases/build-2.01.3-v1.md",
-  "sequence":36,
+  "phase":"2.01.4 — Weapon Info Scroll Repair",
+  "tag":"build-2.01.4-v1",
+  "title":"Skirmish Arena 2.01.4",
+  "notesFile":"docs/releases/build-2.01.4-v1.md",
+  "sequence":37,
   "releaseRevision":1
 }
