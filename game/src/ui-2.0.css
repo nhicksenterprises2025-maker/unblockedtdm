@@ -1,0 +1,174 @@
+/* Skirmish Arena 2.0 — persistent career progression presentation. */
+body.ui-2-0{
+  --career-bg:rgba(7,13,19,.78);
+  --career-line:#263543;
+  --career-text:#eef4f7;
+  --career-muted:#8193a0;
+  --career-cyan:#55c8ff;
+  --career-gold:#f2c94c;
+}
+
+body.ui-2-0 #mainMenu [data-menu-view="home"]{
+  gap:clamp(18px,2.2vh,30px)!important;
+}
+
+body.ui-2-0 .career-strip{
+  width:100%;
+  max-width:1120px;
+  display:grid;
+  grid-template-columns:1.05fr .8fr .9fr 1.55fr;
+  border:1px solid var(--career-line);
+  background:var(--career-bg);
+  box-shadow:0 16px 44px rgba(0,0,0,.18);
+}
+body.ui-2-0 .career-strip>div{
+  min-width:0;
+  padding:18px 20px;
+  border-right:1px solid var(--career-line);
+}
+body.ui-2-0 .career-strip>div:nth-child(4){border-right:0}
+body.ui-2-0 .career-strip span,
+body.ui-2-0 .career-strip small{
+  display:block;
+  font:800 7px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.13em;
+  color:var(--career-muted);
+}
+body.ui-2-0 .career-strip strong{
+  display:block;
+  margin-top:7px;
+  font:900 21px/1 Inter,Arial,sans-serif;
+  color:var(--career-text);
+}
+body.ui-2-0 .career-primary{
+  border-left:3px solid var(--career-cyan);
+}
+body.ui-2-0 .career-primary strong{font-size:25px}
+body.ui-2-0 .career-primary b{
+  display:block;
+  margin-top:7px;
+  font:900 9px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.15em;
+  color:var(--career-cyan);
+}
+body.ui-2-0 .career-stat small{margin-top:8px}
+body.ui-2-0 .career-xp>div:first-child,
+body.ui-2-0 .career-postgame-progress>div:first-child{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+body.ui-2-0 .career-xp>div:first-child strong,
+body.ui-2-0 .career-postgame-progress>div:first-child strong{
+  margin:0;
+  font-size:11px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+body.ui-2-0 .career-xp-track{
+  position:relative;
+  height:5px;
+  margin:11px 0 8px;
+  overflow:hidden;
+  background:#13202a;
+}
+body.ui-2-0 .career-xp-track i{
+  display:block;
+  height:100%;
+  background:var(--career-cyan);
+  box-shadow:0 0 18px rgba(85,200,255,.25);
+}
+body.ui-2-0 .career-recent{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:11px 20px!important;
+  border-top:1px solid var(--career-line);
+  border-right:0!important;
+}
+body.ui-2-0 .career-recent>span{flex:0 0 auto}
+body.ui-2-0 .career-recent>div{display:flex;gap:7px;min-width:0;overflow:hidden}
+body.ui-2-0 .career-result{
+  display:inline-flex!important;
+  align-items:center;
+  gap:6px;
+  min-width:max-content;
+  padding:5px 8px;
+  border:1px solid #243542;
+  background:#0c151d;
+  font-size:7px!important;
+  letter-spacing:.06em!important;
+}
+body.ui-2-0 .career-result b{color:#9dafba}
+body.ui-2-0 .career-result.win b{color:#71d6a3}
+body.ui-2-0 .career-result.loss b{color:#ff7b89}
+body.ui-2-0 .career-result em{font-style:normal;color:#6f8797}
+body.ui-2-0 .career-empty{white-space:nowrap}
+
+body.ui-2-0 .career-postgame{
+  display:grid;
+  grid-template-columns:.85fr 1.35fr 1.4fr;
+  gap:0;
+  margin:14px 0 18px;
+  border:1px solid #2b3a46;
+  background:#0a1117;
+}
+body.ui-2-0 .career-postgame>div{
+  min-width:0;
+  padding:16px 18px;
+  border-right:1px solid #2b3a46;
+}
+body.ui-2-0 .career-postgame>div:last-child{border-right:0}
+body.ui-2-0 .career-postgame span,
+body.ui-2-0 .career-postgame small{
+  display:block;
+  font:800 7px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.11em;
+  color:#80919d;
+}
+body.ui-2-0 .career-postgame strong{
+  display:block;
+  margin-top:6px;
+  font:900 24px/1 Inter,Arial,sans-serif;
+  color:#f1f5f7;
+}
+body.ui-2-0 .career-postgame-level{
+  border-left:3px solid var(--career-cyan);
+}
+body.ui-2-0 .career-postgame.level-up .career-postgame-level{
+  border-left-color:var(--career-gold);
+}
+body.ui-2-0 .career-postgame-level b{
+  display:block;
+  margin-top:7px;
+  font:900 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.15em;
+  color:var(--career-cyan);
+}
+body.ui-2-0 .career-postgame.level-up .career-postgame-level b{color:var(--career-gold)}
+body.ui-2-0 .career-postgame-earned strong{font-size:29px;color:var(--career-cyan)}
+body.ui-2-0 .career-postgame-earned small{margin-top:8px;line-height:1.65;letter-spacing:.06em}
+body.ui-2-0 .career-postgame-progress .career-xp-track{margin:11px 0 8px}
+
+@media (max-width:1450px){
+  body.ui-2-0 .career-strip{grid-template-columns:1fr 1fr}
+  body.ui-2-0 .career-strip>div:nth-child(2){border-right:0}
+  body.ui-2-0 .career-strip>div:nth-child(3),
+  body.ui-2-0 .career-strip>div:nth-child(4){border-top:1px solid var(--career-line)}
+  body.ui-2-0 .career-strip>div:nth-child(3){border-right:1px solid var(--career-line)}
+  body.ui-2-0 .career-recent{grid-column:1/-1}
+}
+
+@media (max-width:1000px){
+  body.ui-2-0 .career-postgame{grid-template-columns:1fr}
+  body.ui-2-0 .career-postgame>div{border-right:0;border-bottom:1px solid #2b3a46}
+  body.ui-2-0 .career-postgame>div:last-child{border-bottom:0}
+}
+
+@media (max-height:800px){
+  body.ui-2-0 .career-strip>div{padding:12px 14px}
+  body.ui-2-0 .career-recent{display:none}
+  body.ui-2-0 .career-strip strong{font-size:18px}
+  body.ui-2-0 .career-primary strong{font-size:21px}
+}
