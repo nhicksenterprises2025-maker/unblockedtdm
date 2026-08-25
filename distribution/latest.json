@@ -1,14 +1,14 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "1.99.3",
+  "gameVersion": "2.0",
   "build": 1,
-  "sequence": 31,
-  "phase": "Phase 9 — Final Release Candidate",
-  "tag": "build-1.99.3-v1",
-  "title": "Skirmish Arena 1.99.3 — Phase 9",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.99.3-v1/UnblockedTDM-1.99.3-v1.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-1.99.3-v1/UnblockedTDM-Setup-1.99.3-v1.exe",
-  "sha256": "3f31a6b1cc58b4b0a49e64272770fb483677f3a471ff84aa610d7f5225486748",
-  "installerSha256": "927d4e7dfc079a571cbf9fa18f0ae74c4f2936b273314a81071fc5d2d35ec827",
-  "publishedAt": "2026-08-25T14:25:53.854Z"
+  "sequence": 32,
+  "phase": "2.0 — Career Progression",
+  "tag": "build-2.0-v1",
+  "title": "Skirmish Arena 2.0",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.0-v1/UnblockedTDM-2.0-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.0-v1/UnblockedTDM-Setup-2.0-v1.exe",
+  "sha256": "1ad1dc04b5ea4c2cee3f399a3b559f686b3cd92bca3e14237c25fef4a83ac610",
+  "installerSha256": "60ef9afce64785a22059bbcba1bc95a9a5af325ca07bf2670441423fffe7d7bb",
+  "publishedAt": "2026-08-25T14:41:38.219Z"
 }
