@@ -1,0 +1,151 @@
+/* Skirmish Arena 2.1.1 — 1000-level account Career.
+   Extends the approved home screen; it does not restructure the main menu. */
+body.ui-211{
+  --career-panel:#0a1117;
+  --career-panel-2:#0d161e;
+  --career-line-2:#293946;
+  --career-bright:#f0f4f7;
+  --career-dim:#7e919e;
+  --career-cyan-2:#42bfff;
+  --career-gold-2:#ebc85a;
+}
+
+body.ui-211 .career-rank-badge{display:block;overflow:visible}
+body.ui-211 .career-strip-211{cursor:pointer;position:relative;transition:border-color .12s ease,background .12s ease}
+body.ui-211 .career-strip-211:hover{border-color:#3b5a6e;background:rgba(9,17,24,.92)}
+body.ui-211 .career-strip-211:focus-visible{outline:2px solid var(--career-cyan-2);outline-offset:3px}
+body.ui-211 .career-primary-211{display:grid;grid-template-columns:54px minmax(0,1fr);align-items:center;gap:12px}
+body.ui-211 .career-strip-badge{width:48px;height:54px;filter:drop-shadow(0 7px 12px rgba(0,0,0,.32))}
+body.ui-211 .career-view-cue{margin-left:auto;white-space:nowrap;font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;color:var(--career-cyan-2)}
+
+body.ui-211 .career-view{min-height:100%;padding-bottom:24px}
+body.ui-211 .career-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;padding-bottom:18px;border-bottom:1px solid var(--career-line-2)}
+body.ui-211 .career-page-head>div>span,
+body.ui-211 .career-section-intro>span{display:block;font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.18em;color:var(--career-cyan-2)}
+body.ui-211 .career-page-head h2{margin:6px 0 5px;font-size:34px;line-height:1;letter-spacing:-.025em}
+body.ui-211 .career-page-head p{margin:0;color:var(--career-dim);font-size:10px}
+body.ui-211 .career-page-head button{min-width:120px;padding:10px 13px;border:1px solid #314655;border-radius:2px;background:#0c151c;color:#9bc3d7;font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em;cursor:pointer}
+body.ui-211 .career-page-head button:hover{border-color:var(--career-cyan-2);color:#e7f7ff}
+body.ui-211 .career-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--career-line-2)}
+body.ui-211 .career-tabs button{position:relative;padding:13px 12px;border:0;border-right:1px solid var(--career-line-2);background:#080f15;color:#748b9a;font:900 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.14em;cursor:pointer}
+body.ui-211 .career-tabs button:last-child{border-right:0}
+body.ui-211 .career-tabs button.active{color:#e8f7ff;background:#0c1820}
+body.ui-211 .career-tabs button.active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--career-cyan-2)}
+body.ui-211 .career-page-body{padding-top:18px}
+
+body.ui-211 .career-overview-hero{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:258px;border:1px solid var(--career-line-2);background:linear-gradient(120deg,#0a1117,#0d1820)}
+body.ui-211 .career-overview-badge{display:grid;place-items:center;border-right:1px solid var(--career-line-2);background:radial-gradient(circle at 50% 45%,rgba(64,174,226,.11),transparent 62%)}
+body.ui-211 .career-badge-hero{width:150px;height:170px;filter:drop-shadow(0 20px 22px rgba(0,0,0,.44))}
+body.ui-211 .career-overview-identity{display:flex;flex-direction:column;justify-content:center;padding:28px 34px}
+body.ui-211 .career-overview-identity>span{font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.18em;color:var(--career-cyan-2)}
+body.ui-211 .career-overview-identity h1{margin:8px 0 0;font-size:50px;line-height:.95;letter-spacing:-.04em}
+body.ui-211 .career-overview-identity h3{margin:10px 0 22px;font:900 12px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.17em;color:#a8dff7}
+body.ui-211 .career-level-line{display:flex;justify-content:space-between;gap:20px;color:#8ea2ae;font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.09em}
+body.ui-211 .career-level-line b{color:#ddecf3}
+body.ui-211 .career-xp-track-large{height:7px;margin-top:9px}
+
+body.ui-211 .career-account-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px;border-top:1px solid var(--career-line-2);border-left:1px solid var(--career-line-2)}
+body.ui-211 .career-account-grid>div{min-width:0;padding:16px 18px;border-right:1px solid var(--career-line-2);border-bottom:1px solid var(--career-line-2);background:#091117}
+body.ui-211 .career-account-grid span,
+body.ui-211 .career-account-grid small{display:block;font:900 7px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.11em;color:#718794}
+body.ui-211 .career-account-grid strong{display:block;margin:7px 0 6px;font-size:23px;line-height:1;color:#eef4f7}
+body.ui-211 .career-account-grid small{font-size:6px;color:#546a78}
+
+body.ui-211 .career-next-rank{margin-top:12px;padding:18px;border:1px solid var(--career-line-2);background:#091117}
+body.ui-211 .career-next-rank-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px}
+body.ui-211 .career-next-rank-head span{display:block;font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.15em;color:#728996}
+body.ui-211 .career-next-rank-head strong{display:block;margin-top:6px;font-size:15px;color:#edf5f8}
+body.ui-211 .career-next-rank-head>b{font:900 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;color:var(--career-cyan-2)}
+body.ui-211 .career-rank-track{height:8px;margin-top:15px;background:#14232d;overflow:hidden}
+body.ui-211 .career-rank-track i{display:block;height:100%;background:linear-gradient(90deg,#2faee8,#79d8ff);box-shadow:0 0 14px rgba(66,191,255,.28)}
+body.ui-211 .career-rank-track-foot{display:flex;justify-content:space-between;margin-top:7px;font:800 6px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.11em;color:#5f7481}
+body.ui-211 .career-economy-note{display:flex;gap:18px;align-items:center;margin-top:12px;padding:11px 14px;border-left:2px solid #334957;background:#091117}
+body.ui-211 .career-economy-note span{flex:0 0 auto;font:900 6px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.14em;color:#6f8795}
+body.ui-211 .career-economy-note p{margin:0;color:#788d99;font-size:8px;line-height:1.4}
+
+body.ui-211 .career-rank-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+body.ui-211 .career-rank-card{position:relative;display:grid;grid-template-rows:132px auto auto;min-width:0;border:1px solid #273744;background:#091117;overflow:hidden}
+body.ui-211 .career-rank-card.current{border-color:var(--career-cyan-2);box-shadow:inset 0 0 0 1px rgba(66,191,255,.13)}
+body.ui-211 .career-rank-card.locked{filter:saturate(.25);opacity:.53}
+body.ui-211 .career-rank-card-badge{display:grid;place-items:center;border-bottom:1px solid #22313c;background:radial-gradient(circle at 50% 45%,rgba(85,200,255,.08),transparent 64%)}
+body.ui-211 .career-rank-card-badge .career-rank-badge{width:98px;height:112px;filter:drop-shadow(0 11px 13px rgba(0,0,0,.42))}
+body.ui-211 .career-rank-card-copy{padding:11px 12px 8px}
+body.ui-211 .career-rank-card-copy span,
+body.ui-211 .career-rank-card-copy small{display:block;font:800 6px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em;color:#6d8390}
+body.ui-211 .career-rank-card-copy strong{display:block;margin:6px 0 5px;font-size:12px;line-height:1.05;color:#edf4f7}
+body.ui-211 .career-rank-card-copy small{min-height:16px;color:#526976}
+body.ui-211 .career-rank-card>b{padding:7px 12px;border-top:1px solid #1f2d36;font:900 6px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;color:#5e7481}
+body.ui-211 .career-rank-card.current>b{color:var(--career-cyan-2)}
+body.ui-211 .career-rank-card.earned:not(.current)>b{color:#79b996}
+
+body.ui-211 .career-section-intro{padding:2px 0 16px}
+body.ui-211 .career-section-intro h3{margin:7px 0 5px;font-size:24px;letter-spacing:-.02em}
+body.ui-211 .career-section-intro p{margin:0;color:#788d99;font-size:9px}
+body.ui-211 .career-milestone-list{border-top:1px solid var(--career-line-2)}
+body.ui-211 .career-milestone-row{display:grid;grid-template-columns:minmax(160px,.8fr) minmax(260px,1.65fr) minmax(120px,.6fr);align-items:center;min-height:82px;border-left:1px solid var(--career-line-2);border-right:1px solid var(--career-line-2);border-bottom:1px solid var(--career-line-2);background:#091117}
+body.ui-211 .career-milestone-row>div{padding:14px 17px}
+body.ui-211 .career-milestone-row>div+div{border-left:1px solid #22313c}
+body.ui-211 .career-milestone-name span,
+body.ui-211 .career-milestone-reward span{display:block;font:900 6px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.14em;color:#667e8b}
+body.ui-211 .career-milestone-name strong,
+body.ui-211 .career-milestone-reward strong{display:block;margin-top:7px;font-size:12px;color:#edf4f7}
+body.ui-211 .career-milestone-progress>div:first-child{display:flex;justify-content:space-between;gap:12px;font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:#7e929d}
+body.ui-211 .career-milestone-progress b{color:#c4d7df}
+body.ui-211 .career-milestone-track{height:6px;margin-top:10px;background:#14222b}
+body.ui-211 .career-milestone-track i{display:block;height:100%;background:var(--career-cyan-2)}
+body.ui-211 .career-milestone-reward strong{color:var(--career-cyan-2)}
+body.ui-211 .career-milestone-row.complete{opacity:.72}
+body.ui-211 .career-milestone-row.complete .career-milestone-track i{background:#6ca688}
+body.ui-211 .career-milestone-row.complete .career-milestone-reward strong{color:#79b996}
+
+body.ui-211 .career-postgame-211{grid-template-columns:.9fr 1.75fr 1.15fr!important;align-items:stretch}
+body.ui-211 .career-postgame-rank{display:grid;grid-template-columns:74px minmax(0,1fr);align-items:center;gap:11px;border-left:3px solid var(--career-cyan-2)}
+body.ui-211 .career-postgame-211.level-up .career-postgame-rank{border-left-color:var(--career-gold-2)}
+body.ui-211 .career-postgame-badge{width:68px;height:78px;filter:drop-shadow(0 9px 11px rgba(0,0,0,.42))}
+body.ui-211 .career-postgame-rank b{display:block;margin-top:7px;font:900 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.13em;color:var(--career-cyan-2)}
+body.ui-211 .career-postgame-breakdown{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin-top:10px;border-top:1px solid #273640;border-left:1px solid #273640}
+body.ui-211 .career-postgame-breakdown>div{min-width:0;padding:8px;border-right:1px solid #273640;border-bottom:1px solid #273640}
+body.ui-211 .career-postgame-breakdown span{font-size:6px;letter-spacing:.08em}
+body.ui-211 .career-postgame-breakdown small{margin-top:4px;font-size:6px;letter-spacing:.04em}
+body.ui-211 .career-postgame-breakdown strong{margin-top:5px;font-size:10px;color:#9ce2ff}
+body.ui-211 .career-match-total{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:10px}
+body.ui-211 .career-match-total strong{margin:0;font-size:25px;color:var(--career-cyan-2)}
+body.ui-211 .career-postgame-progress{grid-column:3}
+body.ui-211 .career-postgame-milestones{grid-column:1/-1!important;display:block!important;padding:0!important;border-top:1px solid #2b3a46;border-right:0!important}
+body.ui-211 .career-postgame-milestones>span{padding:9px 15px;border-bottom:1px solid #25343e;color:var(--career-gold-2)}
+body.ui-211 .career-postgame-milestones>div{display:grid;grid-template-columns:1fr 1fr auto;align-items:center;gap:12px;padding:9px 15px;border-bottom:1px solid #1f2c34}
+body.ui-211 .career-postgame-milestones>div:last-child{border-bottom:0}
+body.ui-211 .career-postgame-milestones b{font-size:9px;color:#eef4f6}
+body.ui-211 .career-postgame-milestones strong{margin:0;font-size:12px;color:var(--career-gold-2)}
+
+body.ui-211 .career-rank-promotion{position:fixed;z-index:420;inset:0;display:grid;place-items:center;background:rgba(2,6,9,.84);opacity:0;transition:opacity .16s ease;cursor:pointer}
+body.ui-211 .career-rank-promotion.visible{opacity:1}
+body.ui-211 .career-promotion-shell{width:min(520px,88vw);padding:34px 38px 31px;border-top:2px solid #eff5f7;border-bottom:2px solid #eff5f7;background:linear-gradient(90deg,transparent,rgba(11,20,27,.96) 12%,rgba(11,20,27,.96) 88%,transparent);text-align:center;transform:translateY(8px) scale(.98);transition:transform .16s ease}
+body.ui-211 .career-rank-promotion.visible .career-promotion-shell{transform:none}
+body.ui-211 .career-promotion-shell>span{display:block;font:900 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.28em;color:var(--career-gold-2)}
+body.ui-211 .career-promotion-badge{width:190px;height:215px;margin:17px auto 4px;filter:drop-shadow(0 22px 26px rgba(0,0,0,.62))}
+body.ui-211 .career-promotion-shell h2{margin:3px 0 7px;font-size:36px;line-height:1;letter-spacing:.02em}
+body.ui-211 .career-promotion-shell>b{display:block;font:900 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.15em;color:#c8d9e1}
+body.ui-211 .career-promotion-shell>small{display:block;margin-top:11px;font:800 6px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.18em;color:#617783}
+
+@media (max-width:1300px){
+  body.ui-211 .career-rank-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  body.ui-211 .career-postgame-breakdown{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:960px){
+  body.ui-211 .career-overview-hero{grid-template-columns:160px minmax(0,1fr)}
+  body.ui-211 .career-badge-hero{width:115px;height:132px}
+  body.ui-211 .career-account-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.ui-211 .career-rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.ui-211 .career-milestone-row{grid-template-columns:1fr}
+  body.ui-211 .career-milestone-row>div+div{border-left:0;border-top:1px solid #22313c}
+  body.ui-211 .career-postgame-211{grid-template-columns:1fr!important}
+  body.ui-211 .career-postgame-progress{grid-column:1}
+}
+@media (max-height:800px){
+  body.ui-211 .career-overview-hero{min-height:220px}
+  body.ui-211 .career-badge-hero{width:126px;height:144px}
+  body.ui-211 .career-overview-identity h1{font-size:42px}
+  body.ui-211 .career-rank-card{grid-template-rows:110px auto auto}
+  body.ui-211 .career-rank-card-badge .career-rank-badge{width:82px;height:94px}
+}
