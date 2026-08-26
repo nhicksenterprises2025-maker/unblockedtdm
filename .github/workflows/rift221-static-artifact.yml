@@ -5,7 +5,7 @@ on:
     branches: [rift-run-ios]
     paths:
       - '.github/workflows/rift221-static-artifact.yml'
-      - 'rift22patch/**'
+      - 'rift221build/**'
 
 permissions:
   contents: write
@@ -19,54 +19,20 @@ jobs:
           ref: rift-run-ios
           fetch-depth: 0
 
-      - name: Reconstruct exact 2.2.1 HTML
+      - name: Build exact 2.2.1 static snapshot
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import json,re,hashlib
-
-          def parts(d):
-              files=[]
-              for p in Path(d).glob('p*.txt'):
-                  m=re.fullmatch(r'p(\d+)\.txt',p.name)
-                  if m: files.append((int(m.group(1)),p))
-              return ''.join(p.read_text() for _,p in sorted(files))
-
-          # Full 1.8 snapshot.
-          s=parts('rift18plain')
-
-          # 1.9 -> 2.0 -> 2.1 replacement payloads.
-          for d in ('rift19patch','rift20patch','rift21patch'):
-              ops=json.loads(parts(d))
-              for old,new,count in ops:
-                  if count == -1:
-                      if old not in s: raise SystemExit(f'{d}: missing replacement needle')
-                      s=s.replace(old,new)
-                  else:
-                      if s.count(old) < count: raise SystemExit(f'{d}: replacement count mismatch')
-                      s=s.replace(old,new,count)
-
-          # 2.2 CONTRACTS is an offset patch against the exact 2.1 source.
-          ops=json.loads(parts('rift22patch'))
-          for start,end,repl in sorted(ops,key=lambda x:x[0],reverse=True):
-              s=s[:start]+repl+s[end:]
-
-          # 2.2.1 is the static boot hotfix label only; gameplay is identical to 2.2.
-          s=s.replace('<title>RIFT//RUN 2.2</title>','<title>RIFT//RUN 2.2.1</title>',1)
-          s=s.replace('00:00 · v2.2','00:00 · v2.2.1',1)
-          s=s.replace('UPDATE 2.2 · CONTRACTS','UPDATE 2.2.1 · CONTRACTS',1)
-          s=s.replace("b.textContent='2.2 · CONTRACTS · BOOT RECOVERY'","b.textContent='2.2.1 · CONTRACTS · BOOT RECOVERY'",1)
-
-          data=s.encode()
-          sha=hashlib.sha256(data).hexdigest()
-          expected='f034e94ca2ef737d649c3b8df05c7d680946598edcaaaa0a3e37c7d56cd8ca0a'
-          print('bytes',len(data),'sha256',sha)
-          if sha != expected: raise SystemExit('2.2.1 artifact hash mismatch')
-          if 'UPDATE 2.2.1 · CONTRACTS' not in s: raise SystemExit('version marker missing')
-          Path('rift221').mkdir(exist_ok=True)
-          Path('rift221/index.html').write_bytes(data)
-          PY
+          rm -rf dist
+          node rift221build/build.js
+          test -f dist/index.html
+          bytes=$(wc -c < dist/index.html)
+          sha=$(sha256sum dist/index.html | awk '{print $1}')
+          echo "bytes=$bytes sha256=$sha"
+          test "$bytes" = "94593"
+          test "$sha" = "f034e94ca2ef737d649c3b8df05c7d680946598edcaaaa0a3e37c7d56cd8ca0a"
+          grep -q 'UPDATE 2.2.1 · CONTRACTS' dist/index.html
+          mkdir -p rift221
+          cp dist/index.html rift221/index.html
 
       - name: Commit verified static artifact
         shell: bash
