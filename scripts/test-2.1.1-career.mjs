@@ -113,7 +113,7 @@ for (const token of ['singularity','obsidian','prism','galaxy','crystal','blueDi
 assert.ok(badgeHelper.includes('assets/ranks/rank-badges.svg'));
 assert.equal(badgeHelper.toLowerCase().includes('placeholder'), false, 'Rank badge helper cannot contain placeholder rendering.');
 
-for (const token of ['data-menu-view="career"','OVERVIEW','RANKS','MILESTONES','RANK PROMOTION','TOTAL CAREER XP GAINED','VIEW CAREER']) assert.ok(runtime.includes(token), `Career UI missing ${token}.`);
+for (const token of ["view.dataset.menuView = 'career'",'OVERVIEW','RANKS','MILESTONES','RANK PROMOTION','TOTAL CAREER XP GAINED','VIEW CAREER']) assert.ok(runtime.includes(token), `Career UI missing ${token}.`);
 for (const token of ['career-overview-hero','career-rank-grid','career-milestone-row','career-rank-promotion']) assert.ok(css.includes(token), `Career styling missing ${token}.`);
 assert.ok(menu.includes("'career'"), 'MainMenu must allow the injected Career view.');
 assert.equal(index.includes('data-menu-nav="career"'), false, '2.1.1 must not add a Career tile/nav button to the approved main menu.');
