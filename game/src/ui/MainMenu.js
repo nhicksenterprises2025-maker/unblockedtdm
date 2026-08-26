@@ -51,10 +51,11 @@ export class MainMenu {
   }
 
   show(view = 'home') {
-    this.view = ['home', 'settings', 'weapon-info'].includes(view) ? view : 'home';
+    this.view = ['home', 'settings', 'weapon-info', 'career'].includes(view) ? view : 'home';
     this.root.classList.add('visible');
     for (const panel of this.root.querySelectorAll('[data-menu-view]')) panel.classList.toggle('active', panel.dataset.menuView === this.view);
     for (const button of this.root.querySelectorAll('[data-menu-nav]')) button.classList.toggle('active', button.dataset.menuNav === this.view);
+    window.dispatchEvent(new CustomEvent('skirmish:menu-view-change', { detail:{ view:this.view } }));
   }
 
   hide() {
