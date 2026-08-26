@@ -137,8 +137,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             $plan = Get-Content release-plan.json | ConvertFrom-Json
             git commit -m "Publish $($plan.title) distribution manifests [skip ci]"
+            # Build/sync steps can modify tracked metadata. Those generated changes are
+            # not release source and block pull --rebase unless discarded first.
+            git reset --hard HEAD
             git pull --rebase origin main
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             git push origin HEAD:main
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
 
       - name: Upload CI copy of Windows assets
@@ -173,7 +178,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add distribution/last-release-failure.txt
           git commit -m "Record release failure diagnostic [skip ci]" || exit 0
+          git reset --hard HEAD
           git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git push origin HEAD:main
 
   launcher-release:
@@ -330,8 +337,11 @@ jobs:
           git diff --cached --quiet
           if ($LASTEXITCODE -ne 0) {
             git commit -m "Publish Skirmish Arena Launcher $($plan.launcherVersion) [skip ci]"
+            git reset --hard HEAD
             git pull --rebase origin main
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             git push origin HEAD:main
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
 
       - name: Upload launcher installer artifact
@@ -366,5 +376,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add distribution/last-launcher-failure.txt
           git commit -m "Record launcher release failure [skip ci]" || exit 0
+          git reset --hard HEAD
           git pull --rebase origin main
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git push origin HEAD:main
