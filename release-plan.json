@@ -1,11 +1,11 @@
 {
   "product":"Skirmish Arena",
-  "gameVersion":"2.01.4",
+  "gameVersion":"2.1.1",
   "build":1,
-  "phase":"2.01.4 — Weapon Info Scroll Repair",
-  "tag":"build-2.01.4-v1",
-  "title":"Skirmish Arena 2.01.4",
-  "notesFile":"docs/releases/build-2.01.4-v1.md",
-  "sequence":37,
+  "phase":"2.1.1 — 1000-Level Account Career",
+  "tag":"build-2.1.1-v1",
+  "title":"Skirmish Arena 2.1.1",
+  "notesFile":"docs/releases/build-2.1.1-v1.md",
+  "sequence":38,
   "releaseRevision":1
 }
