@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const unpackedExecutable = path.resolve(here, '../dist-game/win-unpacked/UnblockedTDM.exe');
 const portableExecutable = path.resolve(here, '../dist-game/UnblockedTDM.exe');
-const timeoutMs = 60000;
+const smokeOutputDir = path.resolve(here, '../dist-game/smoke-results');
+const timeoutMs = 55000;
 
 if (process.platform !== 'win32') {
   console.log('Packaged Skirmish Arena smoke test skipped outside Windows.');
@@ -19,6 +20,7 @@ for (const executable of [unpackedExecutable, portableExecutable]) {
     process.exit(10);
   }
 }
+fs.mkdirSync(smokeOutputDir, { recursive: true });
 
 function terminateTree(pid) {
   if (!pid) return;
@@ -31,15 +33,26 @@ function terminateTree(pid) {
   } catch {}
 }
 
-function runSmoke(label, executable) {
+function readSmokeResult(resultPath) {
+  try {
+    return JSON.parse(fs.readFileSync(resultPath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function runSmoke(label, executable, resultName) {
   return new Promise((resolve, reject) => {
+    const resultPath = path.join(smokeOutputDir, `${resultName}.json`);
+    fs.rmSync(resultPath, { force: true });
     console.log(`Boot-smoke testing ${label}: ${executable}`);
     const child = spawn(executable, ['--smoke-test'], {
       stdio: 'inherit',
       windowsHide: true,
       env: {
         ...process.env,
-        SKIRMISH_SMOKE_TEST: '1'
+        SKIRMISH_SMOKE_TEST: '1',
+        SKIRMISH_SMOKE_RESULT_PATH: resultPath
       }
     });
 
@@ -53,32 +66,35 @@ function runSmoke(label, executable) {
 
     const timeout = setTimeout(() => {
       if (settled) return;
+      const status = readSmokeResult(resultPath);
       terminateTree(child.pid);
-      finish(reject, new Error(`${label} smoke test timed out after ${timeoutMs}ms.`));
+      finish(reject, new Error(`${label} smoke test timed out after ${timeoutMs}ms. Last status: ${JSON.stringify(status)}`));
     }, timeoutMs);
 
     child.on('error', (error) => {
+      const status = readSmokeResult(resultPath);
       terminateTree(child.pid);
-      finish(reject, new Error(`Unable to start ${label} smoke test: ${error.message}`));
+      finish(reject, new Error(`Unable to start ${label} smoke test: ${error.message}. Last status: ${JSON.stringify(status)}`));
     });
 
     child.on('exit', (code, signal) => {
       if (settled) return;
-      if (code === 0) {
-        console.log(`${label} boot smoke test passed.`);
+      const status = readSmokeResult(resultPath);
+      if (code === 0 && status?.stage === 'pass') {
+        console.log(`${label} boot smoke test passed: ${JSON.stringify(status.state || {})}`);
         finish(resolve);
         return;
       }
-      finish(reject, new Error(`${label} boot smoke test failed (code=${code}, signal=${signal || 'none'}).`));
+      finish(reject, new Error(`${label} boot smoke test failed (code=${code}, signal=${signal || 'none'}). Last status: ${JSON.stringify(status)}`));
     });
   });
 }
 
 try {
   // First prove the exact packaged Electron application reaches modern UI.
-  await runSmoke('win-unpacked packaged app', unpackedExecutable);
+  await runSmoke('win-unpacked packaged app', unpackedExecutable, 'win-unpacked');
   // Then prove the final portable executable used by releases preserves the same boot path.
-  await runSmoke('portable release executable', portableExecutable);
+  await runSmoke('portable release executable', portableExecutable, 'portable');
   console.log('Packaged Skirmish Arena boot integrity passed for both executable paths.');
   process.exit(0);
 } catch (error) {
