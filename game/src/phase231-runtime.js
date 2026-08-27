@@ -8,6 +8,10 @@ function ensureStyle(href) {
   document.head.appendChild(link);
 }
 
+function setText(node, value) {
+  if (node && node.textContent !== value) node.textContent = value;
+}
+
 function weaponInfoBlueprintIcon() {
   return `<svg class="ui231-blueprint-icon" viewBox="0 0 150 110" aria-hidden="true">
     <defs>
@@ -53,10 +57,10 @@ function updateHomeBuildLabel() {
     buildInfoPromise = window.gameAPI?.getBuildInfo?.()
       ?.catch?.(() => null) || Promise.resolve(null);
   }
-  eyebrow.textContent = 'BUILD 2.3.1';
+  setText(eyebrow, 'BUILD 2.3.1');
   buildInfoPromise.then((info) => {
     if (!eyebrow.isConnected) return;
-    eyebrow.textContent = `BUILD ${info?.gameVersion || '2.3.1'}`;
+    setText(eyebrow, `BUILD ${info?.gameVersion || '2.3.1'}`);
   });
 }
 
@@ -84,9 +88,9 @@ function configureWeaponInfoHeader() {
   const eyebrow = title.querySelector('.menu-eyebrow');
   const heading = title.querySelector('h2');
   const copy = title.querySelector('p');
-  if (eyebrow) eyebrow.textContent = 'COMPLETE ARSENAL · CANONICAL COMBAT DATA';
-  if (heading) heading.textContent = 'WEAPON INFO';
-  if (copy) copy.textContent = 'All eight live weapons in one dedicated reference page with real in-game models, exact stats, handling bars and the actual gameplay crosshair spread renderer.';
+  setText(eyebrow, 'COMPLETE ARSENAL · CANONICAL COMBAT DATA');
+  setText(heading, 'WEAPON INFO');
+  setText(copy, 'All eight live weapons in one dedicated reference page with real in-game models, exact stats, handling bars and the actual gameplay crosshair spread renderer.');
 
   title.querySelector('[data-ui221-weapon-back]')?.remove();
   if (!title.querySelector('[data-ui231-weapon-back]')) {
@@ -108,7 +112,7 @@ function syncWeaponPageState() {
 
   if (!active) {
     document.body.classList.remove('ui221-weapon-page');
-    if (weaponView) delete weaponView.dataset.ui231Opened;
+    if (weaponView?.dataset.ui231Opened) delete weaponView.dataset.ui231Opened;
     return;
   }
 
@@ -137,17 +141,17 @@ function refresh231() {
 function scheduleRefresh() {
   if (queued) return;
   queued = true;
-  queueMicrotask(refresh231);
+  requestAnimationFrame(refresh231);
 }
 
 ensureStyle('ui-2.3.1.css');
 document.body.classList.add('ui-231');
 
-const menuRoot = document.getElementById('mainMenu');
-if (menuRoot) {
-  const observer = new MutationObserver(scheduleRefresh);
-  observer.observe(menuRoot, { childList: true, subtree: true });
-}
+// 2.3.1 is the final runtime in the deterministic boot chain. Earlier builds
+// used a subtree-wide MutationObserver here; refresh231 itself mutates that same
+// subtree, allowing a self-triggering microtask loop that could starve Electron
+// and leave the historical 1.6 shell visible/unresponsive. Refresh only from
+// explicit application events and resize, and make all writes idempotent.
 window.addEventListener('skirmish:menu-view-change', scheduleRefresh);
 window.addEventListener('skirmish:show-menu-home', scheduleRefresh);
 window.addEventListener('resize', scheduleRefresh);
