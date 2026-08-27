@@ -1,7 +1,11 @@
 const { app, BrowserWindow, ipcMain, protocol, net } = require('electron');
+const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const buildInfo = require('./build-info.json');
+
+const smokeTest = process.argv.includes('--smoke-test');
+if (smokeTest) app.commandLine.appendSwitch('disable-gpu');
 
 let window;
 let uiReady = false;
@@ -32,10 +36,31 @@ function resolveAppAsset(requestUrl) {
   return resolved;
 }
 
+function writeSmokeSentinel() {
+  const sentinel = process.env.SKIRMISH_SMOKE_SENTINEL;
+  if (!sentinel) return;
+  fs.mkdirSync(path.dirname(sentinel), { recursive: true });
+  fs.writeFileSync(sentinel, JSON.stringify({
+    uiReady: true,
+    product: buildInfo.product,
+    gameVersion: buildInfo.gameVersion,
+    build: buildInfo.build,
+    sequence: buildInfo.sequence,
+    phase: buildInfo.phase,
+    tag: buildInfo.tag
+  }, null, 2));
+}
+
 function showStartupFailure(reason = 'The modern Skirmish Arena UI did not finish loading.') {
   if (!window || window.isDestroyed()) return;
   if (bootTimeout) clearTimeout(bootTimeout);
   bootTimeout = null;
+
+  if (smokeTest) {
+    console.error(`[Skirmish smoke test] ${reason}`);
+    app.exit(2);
+    return;
+  }
 
   const safeReason = JSON.stringify(String(reason));
   window.webContents.executeJavaScript(`
@@ -56,7 +81,7 @@ function createWindow() {
     height: 760,
     minWidth: 960,
     minHeight: 600,
-    fullscreen: true,
+    fullscreen: !smokeTest,
     show: false,
     backgroundColor: '#07141b',
     title: 'Skirmish Arena',
@@ -72,7 +97,7 @@ function createWindow() {
     if (uiReady) return;
     bootTimeout = setTimeout(() => {
       if (!uiReady) showStartupFailure();
-    }, 8000);
+    }, smokeTest ? 15000 : 8000);
   });
 
   window.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
@@ -97,6 +122,13 @@ ipcMain.on('game:ui-ready', () => {
   uiReady = true;
   if (bootTimeout) clearTimeout(bootTimeout);
   bootTimeout = null;
+
+  if (smokeTest) {
+    writeSmokeSentinel();
+    app.exit(0);
+    return;
+  }
+
   if (window && !window.isDestroyed() && !window.isVisible()) window.show();
 });
 
