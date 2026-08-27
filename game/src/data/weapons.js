@@ -37,7 +37,7 @@ export const WEAPONS = {
     ...common,
     id: 'shotgun', name: 'Shotgun', shortName: 'SHOTGUN', slot: 'both', kind: 'shotgun', fireMode: 'semi',
     damage: 16, critChance: 0.007, critDamage: 21, fireInterval: 0.8, magazineSize: 6, reloadTime: 1.0, reloadStyle: 'shell',
-    fullDamageRangeTiles: 6, falloffDamage: 5, baseSpreadDegrees: 6, movingSpreadDegrees: 7.5, pelletCount: 8,
+    fullDamageRangeTiles: 2, maxRangeTiles: 2.5, falloffDamage: 5, baseSpreadDegrees: 6, movingSpreadDegrees: 7.5, pelletCount: 8,
     adsTime: 0.55, movementMultiplier: 0.80, swapTier: 3, swapTime: 1.3,
     render: { muzzleForward: 70, shoulderSide: 10.5, adsForwardShift: 3, adsSideShift: 2.2, kick: 5.5 }
   },
@@ -99,7 +99,8 @@ export function formatWeaponStats(weapon) {
   if (weapon.magazineSize > 0) rows.push(['Magazine', `${weapon.magazineSize} + ${weapon.magazineSize * weapon.extraMagazines} reserve`]);
   if (weapon.reloadStyle === 'shell') rows.push(['Reload', `${weapon.reloadTime.toFixed(1)}s per shell`]);
   else if (weapon.reloadTime > 0) rows.push(['Reload', `${weapon.reloadTime.toFixed(1)}s`]);
-  if (weapon.kind !== 'launcher') rows.push(['Range', `${weapon.fullDamageRangeTiles} tiles${weapon.kind === 'melee' ? '' : ` → ${weapon.falloffDamage} falloff`}`]);
+  if (weapon.kind === 'shotgun') rows.push(['Range', `${weapon.fullDamageRangeTiles} full → ${weapon.maxRangeTiles} max · ${weapon.falloffDamage} falloff`]);
+  else if (weapon.kind !== 'launcher') rows.push(['Range', `${weapon.fullDamageRangeTiles} tiles${weapon.kind === 'melee' ? '' : ` → ${weapon.falloffDamage} falloff`}`]);
   if (weapon.kind === 'projectile') rows.push(['Projectile', `${weapon.projectileSpeedTiles} tiles/sec`]);
   if (weapon.blastRadiusTiles) rows.push(['Blast radius', `${weapon.blastRadiusTiles} tiles`]);
   if (weapon.baseSpreadDegrees > 0) rows.push(['Spread', `${weapon.baseSpreadDegrees}° base / ${weapon.movingSpreadDegrees}° moving`]);
