@@ -22,3 +22,4 @@ import './phase2211-runtime.js';
 document.documentElement.dataset.skirmishUiBoot = '2.21.1';
 document.body.classList.add('skirmish-ui-booted');
 window.dispatchEvent(new CustomEvent('skirmish:ui-booted', { detail: { version: '2.21.1' } }));
+window.gameAPI?.uiReady?.();
