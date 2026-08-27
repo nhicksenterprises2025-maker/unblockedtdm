@@ -18,6 +18,19 @@ const logoUrl = new URL('../game/src/assets/skirmish-arena-main-logo.webp', impo
 const gameIconUrl = new URL('../game/build/icon.ico', import.meta.url);
 const launcherIconUrl = new URL('../launcher/build/icon.ico', import.meta.url);
 
+function icoContains256Frame(icon) {
+  if (icon.length < 22 || icon.readUInt16LE(0) !== 0 || icon.readUInt16LE(2) !== 1) return false;
+  const count = icon.readUInt16LE(4);
+  if (icon.length < 6 + count * 16) return false;
+  for (let i = 0; i < count; i += 1) {
+    const offset = 6 + i * 16;
+    const width = icon[offset] === 0 ? 256 : icon[offset];
+    const height = icon[offset + 1] === 0 ? 256 : icon[offset + 1];
+    if (width >= 256 && height >= 256) return true;
+  }
+  return false;
+}
+
 assert.equal(WEAPON_LIST.length, 8, 'Weapon Info must cover all eight live weapons.');
 assert.ok(menu.includes('WEAPON_LIST.map(weaponCatalogCard)'), 'Weapon Info must render every live weapon in one catalog.');
 assert.ok(menu.includes('weaponModelSvg(weapon)'), 'Each catalog card must use the actual gameplay weapon-model canvas pipeline.');
@@ -66,6 +79,7 @@ for (const [label, iconUrl] of [['game', gameIconUrl], ['launcher', launcherIcon
   const icon = fs.readFileSync(iconUrl);
   assert.ok(icon.length > 1000, `${label} Windows icon must be a real ICO asset.`);
   assert.deepEqual([...icon.subarray(0, 4)], [0, 0, 1, 0], `${label} Windows icon must be a valid ICO container.`);
+  assert.ok(icoContains256Frame(icon), `${label} Windows icon must contain a 256x256 frame required by electron-builder.`);
 }
 assert.ok(gameBuilder.includes('icon: build/icon.ico'), 'Game builder must use the Skirmish Arena Windows icon.');
 assert.ok(launcherBuilder.includes('icon: build/icon.ico'), 'Launcher builder must use the Skirmish Arena Windows icon.');
