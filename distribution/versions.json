@@ -4,6 +4,20 @@
     {
       "product": "Skirmish Arena",
       "gameVersion": "2.21.1",
+      "build": 3,
+      "sequence": 43,
+      "phase": "2.21.1 — Production Packaging Hardening",
+      "tag": "build-2.21.1-v3",
+      "title": "Skirmish Arena 2.21.1 — Build 3",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.21.1-v3/UnblockedTDM-2.21.1-v3.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.21.1-v3/SkirmishArena-Setup-2.21.1-v3.exe",
+      "sha256": "28cb60d3b6c6bda7a1c03aee28d83547de5b5b6174aa5a87b8793960a53d7a08",
+      "installerSha256": "6a61f16cef9240ee097961d0a382688a7e9e49a13929e14bcd0a51c969aa206c",
+      "publishedAt": "2026-08-27T16:24:19.977Z"
+    },
+    {
+      "product": "Skirmish Arena",
+      "gameVersion": "2.21.1",
       "build": 2,
       "sequence": 42,
       "phase": "2.21.1 — Packaged UI Startup Repair",
