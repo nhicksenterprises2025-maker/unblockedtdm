@@ -7,11 +7,13 @@ Build 3 is the final production-hardening pass for the 2.21.1 release line. It p
 ### Windows Packaging
 - Added authored Skirmish Arena Windows icon assets for both the game executable and launcher installer.
 - Game and launcher Electron builders now explicitly use the Skirmish Arena icon instead of the default Electron icon.
+- Windows icons include the required 256×256 frame used by Electron packaging.
 - Added intentional Skirmish Arena package descriptions and author metadata for both applications.
 - The release metadata sync now stamps the current `gameVersion` into the packaged game package so Windows application metadata follows the live release line instead of remaining at the original prototype package version.
 
 ### Release Regression Coverage
-- 2.21.1 validation now verifies both Windows ICO assets exist and are valid ICO containers.
+- 2.21.1 validation verifies both Windows ICO assets exist and are valid ICO containers.
+- Validation now parses the ICO directory and requires a 256×256 frame so an undersized icon cannot reach the Windows packaging stage again.
 - Validation verifies both Electron builders reference the branded icons.
 - Validation verifies the game and launcher package metadata remains branded and intentional.
 - Validation verifies build synchronization continues to stamp the package version from `release-plan.json`.
