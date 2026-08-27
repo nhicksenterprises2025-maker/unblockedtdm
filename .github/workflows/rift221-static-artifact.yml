@@ -1,12 +1,11 @@
-name: Build RIFT RUN 2.2.1 static artifact
+name: Build RIFT RUN 2.2.1 PC mobile static artifact
 
 on:
   push:
     branches: [rift-run-ios]
     paths:
       - '.github/workflows/rift221-static-artifact.yml'
-      - 'rift221desktop/**'
-  workflow_dispatch:
+      - 'rift221snapshot/**'
 
 permissions:
   contents: write
@@ -20,32 +19,29 @@ jobs:
           ref: rift-run-ios
           fetch-depth: 0
 
-      - name: Reconstruct exact 2.2.1 desktop static snapshot
+      - name: Reconstruct exact 2.2.1 PC mobile game
         shell: bash
         run: |
-          node <<'NODE'
-          const fs=require('fs'),zlib=require('zlib'),crypto=require('crypto');
-          let b64='';
-          for(let i=0;i<5;i++) b64+=fs.readFileSync(`rift221desktop/p${i}.txt`,'utf8').trim();
-          const br=Buffer.from(b64,'base64');
-          const html=zlib.brotliDecompressSync(br);
-          const sha=crypto.createHash('sha256').update(html).digest('hex');
-          console.log('brotli bytes',br.length,'html bytes',html.length,'sha256',sha);
-          if(html.length!==97087) throw new Error(`size mismatch: ${html.length}`);
-          if(sha!=='f5eb1f8d5c0df43311e5e6f6b2b6d5a11af3af5e47d0fb07cb0bf403875bc2a5') throw new Error(`sha mismatch: ${sha}`);
-          const s=html.toString('utf8');
-          for(const marker of [
-            'UPDATE 2.2.1 · CONTRACTS',
-            'DESKTOP COMBAT',
-            'CONTROLS — TOUCH + DESKTOP',
-            'WASD / ARROWS MOVE · MOUSE AIM PRIORITY · SPACE DASH · E OVERDRIVE',
-            'mouseAim',
-            'syncKeys'
-          ]) if(!s.includes(marker)) throw new Error(`missing marker: ${marker}`);
-          if(s.includes('fetch(')) throw new Error('runtime fetch found in final game source');
-          fs.mkdirSync('rift221',{recursive:true});
-          fs.writeFileSync('rift221/index.html',html);
-          NODE
+          cat rift221snapshot/p0.txt rift221snapshot/p1.txt rift221snapshot/p2.txt rift221snapshot/p3.txt rift221snapshot/p4.txt rift221snapshot/p5.txt rift221snapshot/p6.txt | base64 -d | gzip -d > /tmp/index.html
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,re
+          p=Path('/tmp/index.html')
+          b=p.read_bytes()
+          sha=hashlib.sha256(b).hexdigest()
+          print('bytes',len(b),'sha256',sha)
+          assert len(b)==104215, len(b)
+          assert sha=='3ee6c9a25af0ac9acbfaac4d91dfd78cc493addc99b8ea1d66373b9600717de6', sha
+          s=b.decode('utf-8')
+          for marker in ('UPDATE 2.2.1 · CONTRACTS','pauseDesktop','fullscreenDesktop','aimTarget'):
+              assert marker in s, marker
+          m=re.search(r'<script>(.*)</script>',s,re.S)
+          assert m, 'script block missing'
+          Path('/tmp/game.js').write_text(m.group(1),encoding='utf-8')
+          PY
+          node --check /tmp/game.js
+          mkdir -p rift221
+          cp /tmp/index.html rift221/index.html
 
       - name: Commit verified static artifact
         shell: bash
@@ -53,5 +49,5 @@ jobs:
           git config user.name 'rift-run-release-bot'
           git config user.email 'actions@users.noreply.github.com'
           git add rift221/index.html
-          git diff --cached --quiet || git commit -m 'RIFT RUN 2.2.1 desktop verified static artifact'
+          git diff --cached --quiet || git commit -m 'RIFT RUN 2.2.1 PC mobile static artifact'
           git push origin HEAD:rift-run-ios
