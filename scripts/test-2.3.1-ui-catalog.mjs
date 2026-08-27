@@ -28,7 +28,7 @@ assert.ok(runtime.includes("document.body.classList.toggle('ui231-weapon-page'")
 assert.ok(runtime.includes("document.body.classList.remove('ui221-weapon-page')"), '2.3.1 must clean stale 2.2.1 Weapon Info page state when leaving the page.');
 assert.ok(runtime.includes('hydrateWeaponModelCanvases(document)'), 'Real in-game weapon models must be hydrated throughout the UI.');
 assert.ok(runtime.includes('hydrateGameplayCrosshairCanvases(document)'), 'Spread visualizers must use the live gameplay crosshair renderer.');
-assert.ok(runtime.includes("eyebrow.textContent = 'BUILD 2.3.1'"), 'Home eyebrow must show the build without MATCH CLIENT copy.');
+assert.ok(runtime.includes("setText(eyebrow, 'BUILD 2.3.1')"), 'Home eyebrow must show the build without MATCH CLIENT copy using an idempotent write.');
 assert.ok(runtime.includes('ui231BlueprintEdge'), 'Weapon Info tile must use the blue blueprint/manual gun art.');
 assert.equal(runtime.includes("button.addEventListener('click', () => queueMicrotask"), false, '2.3.1 must not double-bind Weapon Info navigation over the canonical MainMenu controller.');
 
