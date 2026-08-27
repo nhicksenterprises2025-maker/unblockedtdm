@@ -5,6 +5,7 @@ asar: true
 files:
   - src/**/*
 win:
+  icon: build/icon.ico
   target:
     - portable
   executableName: UnblockedTDM
