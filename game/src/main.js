@@ -81,7 +81,7 @@ function createWindow() {
     height: 760,
     minWidth: 960,
     minHeight: 600,
-    fullscreen: !smokeTest,
+    fullscreen: true,
     show: false,
     backgroundColor: '#07141b',
     title: 'Skirmish Arena',
