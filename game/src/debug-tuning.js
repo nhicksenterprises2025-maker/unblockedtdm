@@ -175,6 +175,11 @@
     }
   }
 
+  // This classic script is parsed before the renderer module tag in index.html.
+  // Engage the shield immediately so the historical 1.6 shell is never exposed
+  // while Electron/module evaluation is still in progress.
+  installBootGuard();
+
   window.addEventListener('error',(event)=>{
     if(bootState!=='ready'&&event.error)failBoot(event.error,document.body.dataset.skirmishBootStage||'WINDOW ERROR');
   });
