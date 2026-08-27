@@ -2,7 +2,11 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const buildInfo = require('./build-info.json');
 
-const SMOKE_TEST = process.argv.includes('--smoke-test');
+// electron-builder's portable wrapper does not reliably forward arbitrary CLI
+// arguments to the inner Electron process. Environment variables are inherited
+// by both the wrapper and the extracted app, so this is the authoritative CI
+// boot-test signal. The CLI flag remains as a local-development fallback.
+const SMOKE_TEST = process.env.SKIRMISH_SMOKE_TEST === '1' || process.argv.includes('--smoke-test');
 const SMOKE_TIMEOUT_MS = 30000;
 let window;
 
