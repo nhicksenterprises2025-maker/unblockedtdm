@@ -1,11 +1,11 @@
 {
-  "product":"Skirmish Arena",
-  "gameVersion":"2.21.1",
-  "build":2,
-  "phase":"2.21.1 — Packaged UI Startup Repair",
-  "tag":"build-2.21.1-v2",
-  "title":"Skirmish Arena 2.21.1 — Build 2",
-  "notesFile":"docs/releases/build-2.21.1-v2.md",
-  "sequence":42,
-  "releaseRevision":1
+  "product": "Skirmish Arena",
+  "gameVersion": "2.21.1",
+  "build": 3,
+  "phase": "2.21.1 — Production Packaging Hardening",
+  "tag": "build-2.21.1-v3",
+  "title": "Skirmish Arena 2.21.1 — Build 3",
+  "notesFile": "docs/releases/build-2.21.1-v3.md",
+  "sequence": 43,
+  "releaseRevision": 1
 }
