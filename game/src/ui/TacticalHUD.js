@@ -1,4 +1,5 @@
 import { WEAPON_LIST } from '../data/weapons.js';
+import { GameSettings, bindingLabel, mouseBindingCode } from '../engine/GameSettings.js';
 
 const WEAPON_BY_ID = new Map(WEAPON_LIST.map((weapon) => [weapon.id, weapon]));
 const FEED_LIFETIME_MS = 6500;
@@ -24,16 +25,18 @@ function safe(value) {
 }
 
 export class TacticalHUD {
-  constructor({ minimapRenderer, players, localPlayer } = {}) {
+  constructor({ minimapRenderer, players, localPlayer, settings = null } = {}) {
     this.minimapRenderer = minimapRenderer;
     this.players = players || [];
     this.localPlayer = localPlayer || null;
+    this.settings = settings || new GameSettings();
     this.active = false;
     this.tabHeld = false;
     this.mapVisible = false;
     this.feed = [];
     this.install();
-    this.bindKeys();
+    this.bindControls();
+    this.syncControlCopy();
   }
 
   install() {
@@ -41,7 +44,7 @@ export class TacticalHUD {
     root.id = 'phase3TacticalHud';
     root.className = 'phase3-tactical-hud';
     root.innerHTML = `
-      <div class="phase3-tactical-legend"><span><b>M</b> TACTICAL MAP</span><span><b>TAB</b> SCOREBOARD</span></div>
+      <div class="phase3-tactical-legend"><span><b data-map-binding>M</b> TACTICAL MAP</span><span><b data-scoreboard-binding>TAB</b> SCOREBOARD</span></div>
       <aside id="phase3KillFeed" class="phase3-kill-feed" aria-live="polite"></aside>
       <section id="phase3Scoreboard" class="phase3-scoreboard" aria-hidden="true">
         <div class="phase3-scoreboard-shell">
@@ -49,14 +52,14 @@ export class TacticalHUD {
           <div class="phase3-top-three" id="phase3TopThree"></div>
           <div class="phase3-score-head"><span>RANK / PLAYER</span><span>K</span><span>D</span><span>A</span><span>K/D</span><span>DMG</span></div>
           <div class="phase3-score-rows" id="phase3ScoreRows"></div>
-          <footer>HOLD TAB TO VIEW · #1 OVERALL = MVP</footer>
+          <footer>HOLD <b data-scoreboard-binding>TAB</b> TO VIEW · #1 OVERALL = MVP</footer>
         </div>
       </section>
       <section id="phase3Map" class="phase3-map-overlay" aria-hidden="true">
         <div class="phase3-map-shell">
           <header><div><small>TRAINING COMPLEX // LIVE TACTICAL DATA</small><h2>TACTICAL MAP</h2></div><div class="phase3-map-key"><span class="you">YOU</span><span class="friendly">TEAM</span><span class="enemy">REVEALED ENEMY</span></div></header>
           <canvas id="phase3MapCanvas" width="960" height="660"></canvas>
-          <footer>PRESS M TO CLOSE · ENEMIES REVEAL FOR 1.5S AFTER FIRING</footer>
+          <footer>PRESS <b data-map-binding>M</b> TO CLOSE · ENEMIES REVEAL FOR 1.5S AFTER FIRING</footer>
         </div>
       </section>`;
     document.body.appendChild(root);
@@ -69,27 +72,50 @@ export class TacticalHUD {
     this.mapCanvas = root.querySelector('#phase3MapCanvas');
   }
 
-  bindKeys() {
-    window.addEventListener('keydown', (event) => {
-      if (!this.active) return;
-      if (event.code === 'Tab') {
-        event.preventDefault();
-        this.tabHeld = true;
-        this.syncVisibility();
-      }
-      if (event.code === 'KeyM' && !event.repeat) {
-        event.preventDefault();
-        this.mapVisible = !this.mapVisible;
-        this.syncVisibility();
-      }
-    }, true);
-    window.addEventListener('keyup', (event) => {
-      if (event.code !== 'Tab') return;
-      this.tabHeld = false;
+  binding(action) {
+    return this.settings?.binding?.(action) || null;
+  }
+
+  syncControlCopy() {
+    const mapLabel = bindingLabel(this.binding('map'));
+    const scoreboardLabel = bindingLabel(this.binding('scoreboard'));
+    for (const node of this.root.querySelectorAll('[data-map-binding]')) node.textContent = mapLabel;
+    for (const node of this.root.querySelectorAll('[data-scoreboard-binding]')) node.textContent = scoreboardLabel;
+  }
+
+  handleControlDown(code, repeat = false, event = null) {
+    if (!this.active || !code) return;
+    if (code === this.binding('scoreboard')) {
+      event?.preventDefault?.();
+      this.tabHeld = true;
       this.syncVisibility();
-    }, true);
+    }
+    if (code === this.binding('map') && !repeat) {
+      event?.preventDefault?.();
+      this.mapVisible = !this.mapVisible;
+      this.syncVisibility();
+    }
+  }
+
+  handleControlUp(code, event = null) {
+    if (!code || code !== this.binding('scoreboard')) return;
+    event?.preventDefault?.();
+    this.tabHeld = false;
+    this.syncVisibility();
+  }
+
+  bindControls() {
+    window.addEventListener('keydown', (event) => this.handleControlDown(event.code, event.repeat, event), true);
+    window.addEventListener('keyup', (event) => this.handleControlUp(event.code, event), true);
+    window.addEventListener('mousedown', (event) => this.handleControlDown(mouseBindingCode(event.button), false, event), true);
+    window.addEventListener('mouseup', (event) => this.handleControlUp(mouseBindingCode(event.button), event), true);
     window.addEventListener('blur', () => {
       this.tabHeld = false;
+      this.syncVisibility();
+    });
+    window.addEventListener('unblockedtdm:settings-change', () => {
+      this.tabHeld = false;
+      this.syncControlCopy();
       this.syncVisibility();
     });
   }
