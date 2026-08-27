@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
+const fs = require('node:fs');
 const buildInfo = require('./build-info.json');
 
 // electron-builder's portable wrapper does not reliably forward arbitrary CLI
@@ -7,29 +8,62 @@ const buildInfo = require('./build-info.json');
 // by both the wrapper and the extracted app, so this is the authoritative CI
 // boot-test signal. The CLI flag remains as a local-development fallback.
 const SMOKE_TEST = process.env.SKIRMISH_SMOKE_TEST === '1' || process.argv.includes('--smoke-test');
+const SMOKE_RESULT_PATH = process.env.SKIRMISH_SMOKE_RESULT_PATH || '';
 const SMOKE_TIMEOUT_MS = 30000;
+const SMOKE_HARD_TIMEOUT_MS = 45000;
 let window;
+let smokeWatchdog = null;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function writeSmokeStatus(stage, detail = {}) {
+  if (!SMOKE_TEST || !SMOKE_RESULT_PATH) return;
+  try {
+    fs.mkdirSync(path.dirname(SMOKE_RESULT_PATH), { recursive: true });
+    fs.writeFileSync(SMOKE_RESULT_PATH, `${JSON.stringify({
+      stage,
+      timestamp: new Date().toISOString(),
+      gameVersion: buildInfo.gameVersion,
+      build: buildInfo.build,
+      pid: process.pid,
+      ...detail
+    }, null, 2)}\n`, 'utf8');
+  } catch (error) {
+    console.error('PACKAGED_SMOKE_STATUS_WRITE_FAILED', error?.message || error);
+  }
+}
+
+function exitSmoke(code, stage, detail = {}) {
+  if (smokeWatchdog) clearTimeout(smokeWatchdog);
+  writeSmokeStatus(stage, { ...detail, exitCode: code });
+  app.exit(code);
+}
+
 async function runPackagedSmokeTest(target) {
   const started = Date.now();
+  writeSmokeStatus('renderer-probe-start');
   try {
     while (Date.now() - started < SMOKE_TIMEOUT_MS) {
-      const state = await target.webContents.executeJavaScript(`(() => ({
-        boot: document.body?.dataset?.skirmishBoot || 'missing',
-        version: document.body?.dataset?.skirmishBootVersion || '',
-        brand: document.querySelector('#mainMenu .menu-brand strong')?.textContent?.trim() || '',
-        career: Boolean(document.querySelector('[data-career-strip]')),
-        catalog: Boolean(document.querySelector('[data-weapon-info-catalog]')),
-        logo: Boolean(document.querySelector('.ui231-home-logo'))
-      }))()`);
+      const state = await Promise.race([
+        target.webContents.executeJavaScript(`(() => ({
+          boot: document.body?.dataset?.skirmishBoot || 'missing',
+          stage: document.body?.dataset?.skirmishBootStage || '',
+          version: document.body?.dataset?.skirmishBootVersion || '',
+          brand: document.querySelector('#mainMenu .menu-brand strong')?.textContent?.trim() || '',
+          career: Boolean(document.querySelector('[data-career-strip]')),
+          catalog: Boolean(document.querySelector('[data-weapon-info-catalog]')),
+          logo: Boolean(document.querySelector('.ui231-home-logo'))
+        }))()`),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Renderer probe did not answer within 3000ms.')), 3000))
+      ]);
+
+      writeSmokeStatus('renderer-probe', { state });
 
       if (state.boot === 'failed') {
         console.error('PACKAGED_SMOKE_FAIL boot-state=failed', JSON.stringify(state));
-        app.exit(2);
+        exitSmoke(2, 'boot-failed', { state });
         return;
       }
 
@@ -42,23 +76,26 @@ async function runPackagedSmokeTest(target) {
         state.logo
       ) {
         console.log('PACKAGED_SMOKE_PASS', JSON.stringify(state));
-        app.exit(0);
+        exitSmoke(0, 'pass', { state });
         return;
       }
 
       await sleep(150);
     }
 
-    const diagnostic = await target.webContents.executeJavaScript(`(() => ({
-      boot: document.body?.dataset?.skirmishBoot || 'missing',
-      stage: document.body?.dataset?.skirmishBootStage || '',
-      diagnostic: typeof window.__SKIRMISH_BOOT_DIAGNOSTIC__ === 'function' ? window.__SKIRMISH_BOOT_DIAGNOSTIC__() : null
-    }))()`).catch(() => null);
+    const diagnostic = await Promise.race([
+      target.webContents.executeJavaScript(`(() => ({
+        boot: document.body?.dataset?.skirmishBoot || 'missing',
+        stage: document.body?.dataset?.skirmishBootStage || '',
+        diagnostic: typeof window.__SKIRMISH_BOOT_DIAGNOSTIC__ === 'function' ? window.__SKIRMISH_BOOT_DIAGNOSTIC__() : null
+      }))()`),
+      new Promise((resolve) => setTimeout(() => resolve({ probe: 'unresponsive' }), 3000))
+    ]).catch(() => null);
     console.error('PACKAGED_SMOKE_TIMEOUT', JSON.stringify(diagnostic));
-    app.exit(3);
+    exitSmoke(3, 'renderer-timeout', { diagnostic });
   } catch (error) {
     console.error('PACKAGED_SMOKE_EXCEPTION', error?.stack || error?.message || error);
-    app.exit(4);
+    exitSmoke(4, 'renderer-probe-error', { error: error?.message || String(error) });
   }
 }
 
@@ -85,25 +122,43 @@ function createWindow() {
     windowOptions.show = false;
   }
 
+  writeSmokeStatus('create-window');
   window = new BrowserWindow(windowOptions);
 
+  window.webContents.on('did-finish-load', () => writeSmokeStatus('did-finish-load'));
+  window.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+    writeSmokeStatus('did-fail-load', { errorCode, errorDescription });
+    if (SMOKE_TEST) exitSmoke(6, 'did-fail-load', { errorCode, errorDescription });
+  });
   window.webContents.on('render-process-gone', (_event, details) => {
     if (!SMOKE_TEST) return;
     console.error('PACKAGED_SMOKE_RENDERER_GONE', JSON.stringify(details));
-    app.exit(5);
+    exitSmoke(5, 'renderer-gone', { details });
   });
 
   window.loadFile(path.join(__dirname, 'index.html'))
     .then(() => {
+      writeSmokeStatus('load-file-resolved');
       if (SMOKE_TEST) runPackagedSmokeTest(window);
     })
     .catch((error) => {
       console.error('GAME_LOAD_FILE_FAILED', error?.stack || error?.message || error);
-      if (SMOKE_TEST) app.exit(6);
+      if (SMOKE_TEST) exitSmoke(6, 'load-file-rejected', { error: error?.message || String(error) });
     });
 }
 
-app.whenReady().then(createWindow);
+if (SMOKE_TEST) writeSmokeStatus('main-start', { argv: process.argv.slice(1) });
+
+app.whenReady().then(() => {
+  if (SMOKE_TEST) {
+    writeSmokeStatus('app-ready');
+    smokeWatchdog = setTimeout(() => {
+      console.error('PACKAGED_SMOKE_HARD_TIMEOUT');
+      exitSmoke(7, 'main-watchdog-timeout');
+    }, SMOKE_HARD_TIMEOUT_MS);
+  }
+  createWindow();
+});
 app.on('window-all-closed', () => app.quit());
 ipcMain.handle('game:get-build-info', () => buildInfo);
 ipcMain.handle('game:toggle-fullscreen', () => {
