@@ -50,11 +50,14 @@ for (const runtime of orderedRuntimes) {
 const debugScript = index.indexOf('<script src="debug-tuning.js"></script>');
 const rendererScript = index.indexOf('<script type="module" src="renderer.js"></script>');
 assert.ok(debugScript >= 0 && rendererScript > debugScript, 'Boot bootstrap script must be parsed before the direct renderer module fallback.');
-const immediateGuard = debug.indexOf("\n  installBootGuard();\n\n  window.addEventListener('error'");
-const domReadyRegistration = debug.indexOf("document.addEventListener('DOMContentLoaded',startDeterministicBoot");
-assert.ok(immediateGuard > 0 && immediateGuard < domReadyRegistration, 'Boot shield must engage immediately during classic-script evaluation, before DOMContentLoaded and renderer-module execution.');
+const immediateGuard = debug.lastIndexOf('installBootGuard();');
+const startBootFunction = debug.indexOf('async function startDeterministicBoot()');
+const domReadyRegistration = debug.indexOf("if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startDeterministicBoot");
+assert.ok(immediateGuard > startBootFunction && immediateGuard < domReadyRegistration, 'Boot shield must engage immediately during classic-script evaluation, before DOMContentLoaded and renderer-module execution.');
 
 assert.ok(main.includes("process.argv.includes('--smoke-test')"), 'Packaged game must support CI boot smoke mode.');
+assert.ok(main.includes("fullscreen: true"), 'Normal game startup must remain fullscreen-first.');
+assert.ok(main.includes('windowOptions.fullscreen = false'), 'Only packaged smoke mode may suppress fullscreen.');
 assert.ok(main.includes("state.boot === 'ready'"), 'Packaged smoke mode must require the bootstrap ready state.');
 assert.ok(main.includes("state.brand === 'SKIRMISH ARENA'"), 'Packaged smoke mode must verify modern branding.');
 assert.ok(main.includes('state.career &&'), 'Packaged smoke mode must verify Career presentation.');
