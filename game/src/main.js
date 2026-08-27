@@ -59,13 +59,13 @@ async function runPackagedSmokeTest(target) {
 }
 
 function createWindow() {
-  window = new BrowserWindow({
+  const windowOptions = {
     width: 1280,
     height: 760,
     minWidth: 960,
     minHeight: 600,
-    fullscreen: !SMOKE_TEST,
-    show: !SMOKE_TEST,
+    fullscreen: true,
+    show: true,
     backgroundColor: '#071017',
     title: 'Skirmish Arena',
     autoHideMenuBar: true,
@@ -74,7 +74,14 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false
     }
-  });
+  };
+
+  if (SMOKE_TEST) {
+    windowOptions.fullscreen = false;
+    windowOptions.show = false;
+  }
+
+  window = new BrowserWindow(windowOptions);
 
   window.webContents.on('render-process-gone', (_event, details) => {
     if (!SMOKE_TEST) return;
