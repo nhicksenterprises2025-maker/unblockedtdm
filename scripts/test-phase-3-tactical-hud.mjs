@@ -6,6 +6,7 @@ const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), '
 const flow = read('game/src/flow-v18.js');
 const runtime = read('game/src/phase3-runtime.js');
 const tactical = read('game/src/ui/TacticalHUD.js');
+const settings = read('game/src/engine/GameSettings.js');
 const css = read('game/src/ui-phase3.css');
 const minimap = read('game/src/render/MinimapRenderer.js');
 const renderer = read('game/src/renderer.js');
@@ -35,15 +36,17 @@ for (const token of [
   '#1 OVERALL = MVP',
   'CRITICAL',
   'REVEALED ENEMY',
-  "event.code === 'Tab'",
-  "event.code === 'KeyM'"
+  "this.binding('scoreboard')",
+  "this.binding('map')"
 ]) assert.ok(tactical.includes(token), `Phase 3 tactical HUD missing ${token}.`);
+assert.ok(settings.includes("map: 'KeyM'"), 'Tactical Map must retain M as its default binding.');
+assert.ok(settings.includes("scoreboard: 'Tab'"), 'Scoreboard must retain TAB as its default binding.');
 
 assert.ok(runtime.includes('MatchManager.prototype.recordElimination'), 'Kill feed must hook the existing elimination pipeline without replacing it.');
 assert.ok(runtime.includes("window.addEventListener('unblockedtdm:damage-applied'"), 'Scoreboard damage must use the existing damage event stream.');
 assert.ok(runtime.includes('matchRef.statsSnapshot()'), 'Scoreboard must use canonical MatchManager statistics.');
 assert.ok(minimap.includes('const ENEMY_REVEAL_SECONDS = 1.5;'), 'Enemy tactical reveal must remain 1.5 seconds.');
-assert.ok(minimap.includes('drawFullMap(canvas'), 'M must render the full tactical map.');
+assert.ok(minimap.includes('drawFullMap(canvas'), 'Tactical Map must still render the full tactical map.');
 for (const color of ['#ffffff', '#61cfff', '#ff6273']) assert.ok(minimap.includes(color), `Tactical map missing required actor color ${color}.`);
 
 for (const token of [
@@ -58,4 +61,4 @@ for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12
   assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
 }
 
-console.log('Phase 3 checks passed: tactical HUD, scoreboard, kill feed, full map, limited enemy reveal, front-end isolation, and unchanged gameplay contracts.');
+console.log('Phase 3 checks passed: tactical HUD, rebindable scoreboard/map controls, kill feed, full map, limited enemy reveal, front-end isolation, and unchanged gameplay contracts.');
