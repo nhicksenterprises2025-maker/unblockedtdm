@@ -4,6 +4,20 @@
     {
       "product": "Skirmish Arena",
       "gameVersion": "2.3.1",
+      "build": 2,
+      "sequence": 47,
+      "phase": "2.3.1 — Deterministic Boot Integrity Hard Patch",
+      "tag": "build-2.3.1-v2",
+      "title": "Skirmish Arena 2.3.1 — Build 2",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.1-v2/UnblockedTDM-2.3.1-v2.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.1-v2/SkirmishArena-Setup-2.3.1-v2.exe",
+      "sha256": "492977f01e89d217f395b236c2b4b2c8e66989aa6371f55192514daa1727b1a5",
+      "installerSha256": "7c4dc6177e46e581171f34cd8bdfac35c6ce6498607875f6c851f0bb333e7921",
+      "publishedAt": "2026-08-27T23:05:10.000Z"
+    },
+    {
+      "product": "Skirmish Arena",
+      "gameVersion": "2.3.1",
       "build": 1,
       "sequence": 46,
       "phase": "2.3.1 — UI Identity + Arsenal Reference",
