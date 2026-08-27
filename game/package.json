@@ -1,7 +1,9 @@
 {
   "name": "unblockedtdm-game",
   "productName": "UnblockedTDM",
-  "version": "1.0.0",
+  "version": "2.21.1",
+  "description": "Skirmish Arena competitive 2D 3v3 arena shooter",
+  "author": "Skirmish Arena Development",
   "main": "src/main.js",
   "private": true
 }
