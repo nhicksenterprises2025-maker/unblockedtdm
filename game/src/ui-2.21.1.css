@@ -1,0 +1,314 @@
+/* Skirmish Arena 2.21.1 — dedicated all-weapons reference page + official home logo. */
+
+/* ---------------- Home hero: use the supplied production logo ---------------- */
+body.ui-2211 #mainMenu [data-menu-view="home"] .menu-hero .ui2211-home-logo{
+  display:block;
+  width:min(760px,72vw);
+  max-width:100%;
+  height:auto;
+  max-height:255px;
+  object-fit:contain;
+  object-position:left center;
+  margin:6px 0 15px;
+  filter:drop-shadow(0 12px 22px rgba(0,0,0,.36));
+  user-select:none;
+  pointer-events:none;
+}
+body.ui-2211 #mainMenu [data-menu-view="home"] .menu-hero h1{display:none!important}
+
+/* A non-active Weapon Info view must never leak under the home/settings/career view. */
+body.ui-2211:not(.ui2211-weapon-page) #mainMenu [data-menu-view="weapon-info"]{
+  display:none!important;
+  visibility:hidden!important;
+  height:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  position:absolute!important;
+  pointer-events:none!important;
+}
+
+/* ---------------- Dedicated Weapon Info page ---------------- */
+body.ui-2211.ui2211-weapon-page #mainMenu{
+  overflow:hidden!important;
+}
+body.ui-2211.ui2211-weapon-page #mainMenu .main-menu-shell{
+  display:block!important;
+  width:100vw!important;
+  height:100vh!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+body.ui-2211.ui2211-weapon-page #mainMenu .main-sidebar{display:none!important}
+body.ui-2211.ui2211-weapon-page #mainMenu .main-content{
+  position:fixed!important;
+  inset:0!important;
+  box-sizing:border-box!important;
+  width:100vw!important;
+  max-width:none!important;
+  height:100vh!important;
+  max-height:100vh!important;
+  min-height:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:#080f15!important;
+}
+body.ui-2211.ui2211-weapon-page #mainMenu .main-content>[data-menu-view]:not([data-menu-view="weapon-info"]){
+  display:none!important;
+}
+body.ui-2211.ui2211-weapon-page #mainMenu [data-menu-view="weapon-info"].active{
+  position:absolute!important;
+  inset:0!important;
+  z-index:20!important;
+  display:block!important;
+  visibility:visible!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:28px clamp(28px,3.2vw,58px) 44px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  pointer-events:auto!important;
+  background:
+    linear-gradient(rgba(8,15,21,.975),rgba(8,15,21,.985)),
+    repeating-linear-gradient(90deg,transparent 0 79px,rgba(66,188,241,.025) 80px),
+    repeating-linear-gradient(0deg,transparent 0 79px,rgba(66,188,241,.025) 80px)!important;
+  scrollbar-width:thin;
+  scrollbar-color:#3dbfff #101a22;
+}
+body.ui-2211.ui2211-weapon-page #mainMenu [data-menu-view="weapon-info"]::-webkit-scrollbar{width:10px}
+body.ui-2211.ui2211-weapon-page #mainMenu [data-menu-view="weapon-info"]::-webkit-scrollbar-track{background:#101a22}
+body.ui-2211.ui2211-weapon-page #mainMenu [data-menu-view="weapon-info"]::-webkit-scrollbar-thumb{background:#314a5c;border:2px solid #101a22}
+body.ui-2211.ui2211-weapon-page #mainMenu [data-menu-view="weapon-info"]::-webkit-scrollbar-thumb:hover{background:#3dbfff}
+
+body.ui-2211.ui2211-weapon-page #mainMenu .weapon-info-title{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:end!important;
+  gap:28px!important;
+  width:100%!important;
+  max-width:1680px!important;
+  margin:0 auto 22px!important;
+  padding:0 0 18px!important;
+  border-bottom:1px solid #2d4250!important;
+}
+body.ui-2211.ui2211-weapon-page #mainMenu .weapon-info-title .menu-eyebrow{
+  display:block!important;
+  font-size:11px!important;
+  line-height:1.2!important;
+  letter-spacing:.18em!important;
+  color:#41bfff!important;
+}
+body.ui-2211.ui2211-weapon-page #mainMenu .weapon-info-title h2{
+  margin:5px 0 7px!important;
+  font-size:clamp(38px,4.2vw,68px)!important;
+  line-height:.92!important;
+  letter-spacing:-.025em!important;
+  color:#f2f5f7!important;
+}
+body.ui-2211.ui2211-weapon-page #mainMenu .weapon-info-title p{
+  margin:0!important;
+  max-width:880px!important;
+  font-size:14px!important;
+  line-height:1.55!important;
+  color:#9eb0bc!important;
+}
+body.ui-2211 .ui2211-page-back{
+  min-width:176px;
+  min-height:46px;
+  padding:12px 17px;
+  border:1px solid #38505f;
+  border-radius:2px;
+  background:#0e171e;
+  color:#edf2f5;
+  font:800 10px/1 var(--ut-mono);
+  letter-spacing:.12em;
+  cursor:pointer;
+}
+body.ui-2211 .ui2211-page-back:hover{
+  border-color:#42c3ff;
+  color:#55cbff;
+  background:#10222d;
+}
+
+/* Retire the selector/detail split. The layout is now one continuous catalog document. */
+body.ui-2211.ui2211-weapon-page #mainMenu .weapon-info-layout.ui2211-catalog-layout{
+  display:block!important;
+  width:100%!important;
+  max-width:1680px!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0 auto!important;
+  padding:0!important;
+  overflow:visible!important;
+  border:0!important;
+}
+body.ui-2211.ui2211-weapon-page #mainMenu .weapon-info-list,
+body.ui-2211.ui2211-weapon-page #mainMenu .weapon-info-detail{display:none!important}
+body.ui-2211.ui2211-weapon-page #mainMenu .ui2211-weapon-catalog{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:18px!important;
+  width:100%!important;
+  align-items:start!important;
+}
+
+body.ui-2211 #mainMenu .ui2211-weapon-card{
+  box-sizing:border-box;
+  min-width:0;
+  padding:20px;
+  border:1px solid #2a3d4a;
+  border-top:2px solid #36b9f3;
+  border-radius:2px;
+  background:linear-gradient(180deg,#0d171f 0%,#0a1218 100%);
+  box-shadow:0 12px 26px rgba(0,0,0,.14);
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px;
+  padding-bottom:13px;
+  border-bottom:1px solid #253743;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card-head>div{min-width:0}
+body.ui-2211 #mainMenu .ui2211-weapon-index{
+  display:block;
+  margin-bottom:5px;
+  color:#45c3ff;
+  font:800 9px/1.2 var(--ut-mono);
+  letter-spacing:.16em;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card-head h3{
+  margin:0 0 6px;
+  color:#f3f6f8;
+  font-size:clamp(23px,1.7vw,31px);
+  line-height:1;
+  letter-spacing:-.015em;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card-head small{
+  display:block;
+  color:#8398a6;
+  font:700 9px/1.4 var(--ut-mono);
+  letter-spacing:.08em;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card-head>b{
+  flex:0 0 auto;
+  min-width:62px;
+  padding:9px 11px;
+  border:1px solid #284251;
+  background:#102633;
+  color:#52c9ff;
+  text-align:center;
+  font:900 12px/1 var(--ut-mono);
+  letter-spacing:.08em;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-model{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:145px;
+  margin:11px 0 5px;
+  border-bottom:1px solid #21323e;
+  overflow:hidden;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-model .phase2011-weapon-canvas,
+body.ui-2211 #mainMenu .ui2211-weapon-model canvas[data-game-weapon-model]{
+  display:block!important;
+  width:min(100%,390px)!important;
+  height:132px!important;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-description{
+  min-height:44px;
+  margin:11px 0 12px;
+  color:#a7b6c0;
+  font-size:12px!important;
+  line-height:1.55!important;
+}
+
+/* Compact stat bars, still readable. */
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2-stat-bars{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin:0 0 10px!important;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2-stat-bar{
+  padding:8px 9px!important;
+  border:1px solid #253945!important;
+  background:#0b141b!important;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2-stat-bar span{
+  display:block!important;
+  margin-bottom:5px!important;
+  color:#7fa1b5!important;
+  font-size:8px!important;
+  letter-spacing:.08em!important;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2-stat-track{height:4px!important}
+
+/* Gameplay crosshair spread stays the actual renderer-driven visualizer. */
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2012-spread{
+  box-sizing:border-box!important;
+  min-height:92px!important;
+  height:auto!important;
+  margin:0 0 10px!important;
+  grid-template-columns:150px minmax(0,1fr)!important;
+  border:1px solid #253945!important;
+  background:#091118!important;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2012-spread-copy{
+  padding:10px!important;
+}
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2012-spread-copy strong{font-size:10px!important}
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2012-spread-copy small{font-size:8px!important;line-height:1.4!important}
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2012-crosshair-state canvas{width:78px!important;height:42px!important}
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2012-crosshair-state span{font-size:8px!important}
+body.ui-2211 #mainMenu .ui2211-weapon-card .phase2012-crosshair-state small{font-size:7px!important}
+
+body.ui-2211 #mainMenu .ui2211-exact-stats{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  border-top:1px solid #2b3c47;
+  border-left:1px solid #2b3c47;
+}
+body.ui-2211 #mainMenu .ui2211-exact-stats>div{
+  display:grid;
+  grid-template-columns:minmax(90px,.85fr) minmax(0,1.15fr);
+  align-items:center;
+  gap:10px;
+  min-height:39px;
+  padding:7px 9px;
+  border-right:1px solid #2b3c47;
+  border-bottom:1px solid #2b3c47;
+  background:#0b141b;
+}
+body.ui-2211 #mainMenu .ui2211-exact-stats span{
+  color:#6fbce0;
+  font:700 9px/1.3 var(--ut-mono);
+  letter-spacing:.02em;
+}
+body.ui-2211 #mainMenu .ui2211-exact-stats strong{
+  color:#f0f3f5;
+  font:800 10px/1.35 var(--ut-mono);
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+
+@media (max-width:1180px){
+  body.ui-2211.ui2211-weapon-page #mainMenu .ui2211-weapon-catalog{grid-template-columns:1fr!important}
+  body.ui-2211 #mainMenu .ui2211-weapon-card{padding:18px}
+  body.ui-2211 #mainMenu .ui2211-weapon-model{min-height:135px}
+}
+
+@media (max-width:760px){
+  body.ui-2211.ui2211-weapon-page #mainMenu [data-menu-view="weapon-info"].active{padding:20px 16px 34px!important}
+  body.ui-2211.ui2211-weapon-page #mainMenu .weapon-info-title{grid-template-columns:1fr!important;align-items:start!important}
+  body.ui-2211 .ui2211-page-back{width:100%}
+  body.ui-2211 #mainMenu .ui2211-weapon-card .phase2-stat-bars{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.ui-2211 #mainMenu .ui2211-exact-stats{grid-template-columns:1fr}
+  body.ui-2211 #mainMenu .ui2211-weapon-card .phase2012-spread{grid-template-columns:1fr!important}
+  body.ui-2211 #mainMenu [data-menu-view="home"] .menu-hero .ui2211-home-logo{width:100%;max-height:190px}
+}
