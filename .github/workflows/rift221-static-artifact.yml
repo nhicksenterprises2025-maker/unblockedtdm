@@ -5,7 +5,8 @@ on:
     branches: [rift-run-ios]
     paths:
       - '.github/workflows/rift221-static-artifact.yml'
-      - 'rift221build/**'
+      - 'rift221desktop/**'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -19,20 +20,32 @@ jobs:
           ref: rift-run-ios
           fetch-depth: 0
 
-      - name: Build exact 2.2.1 static snapshot
+      - name: Reconstruct exact 2.2.1 desktop static snapshot
         shell: bash
         run: |
-          rm -rf dist
-          node rift221build/build.js
-          test -f dist/index.html
-          bytes=$(wc -c < dist/index.html)
-          sha=$(sha256sum dist/index.html | awk '{print $1}')
-          echo "bytes=$bytes sha256=$sha"
-          test "$bytes" = "94593"
-          test "$sha" = "f034e94ca2ef737d649c3b8df05c7d680946598edcaaaa0a3e37c7d56cd8ca0a"
-          grep -q 'UPDATE 2.2.1 · CONTRACTS' dist/index.html
-          mkdir -p rift221
-          cp dist/index.html rift221/index.html
+          node <<'NODE'
+          const fs=require('fs'),zlib=require('zlib'),crypto=require('crypto');
+          let b64='';
+          for(let i=0;i<5;i++) b64+=fs.readFileSync(`rift221desktop/p${i}.txt`,'utf8').trim();
+          const br=Buffer.from(b64,'base64');
+          const html=zlib.brotliDecompressSync(br);
+          const sha=crypto.createHash('sha256').update(html).digest('hex');
+          console.log('brotli bytes',br.length,'html bytes',html.length,'sha256',sha);
+          if(html.length!==97087) throw new Error(`size mismatch: ${html.length}`);
+          if(sha!=='f5eb1f8d5c0df43311e5e6f6b2b6d5a11af3af5e47d0fb07cb0bf403875bc2a5') throw new Error(`sha mismatch: ${sha}`);
+          const s=html.toString('utf8');
+          for(const marker of [
+            'UPDATE 2.2.1 · CONTRACTS',
+            'DESKTOP COMBAT',
+            'CONTROLS — TOUCH + DESKTOP',
+            'WASD / ARROWS MOVE · MOUSE AIM PRIORITY · SPACE DASH · E OVERDRIVE',
+            'mouseAim',
+            'syncKeys'
+          ]) if(!s.includes(marker)) throw new Error(`missing marker: ${marker}`);
+          if(s.includes('fetch(')) throw new Error('runtime fetch found in final game source');
+          fs.mkdirSync('rift221',{recursive:true});
+          fs.writeFileSync('rift221/index.html',html);
+          NODE
 
       - name: Commit verified static artifact
         shell: bash
@@ -40,5 +53,5 @@ jobs:
           git config user.name 'rift-run-release-bot'
           git config user.email 'actions@users.noreply.github.com'
           git add rift221/index.html
-          git diff --cached --quiet || git commit -m 'RIFT RUN 2.2.1 verified static artifact'
+          git diff --cached --quiet || git commit -m 'RIFT RUN 2.2.1 desktop verified static artifact'
           git push origin HEAD:rift-run-ios
