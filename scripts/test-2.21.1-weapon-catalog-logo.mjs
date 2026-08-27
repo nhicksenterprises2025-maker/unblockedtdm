@@ -9,7 +9,14 @@ const css = read('game/src/ui-2.21.1.css');
 const debug = read('game/src/debug-tuning.js');
 const index = read('game/src/index.html');
 const uiBoot = read('game/src/ui-boot.js');
+const gameBuilder = read('game/electron-builder.yml');
+const launcherBuilder = read('launcher/electron-builder.yml');
+const syncBuild = read('scripts/sync-build-info.mjs');
+const gamePackage = JSON.parse(read('game/package.json'));
+const launcherPackage = JSON.parse(read('launcher/package.json'));
 const logoUrl = new URL('../game/src/assets/skirmish-arena-main-logo.webp', import.meta.url);
+const gameIconUrl = new URL('../game/build/icon.ico', import.meta.url);
+const launcherIconUrl = new URL('../launcher/build/icon.ico', import.meta.url);
 
 assert.equal(WEAPON_LIST.length, 8, 'Weapon Info must cover all eight live weapons.');
 assert.ok(menu.includes('WEAPON_LIST.map(weaponCatalogCard)'), 'Weapon Info must render every live weapon in one catalog.');
@@ -27,9 +34,8 @@ assert.ok(runtime.includes('hydrateWeaponModelCanvases(document)'), 'All catalog
 assert.ok(runtime.includes('hydrateGameplayCrosshairCanvases(document)'), 'All spread previews must hydrate through the gameplay crosshair renderer.');
 assert.ok(debug.includes("import('./phase2211-runtime.js')"), 'Legacy loader must retain 2.21.1 compatibility.');
 
-// Build 2 regression: packaged Electron must have a direct module entrypoint for the
-// complete modern UI stack. The game cannot depend solely on classic-script dynamic
-// imports or expose the old Build 1.6 shell when those imports fail to start.
+// Packaged Electron must have a direct module entrypoint for the complete modern UI stack.
+// The game cannot depend solely on classic-script dynamic imports or expose the old Build 1.6 shell.
 assert.ok(index.includes('<script type="module" src="ui-boot.js"></script>'), 'index.html must directly boot the modern Skirmish Arena UI as an ES module.');
 for (const phase of [
   'flow-v18.js', 'phase4-runtime.js', 'phase5-runtime.js', 'phase6-runtime.js',
@@ -54,6 +60,22 @@ assert.ok(logo.length > 10000, 'Home logo must be a real packaged image asset, n
 assert.equal(logo.subarray(0, 4).toString('ascii'), 'RIFF', 'Packaged logo must be a valid WebP container.');
 assert.equal(logo.subarray(8, 12).toString('ascii'), 'WEBP', 'Packaged logo must be a valid WebP image.');
 
+// Production packaging must use authored Skirmish Arena metadata and icons rather than Electron defaults.
+for (const [label, iconUrl] of [['game', gameIconUrl], ['launcher', launcherIconUrl]]) {
+  assert.ok(fs.existsSync(iconUrl), `${label} Windows icon must exist.`);
+  const icon = fs.readFileSync(iconUrl);
+  assert.ok(icon.length > 1000, `${label} Windows icon must be a real ICO asset.`);
+  assert.deepEqual([...icon.subarray(0, 4)], [0, 0, 1, 0], `${label} Windows icon must be a valid ICO container.`);
+}
+assert.ok(gameBuilder.includes('icon: build/icon.ico'), 'Game builder must use the Skirmish Arena Windows icon.');
+assert.ok(launcherBuilder.includes('icon: build/icon.ico'), 'Launcher builder must use the Skirmish Arena Windows icon.');
+assert.equal(gamePackage.version, '2.21.1', 'Game package metadata must identify the 2.21.1 release line.');
+assert.ok(gamePackage.description?.includes('Skirmish Arena'), 'Game package description must be branded.');
+assert.ok(launcherPackage.description?.includes('Skirmish Arena'), 'Launcher package description must be branded.');
+assert.equal(gamePackage.author, 'Skirmish Arena Development', 'Game package author metadata must be intentional.');
+assert.equal(launcherPackage.author, 'Skirmish Arena Development', 'Launcher package author metadata must be intentional.');
+assert.ok(syncBuild.includes('gamePackage.version = plan.gameVersion'), 'Build metadata sync must stamp the packaged game version from release-plan.json.');
+
 // 2.21.1 is a UI/logo release. Preserve the 2.2.1 shotgun contract and all other canonical weapon values.
 assert.deepEqual(
   [WEAPONS.shotgun.damage, WEAPONS.shotgun.pelletCount, WEAPONS.shotgun.fullDamageRangeTiles, WEAPONS.shotgun.maxRangeTiles, WEAPONS.shotgun.falloffDamage],
@@ -64,4 +86,4 @@ assert.deepEqual(
   [20, 11, 145, 24, 15, 125, 75]
 );
 
-console.log('Skirmish Arena 2.21.1 checks passed: deterministic packaged UI boot, isolated all-weapons catalog, exact gameplay models/data, scrolling, and supplied metallic home logo.');
+console.log('Skirmish Arena 2.21.1 checks passed: deterministic packaged UI boot, isolated all-weapons catalog, exact gameplay models/data, scrolling, supplied metallic home logo, and branded Windows packaging.');
