@@ -1,9 +1,9 @@
 {
   "product": "Skirmish Arena Launcher",
-  "launcherVersion": "1.0.2",
-  "tag": "launcher-1.0.2",
-  "title": "Skirmish Arena Launcher 1.0.2 — Update Reliability",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/launcher-1.0.2/SkirmishArena-Setup-1.0.2.exe",
-  "sha256": "6679e72cba1c50a6891690bba4858777630b90a1853efa9a25b627902a48cd27",
-  "publishedAt": "2026-08-25T17:45:10.9529566Z"
+  "launcherVersion": "1.0.3",
+  "tag": "launcher-1.0.3",
+  "title": "Skirmish Arena Launcher 1.0.3 — 2.21.1 Bootstrap",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/launcher-1.0.3/SkirmishArena-Setup-1.0.3.exe",
+  "sha256": "f01a07c8641d3ae2f841a9af71cb15d69c268e6c67ab9968b87be0b103ca9c85",
+  "publishedAt": "2026-08-27T16:29:29.8067564Z"
 }
