@@ -1,11 +1,11 @@
 {
   "product":"Skirmish Arena",
   "gameVersion":"2.21.1",
-  "build":1,
-  "phase":"2.21.1 — Weapon Catalog + Main Logo",
-  "tag":"build-2.21.1-v1",
-  "title":"Skirmish Arena 2.21.1",
-  "notesFile":"docs/releases/build-2.21.1-v1.md",
-  "sequence":41,
+  "build":2,
+  "phase":"2.21.1 — Packaged UI Startup Repair",
+  "tag":"build-2.21.1-v2",
+  "title":"Skirmish Arena 2.21.1 — Build 2",
+  "notesFile":"docs/releases/build-2.21.1-v2.md",
+  "sequence":42,
   "releaseRevision":1
 }
