@@ -1,14 +1,14 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.21.1",
-  "build": 4,
-  "sequence": 44,
-  "phase": "2.21.1 — Packaged Modern UI Startup Hotfix",
-  "tag": "build-2.21.1-v4",
-  "title": "Skirmish Arena 2.21.1 — Build 4",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.21.1-v4/UnblockedTDM-2.21.1-v4.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.21.1-v4/SkirmishArena-Setup-2.21.1-v4.exe",
-  "sha256": "fbf9f23b5782f6b1246e3bc299664e17345c29760808c5c67296e22457b3a4f1",
-  "installerSha256": "d98e392a8224034520ccd78121de23f1d8585e83e87d01019054373d282a3e99",
-  "publishedAt": "2026-08-27T16:59:45.522Z"
+  "gameVersion": "2.2.1",
+  "build": 2,
+  "sequence": 45,
+  "phase": "2.2.1 — Known-Good Rollback + Weapon Info Hotfix",
+  "tag": "build-2.2.1-v2",
+  "title": "Skirmish Arena 2.2.1 — Build 2",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.2.1-v2/UnblockedTDM-2.2.1-v2.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.2.1-v2/SkirmishArena-Setup-2.2.1-v2.exe",
+  "sha256": "a79ffda067e91248e503aefde3aea1f12aa5d8a0189da197ef59db8b548272d6",
+  "installerSha256": "1cf01b04d3e17fccf29f5c4bfcfa94f96573ed4dc4008a10f8124fa4c0cc0771",
+  "publishedAt": "2026-08-27T17:17:44.192Z"
 }
