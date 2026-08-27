@@ -9,6 +9,8 @@ const css = read('game/src/ui-2.21.1.css');
 const debug = read('game/src/debug-tuning.js');
 const index = read('game/src/index.html');
 const uiBoot = read('game/src/ui-boot.js');
+const mainProcess = read('game/src/main.js');
+const preload = read('game/src/preload.js');
 const gameBuilder = read('game/electron-builder.yml');
 const launcherBuilder = read('launcher/electron-builder.yml');
 const syncBuild = read('scripts/sync-build-info.mjs');
@@ -47,9 +49,19 @@ assert.ok(runtime.includes('hydrateWeaponModelCanvases(document)'), 'All catalog
 assert.ok(runtime.includes('hydrateGameplayCrosshairCanvases(document)'), 'All spread previews must hydrate through the gameplay crosshair renderer.');
 assert.ok(debug.includes("import('./phase2211-runtime.js')"), 'Legacy loader must retain 2.21.1 compatibility.');
 
-// Packaged Electron must have a direct module entrypoint for the complete modern UI stack.
-// The game cannot depend solely on classic-script dynamic imports or expose the old Build 1.6 shell.
+// Packaged Electron must run the ES-module UI graph from a standard application origin.
+// Loading index.html directly over file:// can leave the literal Build 1.6 fallback shell visible.
 assert.ok(index.includes('<script type="module" src="ui-boot.js"></script>'), 'index.html must directly boot the modern Skirmish Arena UI as an ES module.');
+assert.ok(mainProcess.includes('protocol.registerSchemesAsPrivileged'), 'Electron must register a privileged application protocol before app ready.');
+assert.ok(mainProcess.includes("scheme: 'skirmish'"), 'Packaged UI must use the Skirmish application protocol.');
+assert.ok(mainProcess.includes("protocol.handle('skirmish'"), 'Electron must serve packaged assets through the Skirmish protocol.');
+assert.ok(mainProcess.includes("window.loadURL('skirmish://app/index.html')"), 'Packaged window must load the standard Skirmish application origin.');
+assert.equal(mainProcess.includes('window.loadFile('), false, 'Packaged game must not fall back to file:// loadFile startup.');
+assert.ok(mainProcess.includes('show: false'), 'Packaged window must remain hidden until the modern UI reports ready.');
+assert.ok(mainProcess.includes("ipcMain.on('game:ui-ready'"), 'Main process must wait for the renderer UI-ready signal.');
+assert.ok(mainProcess.includes('STARTUP FAILED'), 'A failed UI boot must show an explicit startup diagnostic instead of the legacy shell.');
+assert.ok(preload.includes("uiReady: () => ipcRenderer.send('game:ui-ready')"), 'Preload must expose the UI-ready signal without enabling nodeIntegration.');
+assert.ok(uiBoot.includes('window.gameAPI?.uiReady?.()'), 'Modern UI bootstrap must signal completion to Electron.');
 for (const phase of [
   'flow-v18.js', 'phase4-runtime.js', 'phase5-runtime.js', 'phase6-runtime.js',
   'phase7-runtime.js', 'phase8-runtime.js', 'phase9-runtime.js', 'phase10-runtime.js',
@@ -100,4 +112,4 @@ assert.deepEqual(
   [20, 11, 145, 24, 15, 125, 75]
 );
 
-console.log('Skirmish Arena 2.21.1 checks passed: deterministic packaged UI boot, isolated all-weapons catalog, exact gameplay models/data, scrolling, supplied metallic home logo, and branded Windows packaging.');
+console.log('Skirmish Arena 2.21.1 checks passed: standard-origin packaged UI boot, hidden-until-ready startup, isolated all-weapons catalog, exact gameplay models/data, scrolling, supplied metallic home logo, and branded Windows packaging.');
