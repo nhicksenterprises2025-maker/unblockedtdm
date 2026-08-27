@@ -4,11 +4,11 @@ Skirmish Arena is a fast 2D top-down 3v3 arena shooter for Windows built around 
 
 ## Current public build
 
-**Skirmish Arena 2.2.1 — Build 2**  
-Phase: **Known-Good Rollback + Weapon Info Hotfix**  
-Release sequence: **45**
+**Skirmish Arena 2.3.1 — Build 1**  
+Phase: **UI Identity + Arsenal Reference**  
+Release sequence: **46**
 
-This release deliberately restores the complete game runtime from the confirmed working `build-2.2.1-v1` line. The later 2.21.1 home/logo/startup changes were removed after they caused broken menu interaction, missing Career presentation and visual regressions. Build 2 changes only the Weapon Info navigation tile/entry behavior on top of that known-good game runtime.
+2.3.1 builds directly on the confirmed working 2.2.1 runtime. It keeps the stable Main Menu controller, Level 1–1000 Career system, persistence and competitive gameplay intact while improving the home identity, command artwork, UI readability, Tactical Map/Scoreboard presentation and rebuilding Weapon Info as a complete all-eight-weapon reference page.
 
 ## Core match
 
@@ -44,13 +44,19 @@ This release deliberately restores the complete game runtime from the confirmed 
 ## Player-facing systems
 
 - Fullscreen Main Menu with **Play, Loadouts, Weapon Info, Settings and Quit**.
-- Silver Play treatment and live in-game weapon models on the Loadouts tile.
+- Supplied metallic Skirmish Arena production logo in the home hero.
+- Lighter silver/gray Play command treatment with silver Play icon.
+- Loadouts command artwork uses actual posed in-game WeaponRenderer models.
+- Weapon Info command uses a blue blueprint/manual gun sketch.
+- Settings keeps the silver gear treatment; Quit remains unchanged.
 - Three created loadout slots on a fresh profile, expandable to the existing **25-slot maximum**.
 - Persistent loadout names, Primary/Secondary choices, settings and keybinds.
 - Rebindable movement, sprint, dash, reload, weapon slots, Fire, ADS, Tactical Map and Scoreboard controls.
 - Tactical HUD with score, timer, health, stamina, dash, weapons and ammunition.
 - Circular minimap plus full tactical map.
-- Live kill feed, scoreboard, Top 3/MVP presentation and full postgame flow.
+- Live kill feed and a scoreboard with **Kills, Deaths, Assists, K/D and Damage**.
+- Top-three performer presentation with #1 identified as MVP.
+- Full postgame results, round history, Rematch and Main Menu flow.
 
 ## Career progression
 
@@ -66,7 +72,16 @@ Skirmish Arena uses a persistent account Career that does **not** increase weapo
 
 ## Weapon Info
 
-Build 2 preserves the working 2.2.1 Weapon Info system and applies one isolated navigation hotfix. The Weapon Info tile uses a blue blueprint-style gun/manual sketch and explicitly opens the dedicated Weapon Info page. Existing 2.2.1 weapon models, exact canonical stats, spread/handling information and scrolling behavior remain intact.
+2.3.1 replaces the old selector/detail Weapon Info layout with one dedicated full-screen arsenal reference page. All eight live weapons appear in one continuous vertically scrollable catalog.
+
+Every weapon card includes:
+- the actual in-game WeaponRenderer model;
+- exact canonical numerical combat values;
+- readable stat bars;
+- weapon role and handling context;
+- Base, Moving and ADS spread previews rendered through the same gameplay crosshair system used in matches.
+
+The Weapon Info page is hard-isolated from Home, Career and Settings so its content cannot leak beneath other menu views.
 
 ## Distribution
 
@@ -74,15 +89,15 @@ The **Skirmish Arena Launcher** is the main install/update path.
 
 Current launcher line: **1.0.4**.
 
-The launcher installs the bundled game, checks the live release channel, verifies SHA-256 hashes, repairs the managed installation, launches the game and supports archived versions.
-
-Fresh Launcher 1.0.4 installations bootstrap directly from **Skirmish Arena 2.2.1 Build 2**. Existing installations use the live sequence-based update channel; sequence 45 ensures the rollback is offered even to installations that previously received the broken sequence-44 release.
+The launcher installs the bundled game, checks the live release channel, verifies SHA-256 hashes, repairs the managed installation, launches the game and supports archived versions. Existing installations use the sequence-based update channel, so sequence 46 is offered after the stable 2.2.1 sequence-45 rollback.
 
 Some internal executable and managed-install paths retain the original `UnblockedTDM` filename for compatibility. Public product branding is **Skirmish Arena**.
 
 ## Release validation
 
-`npm run check` validates the restored 2.2.1 source and the historical regression chain covering the established gameplay foundation, Skirmish Arena rebrand phases, Career progression, UI/control contracts, Weapon Info behavior and the 2.2.1 Shotgun range contract.
+`npm run check` validates the established gameplay foundation, Skirmish Arena UI phases, Career progression, 2.2.1 control/Shotgun contracts and the 2.3.1 hero-logo/all-eight-weapon-reference contract.
+
+The 2.3.1 regression gate also confirms the working Career runtime remains present, Tactical Map and Scoreboard remain rebindable, fresh profiles remain 3 loadouts expandable to 25, scoreboard columns remain K/D/A/K-D/Damage, real gameplay weapon models and crosshair previews are used, and the approved Shotgun range contract is unchanged.
 
 ## Local development
 
@@ -111,4 +126,4 @@ npm run build:windows
 
 ## Development
 
-Skirmish Arena is developed through iterative implementation, hands-on playtesting, regression testing and versioned releases. Known-good releases are preserved so regressions can be rolled back without rebuilding stable systems from scratch.
+Skirmish Arena is developed through iterative implementation, hands-on playtesting, regression testing and versioned releases. Known-good releases are preserved so presentation updates can be layered onto stable gameplay without rebuilding working systems from scratch.

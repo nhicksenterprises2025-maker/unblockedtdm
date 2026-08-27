@@ -1,0 +1,285 @@
+/* Skirmish Arena 2.3.1 — stable 2.2.1 architecture with focused UI polish.
+   No menu controller replacement: this layer only presents the existing working systems. */
+
+/* ---------- Home hero / supplied production logo ---------- */
+body.ui-231 #mainMenu [data-menu-view="home"] .menu-hero .ui231-home-logo{
+  display:block;
+  width:min(720px,63vw);
+  max-width:100%;
+  height:auto;
+  max-height:220px;
+  object-fit:contain;
+  object-position:left center;
+  margin:5px 0 14px;
+  filter:drop-shadow(0 13px 22px rgba(0,0,0,.36));
+  user-select:none;
+  pointer-events:none;
+}
+body.ui-231 #mainMenu [data-menu-view="home"] .menu-hero h1{display:none!important}
+body.ui-231 #mainMenu [data-menu-view="home"] .menu-hero .menu-eyebrow{
+  font-size:10px!important;
+  letter-spacing:.18em!important;
+  color:#45c6ff!important;
+}
+body.ui-231 #mainMenu [data-menu-view="home"] .menu-hero p{
+  max-width:900px!important;
+  font-size:clamp(13px,.95vw,16px)!important;
+  line-height:1.62!important;
+}
+body.ui-231 #mainMenu .menu-feature-grid strong{font-size:clamp(17px,1.08vw,21px)!important}
+body.ui-231 #mainMenu .menu-feature-grid small{font-size:10px!important;line-height:1.55!important}
+body.ui-231 #mainMenu .menu-feature-grid div{min-height:128px!important;padding:20px 22px!important}
+
+/* Career stays the exact working 1-1000 system, just easier to scan. */
+body.ui-231 #mainMenu .career-strip-211{min-height:126px!important}
+body.ui-231 #mainMenu .career-primary-211{grid-template-columns:62px minmax(0,1fr)!important;gap:14px!important}
+body.ui-231 #mainMenu .career-strip-badge{width:56px!important;height:62px!important}
+body.ui-231 #mainMenu .career-primary-211 strong{font-size:clamp(22px,1.55vw,30px)!important}
+body.ui-231 #mainMenu .career-primary-211 b{font-size:9px!important}
+body.ui-231 #mainMenu .career-stat strong{font-size:clamp(17px,1.2vw,22px)!important}
+body.ui-231 #mainMenu .career-stat small,
+body.ui-231 #mainMenu .career-xp small{font-size:7px!important;line-height:1.35!important}
+body.ui-231 #mainMenu .career-xp>div:first-child{font-size:9px!important}
+body.ui-231 #mainMenu .career-xp-track{height:7px!important}
+body.ui-231 #mainMenu .career-view-cue{font-size:8px!important}
+
+/* ---------- Main-menu command art ---------- */
+body.ui-231 #mainMenu .phase2-play{
+  border-color:#aeb9c1!important;
+  background:linear-gradient(135deg,#e1e6e9 0%,#aab4bc 27%,#7d8992 51%,#c9d1d6 73%,#87939c 100%)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.62),inset 0 -1px rgba(20,29,36,.44),0 12px 28px rgba(0,0,0,.22)!important;
+}
+body.ui-231 #mainMenu .phase2-play:hover{
+  border-color:#ecf3f7!important;
+  filter:brightness(1.06);
+}
+body.ui-231 #mainMenu .phase2-play .phase2-button-copy small{color:#24333d!important}
+body.ui-231 #mainMenu .phase2-play .phase2-button-copy strong{color:#071018!important;text-shadow:0 1px rgba(255,255,255,.4)}
+body.ui-231 #mainMenu .phase2-play .phase2-button-copy em{color:#31414b!important}
+body.ui-231 #mainMenu .phase2-play:after{color:#263945!important}
+body.ui-231 #mainMenu .phase2-play .ui221-play-art{
+  width:clamp(86px,5.8vw,118px)!important;
+  height:clamp(86px,5.8vw,118px)!important;
+  filter:drop-shadow(0 8px 9px rgba(0,0,0,.3));
+}
+
+body.ui-231 #mainMenu .phase2-loadouts .ui221-loadout-art{
+  width:clamp(102px,7vw,142px)!important;
+  height:clamp(72px,5vw,100px)!important;
+  right:clamp(12px,1vw,20px)!important;
+  top:clamp(12px,1vw,20px)!important;
+}
+body.ui-231 #mainMenu .phase2-loadouts .ui221-nav-weapon{width:116px!important;height:44px!important}
+body.ui-231 #mainMenu .phase2-loadouts .ui221-nav-ar{left:-10px!important;top:3px!important;transform:rotate(-8deg) scale(.98)!important}
+body.ui-231 #mainMenu .phase2-loadouts .ui221-nav-shotgun{left:2px!important;top:30px!important;transform:rotate(7deg) scale(.9)!important}
+body.ui-231 #mainMenu .phase2-loadouts .ui221-nav-pistol{left:46px!important;top:51px!important;transform:rotate(-12deg) scale(.63)!important}
+
+body.ui-231 #mainMenu .phase2-weapon-info .ui231-info-art{
+  width:clamp(82px,5.6vw,112px)!important;
+  height:clamp(70px,4.9vw,96px)!important;
+  right:clamp(14px,1.1vw,22px)!important;
+  top:clamp(13px,1vw,20px)!important;
+  filter:drop-shadow(0 8px 12px rgba(17,158,220,.18));
+}
+body.ui-231 #mainMenu .ui231-blueprint-icon{display:block;width:100%;height:100%}
+body.ui-231 #mainMenu .phase2-settings .ui221-settings-art{
+  width:clamp(68px,4.5vw,90px)!important;
+  height:clamp(68px,4.5vw,90px)!important;
+}
+
+/* ---------- Hard isolation: Weapon Info can never leak under Home ---------- */
+body.ui-231:not(.ui231-weapon-page) #mainMenu [data-menu-view="weapon-info"]{
+  display:none!important;
+  visibility:hidden!important;
+  height:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  position:absolute!important;
+  pointer-events:none!important;
+}
+body.ui-231.ui231-weapon-page #mainMenu{overflow:hidden!important}
+body.ui-231.ui231-weapon-page #mainMenu .main-menu-shell{
+  display:block!important;
+  width:100vw!important;
+  height:100vh!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+body.ui-231.ui231-weapon-page #mainMenu .main-sidebar{display:none!important}
+body.ui-231.ui231-weapon-page #mainMenu .main-content{
+  position:fixed!important;
+  inset:0!important;
+  box-sizing:border-box!important;
+  width:100vw!important;
+  max-width:none!important;
+  height:100vh!important;
+  max-height:100vh!important;
+  min-height:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:#080f15!important;
+}
+body.ui-231.ui231-weapon-page #mainMenu .main-content>[data-menu-view]:not([data-menu-view="weapon-info"]){display:none!important}
+body.ui-231.ui231-weapon-page #mainMenu [data-menu-view="weapon-info"].active{
+  position:absolute!important;
+  inset:0!important;
+  z-index:80!important;
+  display:block!important;
+  visibility:visible!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:30px clamp(30px,3.3vw,62px) 48px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  pointer-events:auto!important;
+  background:
+    linear-gradient(rgba(8,15,21,.98),rgba(8,15,21,.99)),
+    repeating-linear-gradient(90deg,transparent 0 79px,rgba(66,188,241,.025) 80px),
+    repeating-linear-gradient(0deg,transparent 0 79px,rgba(66,188,241,.025) 80px)!important;
+  scrollbar-width:thin;
+  scrollbar-color:#3dbfff #101a22;
+}
+body.ui-231.ui231-weapon-page #mainMenu [data-menu-view="weapon-info"]::-webkit-scrollbar{width:10px}
+body.ui-231.ui231-weapon-page #mainMenu [data-menu-view="weapon-info"]::-webkit-scrollbar-track{background:#101a22}
+body.ui-231.ui231-weapon-page #mainMenu [data-menu-view="weapon-info"]::-webkit-scrollbar-thumb{background:#314a5c;border:2px solid #101a22}
+
+body.ui-231.ui231-weapon-page #mainMenu .weapon-info-title{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:end!important;
+  gap:28px!important;
+  width:100%!important;
+  max-width:1700px!important;
+  margin:0 auto 24px!important;
+  padding:0 0 19px!important;
+  border-bottom:1px solid #304451!important;
+}
+body.ui-231.ui231-weapon-page #mainMenu .weapon-info-title .menu-eyebrow{font-size:11px!important;letter-spacing:.18em!important;color:#48c6ff!important}
+body.ui-231.ui231-weapon-page #mainMenu .weapon-info-title h2{margin:6px 0 7px!important;font-size:clamp(40px,4.1vw,66px)!important;line-height:.92!important;color:#f3f6f8!important}
+body.ui-231.ui231-weapon-page #mainMenu .weapon-info-title p{margin:0!important;max-width:980px!important;font-size:14px!important;line-height:1.55!important;color:#9fb1bc!important}
+body.ui-231 .ui231-page-back{
+  min-width:184px;
+  min-height:48px;
+  padding:12px 18px;
+  border:1px solid #3b5261;
+  border-radius:2px;
+  background:#0d171e;
+  color:#eef3f6;
+  font:800 10px/1 var(--ut-mono);
+  letter-spacing:.12em;
+  cursor:pointer;
+}
+body.ui-231 .ui231-page-back:hover{border-color:#48c7ff;color:#5ed0ff;background:#10232e}
+
+/* One continuous all-eight-weapon catalog. */
+body.ui-231.ui231-weapon-page #mainMenu .weapon-info-layout.ui231-catalog-layout{
+  display:block!important;
+  width:100%!important;
+  max-width:1700px!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0 auto!important;
+  padding:0!important;
+  overflow:visible!important;
+  border:0!important;
+}
+body.ui-231.ui231-weapon-page #mainMenu .weapon-info-list,
+body.ui-231.ui231-weapon-page #mainMenu .weapon-info-detail{display:none!important}
+body.ui-231 #mainMenu .ui231-weapon-catalog{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:20px!important;
+  width:100%!important;
+  align-items:start!important;
+}
+body.ui-231 #mainMenu .ui231-weapon-card{
+  box-sizing:border-box;
+  min-width:0;
+  padding:22px;
+  border:1px solid #2c414e;
+  border-top:2px solid #39bdf7;
+  border-radius:2px;
+  background:linear-gradient(180deg,#0d181f 0%,#091218 100%);
+  box-shadow:0 14px 30px rgba(0,0,0,.16);
+}
+body.ui-231 #mainMenu .ui231-weapon-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding-bottom:14px;border-bottom:1px solid #273a46}
+body.ui-231 #mainMenu .ui231-weapon-card-head>div{min-width:0}
+body.ui-231 #mainMenu .ui231-weapon-index{display:block;margin-bottom:6px;color:#48c7ff;font:800 9px/1.2 var(--ut-mono);letter-spacing:.16em}
+body.ui-231 #mainMenu .ui231-weapon-card-head h3{margin:0 0 7px;color:#f4f7f8;font-size:clamp(25px,1.8vw,33px);line-height:1;letter-spacing:-.015em}
+body.ui-231 #mainMenu .ui231-weapon-card-head small{display:block;color:#8ca0ad;font:700 9px/1.4 var(--ut-mono);letter-spacing:.075em}
+body.ui-231 #mainMenu .ui231-weapon-card-head>b{flex:0 0 auto;min-width:64px;padding:9px 11px;border:1px solid #2b4a5b;background:#102a37;color:#58ceff;text-align:center;font:900 12px/1 var(--ut-mono);letter-spacing:.08em}
+body.ui-231 #mainMenu .ui231-weapon-model{display:flex;align-items:center;justify-content:center;min-height:158px;margin:12px 0 6px;border-bottom:1px solid #22343f;overflow:hidden}
+body.ui-231 #mainMenu .ui231-weapon-model .phase2011-weapon-canvas,
+body.ui-231 #mainMenu .ui231-weapon-model canvas[data-game-weapon-model]{display:block!important;width:min(100%,440px)!important;height:146px!important}
+body.ui-231 #mainMenu .ui231-weapon-description{min-height:45px;margin:12px 0 13px;color:#aebbc4;font-size:12px!important;line-height:1.55!important}
+
+body.ui-231 #mainMenu .ui231-weapon-card .phase2-stat-bars{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;margin:0 0 11px!important}
+body.ui-231 #mainMenu .ui231-weapon-card .phase2-stat-bar{padding:9px 10px!important;border:1px solid #273d49!important;background:#0a141b!important}
+body.ui-231 #mainMenu .ui231-weapon-card .phase2-stat-bar span{display:block!important;margin-bottom:6px!important;color:#83a9bd!important;font-size:8px!important;letter-spacing:.09em!important}
+body.ui-231 #mainMenu .ui231-weapon-card .phase2-stat-track{height:5px!important}
+
+body.ui-231 #mainMenu .ui231-weapon-card .phase2012-spread{
+  box-sizing:border-box!important;
+  min-height:100px!important;
+  height:auto!important;
+  margin:0 0 11px!important;
+  grid-template-columns:165px minmax(0,1fr)!important;
+  border:1px solid #273d49!important;
+  background:#091219!important;
+}
+body.ui-231 #mainMenu .ui231-weapon-card .phase2012-spread-copy{padding:11px!important}
+body.ui-231 #mainMenu .ui231-weapon-card .phase2012-spread-copy strong{font-size:10px!important}
+body.ui-231 #mainMenu .ui231-weapon-card .phase2012-spread-copy small{font-size:8px!important;line-height:1.45!important}
+body.ui-231 #mainMenu .ui231-weapon-card .phase2012-crosshair-state canvas{width:88px!important;height:46px!important}
+body.ui-231 #mainMenu .ui231-weapon-card .phase2012-crosshair-state span{font-size:8px!important}
+body.ui-231 #mainMenu .ui231-weapon-card .phase2012-crosshair-state small{font-size:8px!important}
+
+body.ui-231 #mainMenu .ui231-exact-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid #2d404b;border-left:1px solid #2d404b}
+body.ui-231 #mainMenu .ui231-exact-stats>div{display:grid;grid-template-columns:minmax(94px,.85fr) minmax(0,1.15fr);align-items:center;gap:10px;min-height:41px;padding:8px 10px;border-right:1px solid #2d404b;border-bottom:1px solid #2d404b;background:#0a141b}
+body.ui-231 #mainMenu .ui231-exact-stats span{color:#74c3e7;font:700 9px/1.3 var(--ut-mono);letter-spacing:.02em}
+body.ui-231 #mainMenu .ui231-exact-stats strong{color:#f1f4f6;font:800 10px/1.35 var(--ut-mono);text-align:right;overflow-wrap:anywhere}
+
+/* ---------- Existing tactical systems: presentation uplift only ---------- */
+body.ui-231 .phase3-scoreboard-shell{width:min(1240px,94vw);max-height:90vh}
+body.ui-231 .phase3-scoreboard-shell>header{padding:24px 30px 20px}
+body.ui-231 .phase3-scoreboard-shell h2{font-size:38px}
+body.ui-231 .phase3-top-three>div{padding:18px 22px}
+body.ui-231 .phase3-top-three strong{font-size:20px}
+body.ui-231 .phase3-score-head,
+body.ui-231 .phase3-score-row{grid-template-columns:minmax(270px,2.5fr) repeat(5,minmax(68px,.55fr))}
+body.ui-231 .phase3-score-head{padding:11px 26px;font-size:9px}
+body.ui-231 .phase3-score-row{min-height:58px;padding:0 26px}
+body.ui-231 .phase3-score-row>span b{font-size:14px}
+body.ui-231 .phase3-score-row>strong{font-size:12px}
+body.ui-231 .phase3-map-shell{width:min(1260px,94vw);max-height:92vh}
+body.ui-231 #phase3MapCanvas{width:min(1060px,88vw);max-height:68vh}
+body.ui-231 .phase3-kill-feed{width:min(430px,38vw)}
+body.ui-231 .phase3-feed-row{font-size:10px;padding:8px 11px}
+
+/* Existing one-page Loadouts remains one page; only improve scanability. */
+body.ui-231 .loadout-screen:not(.hidden) .weapon-card strong{font-size:14px!important}
+body.ui-231 .loadout-screen:not(.hidden) .weapon-detail-title h2{font-size:clamp(26px,2.15vw,35px)!important}
+body.ui-231 .loadout-screen:not(.hidden) .weapon-detail .phase2011-weapon-canvas{width:min(100%,470px)!important}
+
+@media (max-width:1220px){
+  body.ui-231 #mainMenu .ui231-weapon-catalog{grid-template-columns:1fr!important}
+  body.ui-231 #mainMenu .ui231-weapon-card{padding:19px}
+  body.ui-231 #mainMenu [data-menu-view="home"] .menu-hero .ui231-home-logo{width:100%;max-height:190px}
+}
+@media (max-width:760px){
+  body.ui-231.ui231-weapon-page #mainMenu [data-menu-view="weapon-info"].active{padding:20px 16px 36px!important}
+  body.ui-231.ui231-weapon-page #mainMenu .weapon-info-title{grid-template-columns:1fr!important;align-items:start!important}
+  body.ui-231 .ui231-page-back{width:100%}
+  body.ui-231 #mainMenu .ui231-weapon-card .phase2-stat-bars{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.ui-231 #mainMenu .ui231-exact-stats{grid-template-columns:1fr}
+  body.ui-231 #mainMenu .ui231-weapon-card .phase2012-spread{grid-template-columns:1fr!important}
+}
+@media (max-height:820px){
+  body.ui-231 #mainMenu [data-menu-view="home"] .menu-hero .ui231-home-logo{max-height:150px;width:min(580px,58vw)}
+  body.ui-231 #mainMenu [data-menu-view="home"] .menu-hero p{font-size:12px!important}
+  body.ui-231 #mainMenu .menu-feature-grid div{min-height:104px!important;padding:15px 18px!important}
+  body.ui-231 #mainMenu .career-strip-211{min-height:106px!important}
+}

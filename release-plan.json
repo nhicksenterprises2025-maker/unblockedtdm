@@ -1,11 +1,11 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.2.1",
-  "build": 2,
-  "phase": "2.2.1 — Known-Good Rollback + Weapon Info Hotfix",
-  "tag": "build-2.2.1-v2",
-  "title": "Skirmish Arena 2.2.1 — Build 2",
-  "notesFile": "docs/releases/build-2.2.1-v2.md",
-  "sequence": 45,
+  "gameVersion": "2.3.1",
+  "build": 1,
+  "phase": "2.3.1 — UI Identity + Arsenal Reference",
+  "tag": "build-2.3.1-v1",
+  "title": "Skirmish Arena 2.3.1 — Build 1",
+  "notesFile": "docs/releases/build-2.3.1-v1.md",
+  "sequence": 46,
   "releaseRevision": 1
 }
