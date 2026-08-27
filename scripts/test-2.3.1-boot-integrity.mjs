@@ -5,6 +5,7 @@ const read = (relative) => fs.readFileSync(new URL(`../${relative}`, import.meta
 const debug = read('game/src/debug-tuning.js');
 const index = read('game/src/index.html');
 const main = read('game/src/main.js');
+const smoke = read('scripts/smoke-packaged-game.mjs');
 const pkg = JSON.parse(read('package.json'));
 
 const orderedRuntimes = [
@@ -55,8 +56,9 @@ const startBootFunction = debug.indexOf('async function startDeterministicBoot()
 const domReadyRegistration = debug.indexOf("if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startDeterministicBoot");
 assert.ok(immediateGuard > startBootFunction && immediateGuard < domReadyRegistration, 'Boot shield must engage immediately during classic-script evaluation, before DOMContentLoaded and renderer-module execution.');
 
-assert.ok(main.includes("process.argv.includes('--smoke-test')"), 'Packaged game must support CI boot smoke mode.');
-assert.ok(main.includes("fullscreen: true"), 'Normal game startup must remain fullscreen-first.');
+assert.ok(main.includes("process.env.SKIRMISH_SMOKE_TEST === '1'"), 'Portable packaged smoke mode must use an inherited environment signal.');
+assert.ok(main.includes("process.argv.includes('--smoke-test')"), 'Packaged game must retain the CLI smoke fallback for direct testing.');
+assert.ok(main.includes('fullscreen: true'), 'Normal game startup must remain fullscreen-first.');
 assert.ok(main.includes('windowOptions.fullscreen = false'), 'Only packaged smoke mode may suppress fullscreen.');
 assert.ok(main.includes("state.boot === 'ready'"), 'Packaged smoke mode must require the bootstrap ready state.');
 assert.ok(main.includes("state.brand === 'SKIRMISH ARENA'"), 'Packaged smoke mode must verify modern branding.');
@@ -64,8 +66,13 @@ assert.ok(main.includes('state.career &&'), 'Packaged smoke mode must verify Car
 assert.ok(main.includes('state.catalog &&'), 'Packaged smoke mode must verify Weapon Info presentation.');
 assert.ok(main.includes('state.logo'), 'Packaged smoke mode must verify the 2.3.1 home logo.');
 
+assert.ok(smoke.includes("SKIRMISH_SMOKE_TEST: '1'"), 'Smoke runner must propagate the authoritative environment signal through the portable wrapper.');
+assert.ok(smoke.includes('win-unpacked/UnblockedTDM.exe'), 'CI must directly boot-test the packaged Electron app.');
+assert.ok(smoke.includes("../dist-game/UnblockedTDM.exe"), 'CI must also boot-test the final portable release executable.');
+assert.ok(smoke.includes("taskkill"), 'Timed-out Windows smoke tests must clean up the full portable process tree.');
+
 assert.ok(pkg.scripts['smoke:packaged']?.includes('smoke-packaged-game.mjs'), 'Build system must expose the packaged smoke test.');
 assert.ok(pkg.scripts['build:windows']?.includes('npm run smoke:packaged'), 'Windows release build must smoke-test the packaged EXE before launcher packaging/publish.');
 assert.ok(pkg.scripts.check.includes('test-2.3.1-boot-integrity.mjs'), 'Boot integrity regression gate must run in npm check.');
 
-console.log('Skirmish Arena boot-integrity checks passed: deterministic runtime order, immediate fail-closed legacy-shell shielding, and packaged EXE smoke test are enforced.');
+console.log('Skirmish Arena boot-integrity checks passed: deterministic runtime order, immediate fail-closed legacy-shell shielding, portable-safe smoke signaling, and both packaged EXE paths are enforced.');
