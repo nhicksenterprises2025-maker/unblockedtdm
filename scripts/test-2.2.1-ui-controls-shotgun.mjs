@@ -28,7 +28,7 @@ assert.equal(shotgun.fullDamageRangeTiles, 2, 'Shotgun full-damage band must end
 assert.equal(shotgun.maxRangeTiles, 2.5, 'Shotgun must have a hard 2.5-tile maximum damage range.');
 assert.equal(shotgun.falloffDamage, 5, 'Shotgun falloff pellet damage must remain 5 in the 2.0–2.5 tile band.');
 assert.ok(runtime.includes('weapon.maxRangeTiles ?? weapon.fullDamageRangeTiles'), 'Shotgun pellet cast must honor the canonical hard max range.');
-assert.ok(runtime.includes('maxDistance }),'), 'Shotgun cast must be physically limited to the max range.');
+assert.ok(runtime.includes('maxDistance });'), 'Shotgun cast must be physically limited to the max range.');
 assert.ok(runtime.includes('centerDistance > maxDistance'), 'No shotgun target beyond the hard maximum may receive damage.');
 
 // Intentional 2.2.1 balance change is shotgun range only; core values for every other weapon stay canonical.
