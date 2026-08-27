@@ -19,4 +19,9 @@ for (const target of ['game/src/build-info.json', 'launcher/src/build-info.json'
   fs.writeFileSync(path.join(root, target), `${JSON.stringify(info, null, 2)}\n`);
 }
 
+const gamePackagePath = path.join(root, 'game/package.json');
+const gamePackage = JSON.parse(fs.readFileSync(gamePackagePath, 'utf8'));
+gamePackage.version = plan.gameVersion;
+fs.writeFileSync(gamePackagePath, `${JSON.stringify(gamePackage, null, 2)}\n`);
+
 console.log(`Synced ${plan.title}`);
