@@ -49,7 +49,10 @@ for (const runtime of orderedRuntimes) {
 
 const debugScript = index.indexOf('<script src="debug-tuning.js"></script>');
 const rendererScript = index.indexOf('<script type="module" src="renderer.js"></script>');
-assert.ok(debugScript >= 0 && rendererScript > debugScript, 'Boot guard must execute before the direct renderer module fallback.');
+assert.ok(debugScript >= 0 && rendererScript > debugScript, 'Boot bootstrap script must be parsed before the direct renderer module fallback.');
+const immediateGuard = debug.indexOf("\n  installBootGuard();\n\n  window.addEventListener('error'");
+const domReadyRegistration = debug.indexOf("document.addEventListener('DOMContentLoaded',startDeterministicBoot");
+assert.ok(immediateGuard > 0 && immediateGuard < domReadyRegistration, 'Boot shield must engage immediately during classic-script evaluation, before DOMContentLoaded and renderer-module execution.');
 
 assert.ok(main.includes("process.argv.includes('--smoke-test')"), 'Packaged game must support CI boot smoke mode.');
 assert.ok(main.includes("state.boot === 'ready'"), 'Packaged smoke mode must require the bootstrap ready state.');
@@ -62,4 +65,4 @@ assert.ok(pkg.scripts['smoke:packaged']?.includes('smoke-packaged-game.mjs'), 'B
 assert.ok(pkg.scripts['build:windows']?.includes('npm run smoke:packaged'), 'Windows release build must smoke-test the packaged EXE before launcher packaging/publish.');
 assert.ok(pkg.scripts.check.includes('test-2.3.1-boot-integrity.mjs'), 'Boot integrity regression gate must run in npm check.');
 
-console.log('Skirmish Arena boot-integrity checks passed: deterministic runtime order, fail-closed legacy shell, and packaged EXE smoke test are enforced.');
+console.log('Skirmish Arena boot-integrity checks passed: deterministic runtime order, immediate fail-closed legacy-shell shielding, and packaged EXE smoke test are enforced.');
