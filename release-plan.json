@@ -1,11 +1,11 @@
 {
   "product":"Skirmish Arena",
-  "gameVersion":"2.1.1",
-  "build":2,
-  "phase":"2.1.1 — 1000-Level Account Career",
-  "tag":"build-2.1.1-v2",
-  "title":"Skirmish Arena 2.1.1",
-  "notesFile":"docs/releases/build-2.1.1-v1.md",
-  "sequence":39,
-  "releaseRevision":6
+  "gameVersion":"2.2.1",
+  "build":1,
+  "phase":"2.2.1 — UI Readability + Tactical Controls + Shotgun Range",
+  "tag":"build-2.2.1-v1",
+  "title":"Skirmish Arena 2.2.1",
+  "notesFile":"docs/releases/build-2.2.1-v1.md",
+  "sequence":40,
+  "releaseRevision":1
 }
