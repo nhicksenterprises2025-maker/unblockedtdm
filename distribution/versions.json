@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "Skirmish Arena",
+      "gameVersion": "2.3.1",
+      "build": 1,
+      "sequence": 46,
+      "phase": "2.3.1 — UI Identity + Arsenal Reference",
+      "tag": "build-2.3.1-v1",
+      "title": "Skirmish Arena 2.3.1 — Build 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.1-v1/UnblockedTDM-2.3.1-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.1-v1/SkirmishArena-Setup-2.3.1-v1.exe",
+      "sha256": "a88ecc94678694b908e99283dbbc40d0628b433b21774fd70fa52de296554e09",
+      "installerSha256": "c8add61a549583cb44c6ae22430bb96edd6768d91e8ffdd6a9389a608297c344",
+      "publishedAt": "2026-08-27T17:41:13.925Z"
+    },
+    {
+      "product": "Skirmish Arena",
       "gameVersion": "2.2.1",
       "build": 2,
       "sequence": 45,
