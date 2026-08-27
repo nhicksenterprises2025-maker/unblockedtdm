@@ -27,7 +27,9 @@ export const DEFAULT_BINDINGS = Object.freeze({
   primary: 'Digit1',
   secondary: 'Digit2',
   fire: 'Mouse0',
-  ads: 'Mouse2'
+  ads: 'Mouse2',
+  map: 'KeyM',
+  scoreboard: 'Tab'
 });
 
 export const BINDING_ACTIONS = Object.freeze([
@@ -41,7 +43,9 @@ export const BINDING_ACTIONS = Object.freeze([
   ['primary', 'Primary Weapon'],
   ['secondary', 'Secondary Weapon'],
   ['fire', 'Fire'],
-  ['ads', 'ADS']
+  ['ads', 'ADS'],
+  ['map', 'Tactical Map'],
+  ['scoreboard', 'Scoreboard']
 ]);
 
 const RESERVED_CODES = new Set(['Escape', 'F1', 'F11']);
@@ -184,6 +188,7 @@ export function bindingLabel(code) {
   if (code === 'ControlRight') return 'R CTRL';
   if (code === 'AltLeft') return 'L ALT';
   if (code === 'AltRight') return 'R ALT';
+  if (code === 'Tab') return 'TAB';
   if (code.startsWith('Key')) return code.slice(3);
   if (code.startsWith('Digit')) return code.slice(5);
   if (code.startsWith('Numpad')) return `NUM ${code.slice(6)}`;
