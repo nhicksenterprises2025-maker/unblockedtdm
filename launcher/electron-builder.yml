@@ -8,6 +8,7 @@ extraResources:
   - from: ../dist-game/UnblockedTDM.exe
     to: game/UnblockedTDM.exe
 win:
+  icon: build/icon.ico
   target:
     - nsis
   executableName: Skirmish Arena Launcher
