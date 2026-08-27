@@ -34,22 +34,34 @@ jobs:
           $plan = Get-Content smoke-plan.json | ConvertFrom-Json
           $exe = Join-Path (Resolve-Path smoke-bin) $plan.gameAsset
           $sentinel = Join-Path $env:RUNNER_TEMP 'skirmish-ui-smoke.json'
-          Remove-Item $sentinel -Force -ErrorAction SilentlyContinue
+          $stdout = Join-Path $env:RUNNER_TEMP 'skirmish-ui-smoke.stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'skirmish-ui-smoke.stderr.log'
+          Remove-Item $sentinel,$stdout,$stderr -Force -ErrorAction SilentlyContinue
           $env:SKIRMISH_SMOKE_SENTINEL = $sentinel
 
-          $process = Start-Process -FilePath $exe -ArgumentList '--smoke-test' -PassThru
+          $process = Start-Process -FilePath $exe -ArgumentList '--smoke-test' -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
           $deadline = (Get-Date).AddSeconds(45)
           while ((Get-Date) -lt $deadline -and -not (Test-Path $sentinel)) {
             Start-Sleep -Milliseconds 500
           }
 
           if (-not (Test-Path $sentinel)) {
+            Write-Host '===== packaged stdout ====='
+            if (Test-Path $stdout) { Get-Content $stdout }
+            Write-Host '===== packaged stderr ====='
+            if (Test-Path $stderr) { Get-Content $stderr }
             Get-Process | Where-Object { $_.ProcessName -like 'UnblockedTDM*' } | Stop-Process -Force -ErrorAction SilentlyContinue
-            throw 'Packaged Skirmish Arena never emitted the modern UI-ready sentinel. Legacy/fallback startup is not releasable.'
+            throw 'Packaged Skirmish Arena emitted no smoke result. The executable did not reach either UI-ready or the instrumented startup-failure path.'
           }
 
           $result = Get-Content $sentinel -Raw | ConvertFrom-Json
-          if (-not $result.uiReady) { throw 'Smoke sentinel did not confirm uiReady=true.' }
+          if (-not $result.uiReady) {
+            Write-Host '===== packaged stdout ====='
+            if (Test-Path $stdout) { Get-Content $stdout }
+            Write-Host '===== packaged stderr ====='
+            if (Test-Path $stderr) { Get-Content $stderr }
+            throw "Packaged modern UI boot failed: $($result.error)"
+          }
           if ($result.gameVersion -ne $plan.gameVersion) { throw "Smoke gameVersion mismatch: $($result.gameVersion)" }
           if ([int]$result.build -ne [int]$plan.build) { throw "Smoke build mismatch: $($result.build)" }
           if ([int]$result.sequence -ne [int]$plan.sequence) { throw "Smoke sequence mismatch: $($result.sequence)" }
@@ -58,9 +70,13 @@ jobs:
           Write-Host "Packaged UI smoke passed: $($result.gameVersion) Build $($result.build), sequence $($result.sequence), modern UI ready."
           Get-Process | Where-Object { $_.ProcessName -like 'UnblockedTDM*' } | Stop-Process -Force -ErrorAction SilentlyContinue
 
-      - name: Upload smoke sentinel
+      - name: Upload smoke diagnostics
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Skirmish-Arena-Packaged-UI-Smoke
-          path: ${{ runner.temp }}/skirmish-ui-smoke.json
-          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/skirmish-ui-smoke.json
+            ${{ runner.temp }}/skirmish-ui-smoke.stdout.log
+            ${{ runner.temp }}/skirmish-ui-smoke.stderr.log
+          if-no-files-found: warn
