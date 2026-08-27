@@ -5,6 +5,7 @@ const read = (relative) => fs.readFileSync(new URL(`../${relative}`, import.meta
 const debug = read('game/src/debug-tuning.js');
 const index = read('game/src/index.html');
 const main = read('game/src/main.js');
+const phase231 = read('game/src/phase231-runtime.js');
 const smoke = read('scripts/smoke-packaged-game.mjs');
 const pkg = JSON.parse(read('package.json'));
 
@@ -56,6 +57,11 @@ const startBootFunction = debug.indexOf('async function startDeterministicBoot()
 const domReadyRegistration = debug.indexOf("if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startDeterministicBoot");
 assert.ok(immediateGuard > startBootFunction && immediateGuard < domReadyRegistration, 'Boot shield must engage immediately during classic-script evaluation, before DOMContentLoaded and renderer-module execution.');
 
+assert.equal(phase231.includes('new MutationObserver'), false, '2.3.1 must never observe and rewrite the same menu subtree; that can starve Electron in a self-triggering microtask loop.');
+assert.ok(phase231.includes('requestAnimationFrame(refresh231)'), '2.3.1 refreshes must be frame-coalesced rather than recursively queued as microtasks.');
+assert.ok(phase231.includes('function setText(node, value)'), '2.3.1 DOM writes must be idempotent to avoid mutation churn.');
+assert.ok(phase231.includes("window.addEventListener('skirmish:menu-view-change', scheduleRefresh)"), '2.3.1 must refresh from explicit application events.');
+
 assert.ok(main.includes("process.env.SKIRMISH_SMOKE_TEST === '1'"), 'Portable packaged smoke mode must use an inherited environment signal.');
 assert.ok(main.includes("process.argv.includes('--smoke-test')"), 'Packaged game must retain the CLI smoke fallback for direct testing.');
 assert.ok(main.includes('fullscreen: true'), 'Normal game startup must remain fullscreen-first.');
@@ -69,10 +75,10 @@ assert.ok(main.includes('state.logo'), 'Packaged smoke mode must verify the 2.3.
 assert.ok(smoke.includes("SKIRMISH_SMOKE_TEST: '1'"), 'Smoke runner must propagate the authoritative environment signal through the portable wrapper.');
 assert.ok(smoke.includes('win-unpacked/UnblockedTDM.exe'), 'CI must directly boot-test the packaged Electron app.');
 assert.ok(smoke.includes("../dist-game/UnblockedTDM.exe"), 'CI must also boot-test the final portable release executable.');
-assert.ok(smoke.includes("taskkill"), 'Timed-out Windows smoke tests must clean up the full portable process tree.');
+assert.ok(smoke.includes('taskkill'), 'Timed-out Windows smoke tests must clean up the full portable process tree.');
 
 assert.ok(pkg.scripts['smoke:packaged']?.includes('smoke-packaged-game.mjs'), 'Build system must expose the packaged smoke test.');
 assert.ok(pkg.scripts['build:windows']?.includes('npm run smoke:packaged'), 'Windows release build must smoke-test the packaged EXE before launcher packaging/publish.');
 assert.ok(pkg.scripts.check.includes('test-2.3.1-boot-integrity.mjs'), 'Boot integrity regression gate must run in npm check.');
 
-console.log('Skirmish Arena boot-integrity checks passed: deterministic runtime order, immediate fail-closed legacy-shell shielding, portable-safe smoke signaling, and both packaged EXE paths are enforced.');
+console.log('Skirmish Arena boot-integrity checks passed: deterministic startup, fail-closed legacy shielding, no self-triggering menu observer, portable-safe smoke signaling, and both packaged EXE paths are enforced.');
