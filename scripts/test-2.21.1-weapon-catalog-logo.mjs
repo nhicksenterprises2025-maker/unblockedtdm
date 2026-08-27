@@ -7,6 +7,8 @@ const menu = read('game/src/ui/MainMenu.js');
 const runtime = read('game/src/phase2211-runtime.js');
 const css = read('game/src/ui-2.21.1.css');
 const debug = read('game/src/debug-tuning.js');
+const index = read('game/src/index.html');
+const uiBoot = read('game/src/ui-boot.js');
 const logoUrl = new URL('../game/src/assets/skirmish-arena-main-logo.webp', import.meta.url);
 
 assert.equal(WEAPON_LIST.length, 8, 'Weapon Info must cover all eight live weapons.');
@@ -23,7 +25,21 @@ assert.ok(runtime.includes("assets/skirmish-arena-main-logo.webp"), 'Home hero m
 assert.ok(runtime.includes("document.body.classList.toggle('ui2211-weapon-page'"), 'Weapon Info must have an isolated dedicated-page state.');
 assert.ok(runtime.includes('hydrateWeaponModelCanvases(document)'), 'All catalog models must hydrate through the gameplay WeaponRenderer pipeline.');
 assert.ok(runtime.includes('hydrateGameplayCrosshairCanvases(document)'), 'All spread previews must hydrate through the gameplay crosshair renderer.');
-assert.ok(debug.includes("import('./phase2211-runtime.js')"), '2.21.1 runtime must load after the 2.2.1 runtime.');
+assert.ok(debug.includes("import('./phase2211-runtime.js')"), 'Legacy loader must retain 2.21.1 compatibility.');
+
+// Build 2 regression: packaged Electron must have a direct module entrypoint for the
+// complete modern UI stack. The game cannot depend solely on classic-script dynamic
+// imports or expose the old Build 1.6 shell when those imports fail to start.
+assert.ok(index.includes('<script type="module" src="ui-boot.js"></script>'), 'index.html must directly boot the modern Skirmish Arena UI as an ES module.');
+for (const phase of [
+  'flow-v18.js', 'phase4-runtime.js', 'phase5-runtime.js', 'phase6-runtime.js',
+  'phase7-runtime.js', 'phase8-runtime.js', 'phase9-runtime.js', 'phase10-runtime.js',
+  'phase2011-runtime.js', 'phase2012-runtime.js', 'phase2013-runtime.js',
+  'phase2014-runtime.js', 'phase221-runtime.js', 'phase2211-runtime.js'
+]) {
+  assert.ok(uiBoot.includes(`import './${phase}';`), `Modern UI bootstrap missing ${phase}.`);
+}
+assert.ok(uiBoot.includes("document.documentElement.dataset.skirmishUiBoot = '2.21.1'"), 'Modern UI bootstrap must mark successful packaged startup.');
 
 assert.ok(css.includes('body.ui-2211:not(.ui2211-weapon-page) #mainMenu [data-menu-view="weapon-info"]'), 'Inactive Weapon Info must be hard-hidden so it cannot leak onto Home.');
 assert.ok(css.includes('overflow-y:auto!important'), 'Weapon Info must be one vertically scrollable page when all detailed cards exceed the viewport.');
@@ -48,4 +64,4 @@ assert.deepEqual(
   [20, 11, 145, 24, 15, 125, 75]
 );
 
-console.log('Skirmish Arena 2.21.1 checks passed: isolated all-weapons catalog, exact gameplay models/data, scrolling, and supplied metallic home logo.');
+console.log('Skirmish Arena 2.21.1 checks passed: deterministic packaged UI boot, isolated all-weapons catalog, exact gameplay models/data, scrolling, and supplied metallic home logo.');
