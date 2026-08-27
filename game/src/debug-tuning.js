@@ -40,5 +40,5 @@
   import('./phase2013-runtime.js').catch((error)=>console.error('2.01.3 loadout one-page UI failed to load',error));
   import('./phase2014-runtime.js').catch((error)=>console.error('2.01.4 Weapon Info scroll repair failed to load',error));
   import('./phase221-runtime.js').catch((error)=>console.error('2.2.1 UI controls and shotgun range runtime failed to load',error));
-  import('./phase2211-runtime.js').catch((error)=>console.error('2.21.1 Weapon Info catalog and home logo runtime failed to load',error));
+  import('./weapon-info-hotfix.js').catch((error)=>console.error('2.2.1 Weapon Info tab hotfix failed to load',error));
 })();

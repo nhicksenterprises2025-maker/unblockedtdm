@@ -1,11 +1,11 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.21.1",
-  "build": 4,
-  "phase": "2.21.1 — Packaged Modern UI Startup Hotfix",
-  "tag": "build-2.21.1-v4",
-  "title": "Skirmish Arena 2.21.1 — Build 4",
-  "notesFile": "docs/releases/build-2.21.1-v4.md",
-  "sequence": 44,
-  "releaseRevision": 4
+  "gameVersion": "2.2.1",
+  "build": 2,
+  "phase": "2.2.1 — Known-Good Rollback + Weapon Info Hotfix",
+  "tag": "build-2.2.1-v2",
+  "title": "Skirmish Arena 2.2.1 — Build 2",
+  "notesFile": "docs/releases/build-2.2.1-v2.md",
+  "sequence": 45,
+  "releaseRevision": 1
 }

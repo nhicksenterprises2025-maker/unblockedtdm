@@ -3,47 +3,13 @@ import { spreadVisualHtml, statBarsHtml, weaponModelSvg } from './WeaponPresenta
 
 function weaponDescription(weapon) {
   if (weapon.id === 'sniper') return 'Physical high-speed projectile with no piercing. Built around long sightlines and high single-target burst.';
-  if (weapon.id === 'shotgun') return 'Eight-pellet close-range blast with shell-by-shell reload. Full damage ends at 2.0 tiles, falls off through 2.5 tiles, then deals no damage.';
+  if (weapon.id === 'shotgun') return 'Eight-pellet blast with shell-by-shell reload. Strongest when closing distance and controlling corners.';
   if (weapon.id === 'launcher') return 'Explosive projectile with a 2.5-tile blast radius, full self-damage, zero friendly fire and no splash falloff.';
   if (weapon.id === 'melee') return 'Two-tile melee reach with no lunge. Fastest movement modifier and no ammunition requirement.';
   if (weapon.id === 'pistol') return 'Semi-auto sidearm. Every discrete trigger press fires one round with quick handling and neutral movement.';
   if (weapon.id === 'lmg') return 'Heavy 75-round primary with strong damage, long reload and substantial movement cost.';
   if (weapon.id === 'smg') return 'Fast automatic primary for close-range pressure, quick handling and neutral movement.';
   return 'Balanced automatic rifle with predictable spread, medium-range falloff and moderate handling penalties.';
-}
-
-function weaponRole(weapon) {
-  if (weapon.id === 'assault-rifle') return 'VERSATILE PRIMARY';
-  if (weapon.id === 'smg') return 'CLOSE-RANGE PRIMARY';
-  if (weapon.id === 'sniper') return 'LONG-RANGE PRIMARY';
-  if (weapon.id === 'shotgun') return 'CLOSE-RANGE FLEX';
-  if (weapon.id === 'lmg') return 'HEAVY PRIMARY';
-  if (weapon.id === 'pistol') return 'QUICK-HANDLING SECONDARY';
-  if (weapon.id === 'launcher') return 'EXPLOSIVE SECONDARY';
-  return 'MOBILITY SECONDARY';
-}
-
-function weaponCatalogCard(weapon, index) {
-  const stats = formatWeaponStats(weapon);
-  const slot = weapon.slot === 'both' ? 'PRIMARY / SECONDARY' : weapon.slot.toUpperCase();
-  return `
-    <article class="ui2211-weapon-card" data-catalog-weapon="${weapon.id}">
-      <header class="ui2211-weapon-card-head">
-        <div>
-          <span class="ui2211-weapon-index">${String(index + 1).padStart(2, '0')} · ${slot}</span>
-          <h3>${weapon.name}</h3>
-          <small>${weaponRole(weapon)} · ${weapon.kind.toUpperCase()} · SWAP T${weapon.swapTier}</small>
-        </div>
-        <b>${weapon.shortName}</b>
-      </header>
-      <div class="ui2211-weapon-model">${weaponModelSvg(weapon)}</div>
-      <p class="ui2211-weapon-description">${weaponDescription(weapon)}</p>
-      ${statBarsHtml(weapon)}
-      ${spreadVisualHtml(weapon)}
-      <div class="ui2211-exact-stats">
-        ${stats.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('')}
-      </div>
-    </article>`;
 }
 
 export class MainMenu {
@@ -53,7 +19,7 @@ export class MainMenu {
     this.onLoadouts = onLoadouts;
     this.onQuit = onQuit;
     this.view = 'home';
-    this.previewWeapon = WEAPON_LIST[0]; // historical compatibility; 2.21.1 renders the full catalog instead.
+    this.previewWeapon = WEAPON_LIST[0];
     this.bindEvents();
     this.renderWeaponInfo();
     this.show('home');
@@ -71,12 +37,13 @@ export class MainMenu {
         return;
       }
 
-      // Retained for compatibility with historical UI hooks. The live 2.21.1
-      // Weapon Info page is an all-weapons catalog and does not require selection.
       const weaponButton = event.target.closest('[data-weapon-info]');
       if (weaponButton) {
         const weapon = WEAPON_LIST.find((entry) => entry.id === weaponButton.dataset.weaponInfo);
-        if (weapon) this.previewWeapon = weapon;
+        if (weapon) {
+          this.previewWeapon = weapon;
+          this.renderWeaponInfo();
+        }
       }
     });
 
@@ -96,14 +63,27 @@ export class MainMenu {
   }
 
   renderWeaponInfo() {
-    const view = this.root.querySelector('[data-menu-view="weapon-info"]');
-    const layout = view?.querySelector('.weapon-info-layout');
-    if (!view || !layout) return;
+    const list = this.root.querySelector('[data-weapon-info-list]');
+    const detail = this.root.querySelector('[data-weapon-info-detail]');
+    if (!list || !detail) return;
 
-    layout.classList.add('ui2211-catalog-layout');
-    layout.innerHTML = `
-      <div class="ui2211-weapon-catalog" data-weapon-info-catalog>
-        ${WEAPON_LIST.map(weaponCatalogCard).join('')}
-      </div>`;
+    list.innerHTML = WEAPON_LIST.map((weapon) => `
+      <button type="button" data-weapon-info="${weapon.id}" class="${weapon.id === this.previewWeapon.id ? 'active' : ''}">
+        <span>${weapon.slot === 'both' ? 'PRIMARY / SECONDARY' : weapon.slot.toUpperCase()}</span>
+        <strong>${weapon.name}</strong>
+        <small>${weapon.kind.toUpperCase()} · SWAP T${weapon.swapTier}</small>
+      </button>`).join('');
+
+    const stats = formatWeaponStats(this.previewWeapon);
+    detail.innerHTML = `
+      <div class="weapon-info-heading">
+        <div><span>CANONICAL WEAPON DATA</span><h2>${this.previewWeapon.name}</h2></div>
+        <b>${this.previewWeapon.shortName}</b>
+      </div>
+      <div class="phase2-weapon-stage">${weaponModelSvg(this.previewWeapon)}</div>
+      <p>${weaponDescription(this.previewWeapon)}</p>
+      ${statBarsHtml(this.previewWeapon)}
+      ${spreadVisualHtml(this.previewWeapon)}
+      <div class="weapon-info-stats">${stats.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('')}</div>`;
   }
 }
