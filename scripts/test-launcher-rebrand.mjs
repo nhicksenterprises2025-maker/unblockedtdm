@@ -7,9 +7,10 @@ const builder = read('launcher/electron-builder.yml');
 const boot = read('launcher/src/boot.js');
 const index = read('launcher/src/index.html');
 const renderer = read('launcher/src/renderer.js');
+const workflow = read('.github/workflows/publish-windows.yml');
 
 assert.equal(pkg.productName, 'Skirmish Arena Launcher');
-assert.equal(pkg.version, '1.0.2');
+assert.equal(pkg.version, '1.0.3');
 assert.equal(pkg.main, 'src/boot.js');
 
 for (const token of [
@@ -18,7 +19,8 @@ for (const token of [
   'executableName: Skirmish Arena Launcher',
   'artifactName: SkirmishArena-Setup.exe',
   'shortcutName: Skirmish Arena',
-  'uninstallDisplayName: Skirmish Arena Launcher'
+  'uninstallDisplayName: Skirmish Arena Launcher',
+  'icon: build/icon.ico'
 ]) assert.ok(builder.includes(token), `Launcher package contract missing: ${token}`);
 
 assert.ok(boot.includes("app.setPath('userData', path.join(app.getPath('appData'), 'UnblockedTDM Launcher'))"), 'Existing launcher data directory must be preserved during the rebrand.');
@@ -33,6 +35,10 @@ for (const token of [
   'await ensureNewestInstalled();',
   "button.textContent = 'CHECKING…'",
   "stateText.textContent = 'VERIFYING LATEST BUILD'"
-]) assert.ok(renderer.includes(token), `Launcher 1.0.2 newest-build guard missing: ${token}`);
+]) assert.ok(renderer.includes(token), `Launcher newest-build guard missing: ${token}`);
 
-console.log('Launcher 1.0.2 checks passed: same identity/data, Skirmish Arena branding, and newest-build auto-install/play guard.');
+assert.equal(workflow.includes('Restore canonical 2.0 release assets'), false, 'Launcher publishing must never restore an obsolete 2.0 release into the modern pipeline.');
+assert.equal(workflow.includes("gameVersion = '2.0'"), false, 'Launcher publishing must never rewrite the live game channel to 2.0.');
+assert.ok(workflow.includes('git add distribution/launcher-latest.json'), 'Launcher publishing must own only the launcher manifest.');
+
+console.log('Launcher 1.0.3 checks passed: identity/data compatibility, Skirmish Arena branding, newest-build guard, and isolated launcher-channel publishing.');
