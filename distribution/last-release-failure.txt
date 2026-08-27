@@ -1,16 +1,16 @@
 Skirmish Arena release failure diagnostic
-runId=33110799956
-sha=ac3751cad4897a1d2fe399082b74f3df12bfd3e3
+runId=33124280681
+sha=7eb877cd0777555137eb46a02825b5132cfcd6d9
 stage=build-windows
-timestamp=2026-08-27T19:59:03.5997395Z
+timestamp=2026-08-27T22:57:18.6503313Z
 
 ===== install.log =====
-npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
 npm warn deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
 npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 npm warn deprecated boolean@3.2.0: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
-added 320 packages in 20s
+added 320 packages in 18s
 
 ===== sync-build.log =====
 
@@ -34,54 +34,54 @@ Phase 7 checks passed: restrained Training Complex material pass, no prototype w
 Phase 8 checks passed: professional in-match HUD, no prototype map text, final launcher presentation, reliable update detection, and unchanged gameplay.
 Phase 9 checks passed: RC persistence safeguards, focus stability, minimap/HUD performance cleanup, launcher integrity, and unchanged gameplay contracts.
 Skirmish Arena progression compatibility checks passed: Phase 10 bridge, 1000-level Career, agreed XP economy, persistence, and unchanged competitive gameplay.
-(node:5644) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/progression/ProgressionStore.js is not specified and it doesn't parse as CommonJS.
+(node:6400) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/progression/ProgressionStore.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to D:\a\unblockedtdm\unblockedtdm\game\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
 Skirmish Arena 2.1.1 checks passed: 1000 levels, 26 authored rank emblems, 4,137,375 XP career, 880,000 milestone XP, exact match rewards, migration, Career UI, promotion flow, and unchanged competitive gameplay.
-(node:8468) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/progression/ProgressionStore.js is not specified and it doesn't parse as CommonJS.
+(node:3812) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/progression/ProgressionStore.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to D:\a\unblockedtdm\unblockedtdm\game\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
 Skirmish Arena 2.2.1 checks passed: dedicated Weapon Info page, readable UI scale, real menu weapon art, tactical rebinds, and 2.5-tile shotgun max range.
-(node:4976) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/engine/GameSettings.js is not specified and it doesn't parse as CommonJS.
+(node:1400) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/engine/GameSettings.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to D:\a\unblockedtdm\unblockedtdm\game\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
 Skirmish Arena 2.3.1 checks passed: stable Career/menu controller, supplied hero logo, silver command art, isolated all-eight arsenal catalog, real weapon/crosshair rendering, and preserved competitive contracts.
-(node:5780) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/data/weapons.js is not specified and it doesn't parse as CommonJS.
+(node:6888) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/data/weapons.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to D:\a\unblockedtdm\unblockedtdm\game\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
-Skirmish Arena boot-integrity checks passed: deterministic runtime order, immediate fail-closed legacy-shell shielding, and packaged EXE smoke test are enforced.
+Skirmish Arena boot-integrity checks passed: deterministic runtime order, immediate fail-closed legacy-shell shielding, portable-safe smoke signaling, and both packaged EXE paths are enforced.
 Skirmish Arena 2.01.1 checks passed: weapon info, loadouts and round-break switcher reuse the actual gameplay weapon models, fake SVG previews are forbidden, and gameplay contracts are unchanged.
 Skirmish Arena 2.01.2 checks passed: actual gameplay crosshair spread is reused and Weapon Info is viewport-locked without gameplay changes.
 Skirmish Arena 2.01.3 checks passed: main menu scroll restored and Loadouts alone fit a single viewport with gameplay contracts unchanged.
 2.01.4 Weapon Info scroll regression passed.
 Build 1.41 pathfinding validation passed.
-(node:6336) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/ai/GridPathfinder.js is not specified and it doesn't parse as CommonJS.
+(node:2572) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/ai/GridPathfinder.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to D:\a\unblockedtdm\unblockedtdm\game\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
 Build 1.5 tests passed: 25-slot capacity, persistent loadouts, validation, restore, and round-break-only switching.
-(node:6020) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/data/LoadoutStore.js is not specified and it doesn't parse as CommonJS.
+(node:1508) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/data/LoadoutStore.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to D:\a\unblockedtdm\unblockedtdm\game\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
 Build 1.6 settings, bindings, loadout persistence, menu contract and pause-input checks passed.
-(node:1232) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/engine/GameSettings.js is not specified and it doesn't parse as CommonJS.
+(node:1468) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/engine/GameSettings.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to D:\a\unblockedtdm\unblockedtdm\game\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
 Build 1.7 bind fix, bot accuracy, postgame stats and authored launcher checks passed.
-(node:7520) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/ai/BotController.js is not specified and it doesn't parse as CommonJS.
+(node:6720) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/ai/BotController.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to D:\a\unblockedtdm\unblockedtdm\game\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
 Build 1.8 unified UI, postgame integration, persistence and flow contracts passed.
 Build 1.9 release-candidate HUD and canonical-rule checks passed.
 Build 1.9.2 tests passed: 3-slot default, manual expansion, 25-slot cap, persistence and legacy preservation.
-(node:3584) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/data/LoadoutStore.js is not specified and it doesn't parse as CommonJS.
+(node:5652) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/a/unblockedtdm/unblockedtdm/game/src/data/LoadoutStore.js is not specified and it doesn't parse as CommonJS.
 Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
 To eliminate this warning, add "type": "module" to D:\a\unblockedtdm\unblockedtdm\game\package.json.
 (Use `node --trace-warnings ...` to show where the warning was created)
@@ -127,6 +127,7 @@ Synced Skirmish Arena 2.3.1 — Build 2
 > unblockedtdm-build-system@1.0.0 smoke:packaged
 > node scripts/smoke-packaged-game.mjs
 
-Boot-smoke testing packaged game: D:\a\unblockedtdm\unblockedtdm\dist-game\UnblockedTDM.exe
-Packaged game smoke test timed out after 45000ms.
+Boot-smoke testing win-unpacked packaged app: D:\a\unblockedtdm\unblockedtdm\dist-game\win-unpacked\UnblockedTDM.exe
+
+win-unpacked packaged app smoke test timed out after 60000ms.
 
