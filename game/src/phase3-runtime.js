@@ -1,6 +1,7 @@
 import { MatchManager } from './match/MatchManager.js';
 import { MinimapRenderer } from './render/MinimapRenderer.js';
 import { TacticalHUD } from './ui/TacticalHUD.js';
+import { assignBotGamertags } from './data/Gamertags.js';
 
 let matchRef = null;
 let tacticalHud = null;
@@ -10,6 +11,7 @@ const eliminationMeta = new Map();
 
 function ensureHud(match) {
   if (!match || tacticalHud) return;
+  assignBotGamertags(match.players);
   const localPlayer = match.players.find((player) => player.isLocal) || match.players[0] || null;
   tacticalHud = new TacticalHUD({ players: match.players, localPlayer });
   tacticalMapRenderer = new MinimapRenderer(tacticalHud.mapCanvas, match.spawnSystem.map);
