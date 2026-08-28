@@ -46,10 +46,10 @@ function updateHomeBuildLabel() {
     buildInfoPromise = window.gameAPI?.getBuildInfo?.()
       ?.catch?.(() => null) || Promise.resolve(null);
   }
-  setText(eyebrow, 'BUILD 2.3.2');
+  setText(eyebrow, 'BUILD 2.3.3');
   buildInfoPromise.then((info) => {
     if (!eyebrow.isConnected) return;
-    setText(eyebrow, `BUILD ${info?.gameVersion || '2.3.2'}`);
+    setText(eyebrow, `BUILD ${info?.gameVersion || '2.3.3'}`);
   });
 }
 
@@ -135,7 +135,8 @@ function scheduleRefresh() {
 
 ensureStyle('ui-2.3.1.css');
 ensureStyle('ui-2.3.2.css');
-document.body.classList.add('ui-231', 'ui-232');
+ensureStyle('ui-2.3.3.css');
+document.body.classList.add('ui-231', 'ui-232', 'ui-233');
 
 // 2.3.x remains the final presentation runtime in the deterministic boot chain.
 // Refresh only from explicit application events and resize. Never observe and
