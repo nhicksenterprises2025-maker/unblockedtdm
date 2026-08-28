@@ -6,6 +6,7 @@ const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), '
 const menu = read('game/src/ui/MainMenu.js');
 const runtime = read('game/src/phase231-runtime.js');
 const css = read('game/src/ui-2.3.1.css');
+const css232 = read('game/src/ui-2.3.2.css');
 const debug = read('game/src/debug-tuning.js');
 const settings = read('game/src/engine/GameSettings.js');
 const loadouts = read('game/src/data/LoadoutStore.js');
@@ -25,15 +26,18 @@ assert.equal(menu.includes('detail.innerHTML ='), false, 'The single-weapon deta
 
 assert.ok(runtime.includes("assets/skirmish-arena-main-logo.webp"), 'Home hero must use the supplied metallic Skirmish Arena logo.');
 assert.ok(runtime.includes("document.body.classList.toggle('ui231-weapon-page'"), 'Weapon Info must use its own dedicated page state.');
-assert.ok(runtime.includes("document.body.classList.remove('ui221-weapon-page')"), '2.3.1 must clean stale 2.2.1 Weapon Info page state when leaving the page.');
+assert.ok(runtime.includes("document.body.classList.remove('ui221-weapon-page')"), '2.3.x must clean stale 2.2.1 Weapon Info page state when leaving the page.');
 assert.ok(runtime.includes('hydrateWeaponModelCanvases(document)'), 'Real in-game weapon models must be hydrated throughout the UI.');
 assert.ok(runtime.includes('hydrateGameplayCrosshairCanvases(document)'), 'Spread visualizers must use the live gameplay crosshair renderer.');
-assert.ok(runtime.includes("setText(eyebrow, 'BUILD 2.3.1')"), 'Home eyebrow must show the build without MATCH CLIENT copy using an idempotent write.');
-assert.ok(runtime.includes('ui231BlueprintEdge'), 'Weapon Info tile must use the blue blueprint/manual gun art.');
-assert.equal(runtime.includes("button.addEventListener('click', () => queueMicrotask"), false, '2.3.1 must not double-bind Weapon Info navigation over the canonical MainMenu controller.');
+assert.ok(runtime.includes("setText(eyebrow, 'BUILD 2.3.2')"), 'Home eyebrow must show the 2.3.2 build without MATCH CLIENT copy using an idempotent write.');
+assert.ok(runtime.includes("ensureStyle('ui-2.3.2.css')"), '2.3.2 presentation stylesheet must load through the stable runtime.');
+assert.ok(runtime.includes("document.body.classList.add('ui-231', 'ui-232')"), '2.3.2 must layer on top of the stable 2.3.1 presentation runtime.');
+assert.ok(runtime.includes('ui232-blueprint-icon'), 'Weapon Info tile must use the simplified 2.3.2 blue manual/gun sketch.');
+assert.equal(runtime.includes('linearGradient id="ui231BlueprintEdge"'), false, '2.3.2 icon must remove the over-detailed gradient blueprint treatment.');
+assert.equal(runtime.includes("button.addEventListener('click', () => queueMicrotask"), false, '2.3.x must not double-bind Weapon Info navigation over the canonical MainMenu controller.');
 
-assert.ok(debug.includes("import('./phase231-runtime.js')"), '2.3.1 runtime must load after the known-good 2.2.1 runtime.');
-assert.equal(debug.includes("import('./weapon-info-hotfix.js')"), false, 'The rollback-only Weapon Info click hotfix must not remain active in 2.3.1.');
+assert.ok(debug.includes("import('./phase231-runtime.js')"), '2.3.x presentation runtime must load after the known-good 2.2.1 runtime.');
+assert.equal(debug.includes("import('./weapon-info-hotfix.js')"), false, 'The rollback-only Weapon Info click hotfix must not remain active.');
 
 assert.ok(css.includes('body.ui-231:not(.ui231-weapon-page) #mainMenu [data-menu-view="weapon-info"]'), 'Inactive Weapon Info must be hard-hidden so it cannot leak beneath Home/Career.');
 assert.ok(css.includes('overflow-y:auto!important'), 'The complete Weapon Info document must scroll vertically.');
@@ -41,12 +45,17 @@ assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'Deskto
 assert.ok(css.includes('.ui231-weapon-card'), 'Every weapon needs a dedicated detailed catalog card.');
 assert.ok(css.includes('.ui231-exact-stats'), 'Exact weapon data must remain readable in each card.');
 assert.ok(css.includes('.menu-hero h1{display:none!important}'), 'The plain hero text must be replaced by the supplied logo rather than layered beneath it.');
-assert.ok(css.includes('body.ui-231 #mainMenu .phase2-play{'), '2.3.1 must preserve and enhance the Play command tile.');
+assert.ok(css.includes('body.ui-231 #mainMenu .phase2-play{'), '2.3.x must preserve and enhance the Play command tile.');
 assert.ok(css.includes('background:linear-gradient(135deg,#e1e6e9'), 'Play must use the requested lighter silver/gray metallic treatment.');
 assert.ok(css.includes('phase2-loadouts .ui221-loadout-art'), 'Loadouts must retain posed real gameplay weapon models.');
 assert.ok(css.includes('phase2-settings .ui221-settings-art'), 'Settings must retain the silver gear treatment.');
 assert.ok(css.includes('.phase3-scoreboard-shell'), 'Existing tactical scoreboard must receive presentation polish.');
 assert.ok(css.includes('#phase3MapCanvas'), 'Existing Tactical Map must receive presentation polish.');
+
+assert.ok(css232.includes('[data-menu-view="home"] .menu-feature-grid'), '2.3.2 must target the Home summary-card row explicitly.');
+assert.ok(css232.includes('display:none!important'), '2.3.2 must remove the 3V3 / loadout-slot / AI summary boxes from Home.');
+assert.ok(css232.includes('.career-strip-211'), 'Career must remain the next major information block after the Home hero.');
+assert.ok(css232.includes('.ui232-info-art'), '2.3.2 must size the simplified Weapon Info tile art independently.');
 
 assert.ok(settings.includes("map: 'KeyM'"), 'Tactical Map must remain rebindable with M as the default.');
 assert.ok(settings.includes("scoreboard: 'Tab'"), 'Scoreboard must remain rebindable with Tab as the default.');
@@ -58,7 +67,7 @@ assert.ok(tactical.includes('<span>K</span><span>D</span><span>A</span><span>K/D
 assert.ok(career.includes('MAX_CAREER_LEVEL'), 'The existing 1-1000 Career runtime must remain part of the game.');
 assert.ok(career.includes('LEVEL ${profile.level}'), 'Career level presentation must remain intact.');
 
-assert.ok(fs.existsSync(logoUrl), 'Supplied metallic Skirmish Arena logo asset must ship with 2.3.1.');
+assert.ok(fs.existsSync(logoUrl), 'Supplied metallic Skirmish Arena logo asset must ship with 2.3.x.');
 const logo = fs.readFileSync(logoUrl);
 assert.ok(logo.length > 10000, 'Home logo must be the real image asset, not a placeholder.');
 assert.equal(logo.subarray(0, 4).toString('ascii'), 'RIFF', 'Packaged logo must be a valid WebP container.');
@@ -67,12 +76,12 @@ assert.equal(logo.subarray(8, 12).toString('ascii'), 'WEBP', 'Packaged logo must
 assert.deepEqual(
   [WEAPONS.shotgun.damage, WEAPONS.shotgun.pelletCount, WEAPONS.shotgun.fullDamageRangeTiles, WEAPONS.shotgun.maxRangeTiles, WEAPONS.shotgun.falloffDamage],
   [16, 8, 2, 2.5, 5],
-  '2.3.1 must preserve the approved Shotgun 2.0/2.5-tile contract.'
+  '2.3.2 must preserve the approved Shotgun 2.0/2.5-tile contract.'
 );
 assert.deepEqual(
   [WEAPONS.assaultRifle.damage, WEAPONS.smg.damage, WEAPONS.sniper.damage, WEAPONS.lmg.damage, WEAPONS.pistol.damage, WEAPONS.launcher.damage, WEAPONS.melee.damage],
   [20, 11, 145, 24, 15, 125, 75],
-  '2.3.1 is presentation/reference work and must not rebalance the other weapons.'
+  '2.3.2 is presentation-only work and must not rebalance weapons.'
 );
 
-console.log('Skirmish Arena 2.3.1 checks passed: stable Career/menu controller, supplied hero logo, silver command art, isolated all-eight arsenal catalog, real weapon/crosshair rendering, and preserved competitive contracts.');
+console.log('Skirmish Arena 2.3.2 checks passed: stable boot/Career/menu foundation, cleaner Weapon Info command art, Home summary cards removed, and competitive contracts preserved.');
