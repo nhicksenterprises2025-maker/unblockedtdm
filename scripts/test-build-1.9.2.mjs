@@ -47,9 +47,11 @@ assert.equal(legacy.get(9).primary.id, 'sniper');
 assert.equal(legacy.get(9).secondary.id, 'launcher');
 
 const screenSource = fs.readFileSync(new URL('../game/src/ui/LoadoutScreen.js', import.meta.url), 'utf8');
-for (const token of ['addSavedSlot()', 'id="addLoadoutSlot"', '+', 'ADD SLOT', 'Three slots are available by default']) {
+for (const token of ['addSavedSlot()', 'id="addLoadoutSlot"', '+', 'ADD SLOT']) {
   assert.ok(screenSource.includes(token), `Build 1.9.2 loadout UI missing ${token}`);
 }
+assert.ok(screenSource.includes('this.store.canAddSlot()'), 'Loadout UI must expose ADD SLOT only while capacity remains.');
+assert.ok(screenSource.includes('this.store.capacity()'), 'Loadout UI must remain connected to the canonical slot capacity rather than hardcoded explanatory copy.');
 const hotfixCss = fs.readFileSync(new URL('../game/src/ui-v192.css', import.meta.url), 'utf8');
 assert.ok(hotfixCss.includes('.loadout-add-slot'), 'Build 1.9.2 add-slot action must have intentional styling.');
 const flow = fs.readFileSync(new URL('../game/src/flow-v18.js', import.meta.url), 'utf8');
