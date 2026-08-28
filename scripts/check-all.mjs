@@ -21,6 +21,7 @@ const testFiles = [
   'scripts/test-2.3.1-ui-catalog.mjs',
   'scripts/test-2.3.1-boot-integrity.mjs',
   'scripts/test-2.4.1-combat-polish.mjs',
+  'scripts/test-2.4.1.2-scoreboard-teams.mjs',
   'scripts/test-2.01.1-weapon-model-ui.mjs',
   'scripts/test-2.01.2-crosshair-layout.mjs',
   'scripts/test-2.01.3-loadout-onepage.mjs',
