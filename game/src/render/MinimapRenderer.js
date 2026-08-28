@@ -2,6 +2,7 @@ import { TILE_SIZE } from '../engine/constants.js';
 
 const ENEMY_REVEAL_SECONDS = 1.5;
 const MINIMAP_FRAME_MS = 1000 / 30;
+const MINIMAP_OCCLUSION_PADDING = 14;
 
 function readMode() {
   try {
@@ -18,6 +19,7 @@ export class MinimapRenderer {
     this.map = map;
     this.revealUntil = new Map();
     this.lastDrawTime = 0;
+    this.playerOverlap = false;
   }
 
   observeEnemyFire(players, localPlayer, nowSeconds) {
@@ -33,6 +35,32 @@ export class MinimapRenderer {
 
   isEnemyRevealed(actor, nowSeconds) {
     return (this.revealUntil.get(actor.id) || 0) > nowSeconds;
+  }
+
+  updatePlayerOverlap(localPlayer, camera) {
+    const shell = this.canvas?.closest?.('.minimap-shell') || this.canvas;
+    if (!shell) return;
+
+    if (!localPlayer?.health?.alive || !camera) {
+      this.playerOverlap = false;
+      shell.classList.remove('player-overlap');
+      return;
+    }
+
+    const rect = shell.getBoundingClientRect();
+    const zoom = Number(camera.zoom) || 1;
+    const screenX = camera.width / 2 + (localPlayer.x - camera.x) * zoom;
+    const screenY = camera.height / 2 + (localPlayer.y - camera.y) * zoom;
+    const actorRadius = Math.max(18, (Number(localPlayer.radius) || 18) * zoom);
+    const pad = MINIMAP_OCCLUSION_PADDING + actorRadius;
+    const overlaps = screenX >= rect.left - pad
+      && screenX <= rect.right + pad
+      && screenY >= rect.top - pad
+      && screenY <= rect.bottom + pad;
+
+    if (overlaps === this.playerOverlap) return;
+    this.playerOverlap = overlaps;
+    shell.classList.toggle('player-overlap', overlaps);
   }
 
   mapPointNorthUp(x, y, size, padding) {
@@ -210,8 +238,10 @@ export class MinimapRenderer {
     ctx.fillText('N', width / 2, Math.max(20, top - 8));
   }
 
-  draw({ players, localPlayer }) {
+  draw({ players, localPlayer, camera = null }) {
     if (!this.canvas || !localPlayer) return;
+    this.updatePlayerOverlap(localPlayer, camera);
+
     const nowMs = performance.now();
     if (nowMs - this.lastDrawTime < MINIMAP_FRAME_MS) return;
     this.lastDrawTime = nowMs;
