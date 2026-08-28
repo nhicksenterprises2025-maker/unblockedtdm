@@ -1,11 +1,11 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.4.1.2",
+  "gameVersion": "2.4.2.1",
   "build": 1,
-  "phase": "2.4.1.2 — Round HUD + Team Scoreboard",
-  "tag": "build-2.4.1.2-v1",
-  "title": "Skirmish Arena 2.4.1.2 — Build 1",
-  "notesFile": "docs/releases/build-2.4.1.2-v1.md",
-  "sequence": 52,
-  "releaseRevision": 2
+  "phase": "2.4.2.1 — Adaptive HUD Occlusion + Kill Feed Readability",
+  "tag": "build-2.4.2.1-v1",
+  "title": "Skirmish Arena 2.4.2.1 — Build 1",
+  "notesFile": "docs/releases/build-2.4.2.1-v1.md",
+  "sequence": 53,
+  "releaseRevision": 1
 }
