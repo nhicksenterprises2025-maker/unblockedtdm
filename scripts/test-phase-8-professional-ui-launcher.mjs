@@ -19,15 +19,8 @@ assert.ok(runtime.includes("ensureStyle('ui-phase8.css')"), 'Phase 8 runtime mus
 assert.ok(runtime.includes("classList.add('ui-phase8')"), 'Phase 8 runtime must mark the document for scoped overrides.');
 
 for (const token of [
-  '.health-hud',
-  '.stamina-hud',
-  '.dash-hud',
-  '.weapon-hud',
-  '.minimap-shell',
-  '.phase3-kill-feed',
-  '.respawn-panel',
-  '#healthStatus{display:none',
-  '.weapon-controls{display:none'
+  '.health-hud', '.stamina-hud', '.dash-hud', '.weapon-hud', '.minimap-shell',
+  '.phase3-kill-feed', '.respawn-panel', '#healthStatus{display:none', '.weapon-controls{display:none'
 ]) assert.ok(css.includes(token), `Phase 8 professional HUD missing ${token}.`);
 
 for (const label of ['TC // MID', 'BLUE SPAWN', 'RED SPAWN', 'SA // TRAINING', "fillText('SKIRMISH ARENA'"]) {
@@ -47,18 +40,15 @@ for (const token of ['.build-focus', '.launch-button', '.status-strip', '.launch
 }
 
 for (const forbidden of [
-  "from './data/weapons.js'",
-  "from './actors/Player.js'",
-  "from './ai/BotController.js'",
-  "from './match/MatchManager.js'",
-  "from './world/map01.js'"
+  "from './data/weapons.js'", "from './actors/Player.js'", "from './ai/BotController.js'",
+  "from './match/MatchManager.js'", "from './world/map01.js'"
 ]) assert.equal(runtime.includes(forbidden), false, `Phase 8 HUD runtime must remain presentation-only: ${forbidden}.`);
 
-for (const token of [
-  'damage: 20, critChance: 0.02, critDamage: 32',
-  'damage: 145, critChance: 0.35, critDamage: 200',
-  'damage: 125, critChance: 0, critDamage: 125'
-]) assert.ok(weapons.includes(token), `Canonical weapon contract changed: ${token}`);
+// 2.4.1 is an intentional balance release, so historical Phase 8 protects the
+// weapon data schema/roster rather than freezing obsolete numeric values.
+for (const token of ["id: 'assault-rifle'", "id: 'smg'", "id: 'sniper'", "id: 'shotgun'", "id: 'lmg'", "id: 'pistol'", "id: 'launcher'", "id: 'melee'"]) {
+  assert.ok(weapons.includes(token), `Eight-weapon roster changed unexpectedly: ${token}`);
+}
 for (const token of ['PLAYER_SPEED_TILES = 5', 'SPRINT_SPEED_MULTIPLIER = 1.35', 'DASH_CHARGES_MAX = 4', 'DASH_DISTANCE_TILES = 3']) {
   assert.ok(constants.includes(token), `Canonical movement contract changed: ${token}`);
 }
@@ -66,4 +56,4 @@ for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12
   assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
 }
 
-console.log('Phase 8 checks passed: professional in-match HUD, no prototype map text, final launcher presentation, reliable update detection, and unchanged gameplay.');
+console.log('Phase 8 checks passed: professional in-match HUD, no prototype map text, final launcher presentation, reliable update detection, and preserved core movement/match contracts.');
