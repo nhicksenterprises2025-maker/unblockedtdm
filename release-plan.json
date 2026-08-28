@@ -1,11 +1,11 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.3.4",
+  "gameVersion": "2.4.1",
   "build": 1,
-  "phase": "2.3.4 — Transparent Combat HUD + Dash Independence",
-  "tag": "build-2.3.4-v1",
-  "title": "Skirmish Arena 2.3.4 — Build 1",
-  "notesFile": "docs/releases/build-2.3.4-v1.md",
-  "sequence": 50,
+  "phase": "2.4.1 — Combat Readability + Arsenal Balance",
+  "tag": "build-2.4.1-v1",
+  "title": "Skirmish Arena 2.4.1 — Build 1",
+  "notesFile": "docs/releases/build-2.4.1-v1.md",
+  "sequence": 51,
   "releaseRevision": 1
 }
