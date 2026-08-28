@@ -1,4 +1,5 @@
 import './phase2431-runtime.js';
+import './phase2432-runtime.js';
 import { WEAPON_LIST } from './data/weapons.js';
 import { lowAmmoState } from './combat/AmmoState.js';
 import { MatchManager } from './match/MatchManager.js';
@@ -82,5 +83,5 @@ hydrateWeaponModelCanvases(document);
 syncLowAmmoHud();
 
 const lowAmmoTimer = window.setInterval(syncLowAmmoHud, 50);
-window.addEventListener('beforeunload', () => window.clearInterval(lowAmmoTimer), { once: true });
+window.addEventListener('beforeunload', () => window.clearInterval(lowAmmoTimer), { once:true });
 window.addEventListener('skirmish:menu-view-change', () => requestAnimationFrame(() => hydrateWeaponModelCanvases(document)));
