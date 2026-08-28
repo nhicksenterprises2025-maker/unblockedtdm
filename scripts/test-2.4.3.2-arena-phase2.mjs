@@ -63,9 +63,9 @@ for (const token of [
   'liveMap.setDefinition(nextMap)',
   "document.body.dataset.activeMap = map.id",
   "document.body.dataset.arenaPhase2Ready = 'true'",
-  'FOUNDRY ZERO',
+  'Foundry Zero',
   'skirmish:map-selected',
-  'data-arena-map-chip'
+  'dataset.arenaMapChip'
 ]) assert.ok(runtime.includes(token), `Arena Phase 2 runtime missing ${token}`);
 
 assert.ok(parent.includes("import './phase2431-runtime.js';"));
