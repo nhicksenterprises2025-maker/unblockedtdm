@@ -53,6 +53,7 @@ async function runPackagedSmokeTest(target) {
           version: document.body?.dataset?.skirmishBootVersion || '',
           brand: document.querySelector('#mainMenu .menu-brand strong')?.textContent?.trim() || '',
           career: Boolean(document.querySelector('[data-career-strip]')),
+          arena: document.body?.dataset?.arenaReady === 'true' && Boolean(document.querySelector('[data-arena-strip]')),
           catalog: Boolean(document.querySelector('[data-weapon-info-catalog]')),
           logo: Boolean(document.querySelector('.ui231-home-logo'))
         }))()`),
@@ -72,6 +73,7 @@ async function runPackagedSmokeTest(target) {
         state.version === String(buildInfo.gameVersion) &&
         state.brand === 'SKIRMISH ARENA' &&
         state.career &&
+        state.arena &&
         state.catalog &&
         state.logo
       ) {
