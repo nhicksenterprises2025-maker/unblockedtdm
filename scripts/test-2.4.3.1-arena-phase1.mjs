@@ -110,7 +110,7 @@ const css = read('game/src/ui-2.4.3.1.css');
 const runner = read('scripts/check-all.mjs');
 
 for (const token of [
-  "data.arenaReady = 'true'",
+  "dataset.arenaReady = 'true'",
   'data-arena-strip',
   'data-arena-mode-select',
   'data-arena-select-mode="casual"',
