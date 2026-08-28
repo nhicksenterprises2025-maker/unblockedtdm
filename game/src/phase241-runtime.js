@@ -1,5 +1,6 @@
 import { WEAPON_LIST } from './data/weapons.js';
 import { lowAmmoState } from './combat/AmmoState.js';
+import { MatchManager } from './match/MatchManager.js';
 import { WeaponRenderer } from './render/WeaponRenderer.js';
 import { hydrateWeaponModelCanvases } from './ui/WeaponPresentation.js';
 
@@ -13,87 +14,46 @@ function ensureStyle(href) {
 
 function drawPumpShotgun(ctx, state, reload) {
   const pumpSlide = Math.max(0, Math.min(5, (state?.fireKick || 0) * 1.2));
+  ctx.fillStyle = '#513824'; ctx.strokeStyle = '#102732'; ctx.lineWidth = 1.8;
+  ctx.beginPath(); ctx.moveTo(-22,-6); ctx.lineTo(-8,-5); ctx.lineTo(2,-3.5); ctx.lineTo(2,3.5); ctx.lineTo(-8,5); ctx.lineTo(-22,8); ctx.lineTo(-27,4); ctx.lineTo(-27,-4); ctx.closePath(); ctx.fill(); ctx.stroke();
 
-  // Classic pump-stock silhouette.
-  ctx.fillStyle = '#513824';
-  ctx.strokeStyle = '#102732';
-  ctx.lineWidth = 1.8;
-  ctx.beginPath();
-  ctx.moveTo(-22, -6);
-  ctx.lineTo(-8, -5);
-  ctx.lineTo(2, -3.5);
-  ctx.lineTo(2, 3.5);
-  ctx.lineTo(-8, 5);
-  ctx.lineTo(-22, 8);
-  ctx.lineTo(-27, 4);
-  ctx.lineTo(-27, -4);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
+  ctx.fillStyle = '#354b55'; ctx.beginPath(); ctx.roundRect(-2,-6,27,12,3); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#152831'; ctx.beginPath(); ctx.roundRect(8,-4.2,10,4.3,1.4); ctx.fill();
+  ctx.fillStyle = '#9aaab2'; ctx.fillRect(2,-1,7,2);
 
-  // Receiver + ejection port.
-  ctx.fillStyle = '#354b55';
-  ctx.beginPath();
-  ctx.roundRect(-2, -6, 27, 12, 3);
-  ctx.fill();
-  ctx.stroke();
-  ctx.fillStyle = '#152831';
-  ctx.beginPath();
-  ctx.roundRect(8, -4.2, 10, 4.3, 1.4);
-  ctx.fill();
-  ctx.fillStyle = '#9aaab2';
-  ctx.fillRect(2, -1, 7, 2);
+  ctx.strokeStyle = '#162931'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(7,6.1,6,4,0,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle = '#44301f'; ctx.beginPath(); ctx.roundRect(2,6,8,12,2); ctx.fill();
 
-  // Trigger guard and pistol grip detail.
-  ctx.strokeStyle = '#162931';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.ellipse(7, 6.1, 6, 4, 0, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.fillStyle = '#44301f';
-  ctx.beginPath();
-  ctx.roundRect(2, 6, 8, 12, 2);
-  ctx.fill();
-
-  // Ribbed wooden pump/fore-end. It visibly shifts during recoil.
   const pumpX = 27 - pumpSlide;
-  ctx.fillStyle = '#8c6238';
-  ctx.strokeStyle = '#5a3c22';
-  ctx.lineWidth = 1.4;
-  ctx.beginPath();
-  ctx.roundRect(pumpX, -6.2, 20, 12.4, 3);
-  ctx.fill();
-  ctx.stroke();
-  ctx.strokeStyle = 'rgba(45,28,17,.7)';
-  ctx.lineWidth = 1;
-  for (let x = pumpX + 4; x < pumpX + 18; x += 4) {
-    ctx.beginPath(); ctx.moveTo(x, -4.5); ctx.lineTo(x, 4.5); ctx.stroke();
-  }
+  ctx.fillStyle = '#8c6238'; ctx.strokeStyle = '#5a3c22'; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.roundRect(pumpX,-6.2,20,12.4,3); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = 'rgba(45,28,17,.7)'; ctx.lineWidth = 1;
+  for (let x=pumpX+4; x<pumpX+18; x+=4) { ctx.beginPath(); ctx.moveTo(x,-4.5); ctx.lineTo(x,4.5); ctx.stroke(); }
 
-  // Long barrel + magazine tube create the unmistakable pump-shotgun profile.
-  ctx.fillStyle = '#172a32';
-  ctx.fillRect(44, -3.4, 25, 3.4);
-  ctx.fillStyle = '#263e47';
-  ctx.fillRect(44, 1.1, 21, 3.1);
-  ctx.fillStyle = '#0d1d24';
-  ctx.fillRect(68, -3.1, 4, 2.8);
-  ctx.fillStyle = '#76c9e6';
-  ctx.fillRect(63, -4.3, 1.5, 1.5);
+  ctx.fillStyle = '#172a32'; ctx.fillRect(44,-3.4,25,3.4);
+  ctx.fillStyle = '#263e47'; ctx.fillRect(44,1.1,21,3.1);
+  ctx.fillStyle = '#0d1d24'; ctx.fillRect(68,-3.1,4,2.8);
+  ctx.fillStyle = '#76c9e6'; ctx.fillRect(63,-4.3,1.5,1.5);
 
   if (state?.reloading) {
     const shellY = 10 + Math.sin(reload * Math.PI) * 6;
-    ctx.fillStyle = '#d84a37';
-    ctx.beginPath();
-    ctx.roundRect(11, shellY, 10, 4.5, 2);
-    ctx.fill();
-    ctx.fillStyle = '#d7b15b';
-    ctx.fillRect(19, shellY, 2, 4.5);
+    ctx.fillStyle = '#d84a37'; ctx.beginPath(); ctx.roundRect(11,shellY,10,4.5,2); ctx.fill();
+    ctx.fillStyle = '#d7b15b'; ctx.fillRect(19,shellY,2,4.5);
   }
 }
 
 WeaponRenderer.prototype.drawShotgun = function drawShotgun241(ctx, state, reload) {
   drawPumpShotgun(ctx, state, reload);
 };
+
+if (!MatchManager.prototype.__ui241DisplayNames) {
+  MatchManager.prototype.__ui241DisplayNames = true;
+  const originalStatsSnapshot = MatchManager.prototype.statsSnapshot;
+  MatchManager.prototype.statsSnapshot = function statsSnapshot241(...args) {
+    const names = new Map(this.players.map((player) => [player.id, player.displayName]));
+    return originalStatsSnapshot.apply(this, args).map((row) => ({ ...row, displayName: names.get(row.id) || row.displayName || null }));
+  };
+}
 
 const WEAPON_BY_NAME = new Map(WEAPON_LIST.map((weapon) => [weapon.name.toUpperCase(), weapon]));
 
@@ -104,7 +64,6 @@ function syncLowAmmoHud() {
     root.classList.remove('low-ammo');
     return;
   }
-
   const weaponName = document.getElementById('weaponName')?.textContent?.trim()?.toUpperCase();
   const magazineText = document.getElementById('ammoMagazine')?.textContent?.trim();
   const weapon = WEAPON_BY_NAME.get(weaponName);
