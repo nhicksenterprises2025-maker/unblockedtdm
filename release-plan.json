@@ -1,11 +1,11 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.3.1",
-  "build": 2,
-  "phase": "2.3.1 — Deterministic Boot Integrity Hard Patch",
-  "tag": "build-2.3.1-v2",
-  "title": "Skirmish Arena 2.3.1 — Build 2",
-  "notesFile": "docs/releases/build-2.3.1-v2.md",
-  "sequence": 47,
-  "releaseRevision": 6
+  "gameVersion": "2.3.2",
+  "build": 1,
+  "phase": "2.3.2 — Home Command Deck Cleanup",
+  "tag": "build-2.3.2-v1",
+  "title": "Skirmish Arena 2.3.2 — Build 1",
+  "notesFile": "docs/releases/build-2.3.2-v1.md",
+  "sequence": 48,
+  "releaseRevision": 1
 }
