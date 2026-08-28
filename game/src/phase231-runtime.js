@@ -46,10 +46,10 @@ function updateHomeBuildLabel() {
     buildInfoPromise = window.gameAPI?.getBuildInfo?.()
       ?.catch?.(() => null) || Promise.resolve(null);
   }
-  setText(eyebrow, 'BUILD 2.3.3');
+  setText(eyebrow, 'BUILD 2.3.4');
   buildInfoPromise.then((info) => {
     if (!eyebrow.isConnected) return;
-    setText(eyebrow, `BUILD ${info?.gameVersion || '2.3.3'}`);
+    setText(eyebrow, `BUILD ${info?.gameVersion || '2.3.4'}`);
   });
 }
 
@@ -81,8 +81,10 @@ function configureWeaponInfoHeader() {
   setText(heading, 'WEAPON INFO');
   setText(copy, 'All eight live weapons in one dedicated reference page with real in-game models, exact stats, handling bars and the actual gameplay crosshair spread renderer.');
 
-  title.querySelector('[data-ui221-weapon-back]')?.remove();
-  if (!title.querySelector('[data-ui231-weapon-back]')) {
+  for (const stale of title.querySelectorAll('[data-ui221-weapon-back], .ui221-page-back')) stale.remove();
+  const modernButtons = [...title.querySelectorAll('[data-ui231-weapon-back]')];
+  for (const duplicate of modernButtons.slice(1)) duplicate.remove();
+  if (!modernButtons[0]?.isConnected) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'ui231-page-back';
@@ -136,7 +138,8 @@ function scheduleRefresh() {
 ensureStyle('ui-2.3.1.css');
 ensureStyle('ui-2.3.2.css');
 ensureStyle('ui-2.3.3.css');
-document.body.classList.add('ui-231', 'ui-232', 'ui-233');
+ensureStyle('ui-2.3.4.css');
+document.body.classList.add('ui-231', 'ui-232', 'ui-233', 'ui-234');
 
 // 2.3.x remains the final presentation runtime in the deterministic boot chain.
 // Refresh only from explicit application events and resize. Never observe and
