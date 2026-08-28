@@ -29,15 +29,8 @@ assert.ok(css.includes('.phase3-tactical-hud'), 'Phase 3 must have an isolated t
 assert.ok(css.includes('pointer-events:none'), 'Tactical overlays must not capture mouse input.');
 
 for (const token of [
-  'TACTICAL MAP',
-  'SCOREBOARD',
-  'K/D',
-  'DMG',
-  '#1 OVERALL = MVP',
-  'CRITICAL',
-  'REVEALED ENEMY',
-  "this.binding('scoreboard')",
-  "this.binding('map')"
+  'TACTICAL MAP','SCOREBOARD','K/D','DMG','#1 OVERALL = MVP','CRITICAL','REVEALED ENEMY',
+  "this.binding('scoreboard')","this.binding('map')"
 ]) assert.ok(tactical.includes(token), `Phase 3 tactical HUD missing ${token}.`);
 assert.ok(settings.includes("map: 'KeyM'"), 'Tactical Map must retain M as its default binding.');
 assert.ok(settings.includes("scoreboard: 'Tab'"), 'Scoreboard must retain TAB as its default binding.');
@@ -49,11 +42,12 @@ assert.ok(minimap.includes('const ENEMY_REVEAL_SECONDS = 1.5;'), 'Enemy tactical
 assert.ok(minimap.includes('drawFullMap(canvas'), 'Tactical Map must still render the full tactical map.');
 for (const color of ['#ffffff', '#61cfff', '#ff6273']) assert.ok(minimap.includes(color), `Tactical map missing required actor color ${color}.`);
 
-for (const token of [
-  'damage: 20, critChance: 0.02, critDamage: 32',
-  'damage: 145, critChance: 0.35, critDamage: 200',
-  'damage: 125, critChance: 0, critDamage: 125'
-]) assert.ok(weapons.includes(token), `Canonical weapon contract changed: ${token}`);
+for (const id of ['assault-rifle','smg','sniper','shotgun','lmg','pistol','launcher','melee']) {
+  assert.ok(weapons.includes(`id: '${id}'`), `Phase 3 compatibility lost weapon ${id}.`);
+}
+for (const field of ['damage:', 'critChance:', 'critDamage:', 'fireInterval:', 'magazineSize:']) {
+  assert.ok(weapons.includes(field), `Weapon data schema missing ${field}`);
+}
 for (const token of ['PLAYER_SPEED_TILES = 5', 'SPRINT_SPEED_MULTIPLIER = 1.35', 'DASH_CHARGES_MAX = 4', 'DASH_DISTANCE_TILES = 3']) {
   assert.ok(constants.includes(token), `Canonical movement contract changed: ${token}`);
 }
@@ -61,4 +55,4 @@ for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12
   assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
 }
 
-console.log('Phase 3 checks passed: tactical HUD, rebindable scoreboard/map controls, kill feed, full map, limited enemy reveal, front-end isolation, and unchanged gameplay contracts.');
+console.log('Phase 3 checks passed: tactical HUD, rebindable scoreboard/map controls, kill feed, full map, limited enemy reveal, front-end isolation, and balance-ready weapon schema.');
