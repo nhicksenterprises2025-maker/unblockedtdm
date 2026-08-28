@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "Skirmish Arena",
+      "gameVersion": "2.3.3",
+      "build": 1,
+      "sequence": 49,
+      "phase": "2.3.3 — Loadouts Focus + Weapon Scale",
+      "tag": "build-2.3.3-v1",
+      "title": "Skirmish Arena 2.3.3 — Build 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.3-v1/UnblockedTDM-2.3.3-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.3-v1/SkirmishArena-Setup-2.3.3-v1.exe",
+      "sha256": "6c1a150dcfd16d2967b075779f1fac777613795fc324ff6dcf44dc6c046b76fe",
+      "installerSha256": "6471e3ddd279c949c75fbe8273f052921d34d73b35b4b7a8f3710fa954ec2f40",
+      "publishedAt": "2026-08-28T01:03:10.302Z"
+    },
+    {
+      "product": "Skirmish Arena",
       "gameVersion": "2.3.2",
       "build": 1,
       "sequence": 48,
