@@ -3,6 +3,10 @@ const path = require('node:path');
 const fs = require('node:fs');
 const buildInfo = require('./build-info.json');
 
+// electron-builder's portable wrapper does not reliably forward arbitrary CLI
+// arguments to the inner Electron process. Environment variables are inherited
+// by both the wrapper and the extracted app, so this is the authoritative CI
+// boot-test signal. The CLI flag remains as a local-development fallback.
 const SMOKE_TEST = process.env.SKIRMISH_SMOKE_TEST === '1' || process.argv.includes('--smoke-test');
 const SMOKE_RESULT_PATH = process.env.SKIRMISH_SMOKE_RESULT_PATH || '';
 const SMOKE_TIMEOUT_MS = 30000;
@@ -10,18 +14,20 @@ const SMOKE_HARD_TIMEOUT_MS = 45000;
 let window;
 let smokeWatchdog = null;
 
-function sleep(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function writeSmokeStatus(stage, detail = {}) {
   if (!SMOKE_TEST || !SMOKE_RESULT_PATH) return;
   try {
-    fs.mkdirSync(path.dirname(SMOKE_RESULT_PATH), { recursive:true });
+    fs.mkdirSync(path.dirname(SMOKE_RESULT_PATH), { recursive: true });
     fs.writeFileSync(SMOKE_RESULT_PATH, `${JSON.stringify({
       stage,
-      timestamp:new Date().toISOString(),
-      gameVersion:buildInfo.gameVersion,
-      build:buildInfo.build,
-      pid:process.pid,
+      timestamp: new Date().toISOString(),
+      gameVersion: buildInfo.gameVersion,
+      build: buildInfo.build,
+      pid: process.pid,
       ...detail
     }, null, 2)}\n`, 'utf8');
   } catch (error) {
@@ -31,7 +37,7 @@ function writeSmokeStatus(stage, detail = {}) {
 
 function exitSmoke(code, stage, detail = {}) {
   if (smokeWatchdog) clearTimeout(smokeWatchdog);
-  writeSmokeStatus(stage, { ...detail, exitCode:code });
+  writeSmokeStatus(stage, { ...detail, exitCode: code });
   app.exit(code);
 }
 
@@ -89,31 +95,31 @@ async function runPackagedSmokeTest(target) {
         stage: document.body?.dataset?.skirmishBootStage || '',
         diagnostic: typeof window.__SKIRMISH_BOOT_DIAGNOSTIC__ === 'function' ? window.__SKIRMISH_BOOT_DIAGNOSTIC__() : null
       }))()`),
-      new Promise((resolve) => setTimeout(() => resolve({ probe:'unresponsive' }), 3000))
+      new Promise((resolve) => setTimeout(() => resolve({ probe: 'unresponsive' }), 3000))
     ]).catch(() => null);
     console.error('PACKAGED_SMOKE_TIMEOUT', JSON.stringify(diagnostic));
     exitSmoke(3, 'renderer-timeout', { diagnostic });
   } catch (error) {
     console.error('PACKAGED_SMOKE_EXCEPTION', error?.stack || error?.message || error);
-    exitSmoke(4, 'renderer-probe-error', { error:error?.message || String(error) });
+    exitSmoke(4, 'renderer-probe-error', { error: error?.message || String(error) });
   }
 }
 
 function createWindow() {
   const windowOptions = {
-    width:1280,
-    height:760,
-    minWidth:960,
-    minHeight:600,
-    fullscreen:true,
-    show:true,
-    backgroundColor:'#071017',
-    title:'Skirmish Arena',
-    autoHideMenuBar:true,
-    webPreferences:{
-      preload:path.join(__dirname, 'preload.js'),
-      contextIsolation:true,
-      nodeIntegration:false
+    width: 1280,
+    height: 760,
+    minWidth: 960,
+    minHeight: 600,
+    fullscreen: true,
+    show: true,
+    backgroundColor: '#071017',
+    title: 'Skirmish Arena',
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false
     }
   };
 
@@ -143,11 +149,11 @@ function createWindow() {
     })
     .catch((error) => {
       console.error('GAME_LOAD_FILE_FAILED', error?.stack || error?.message || error);
-      if (SMOKE_TEST) exitSmoke(6, 'load-file-rejected', { error:error?.message || String(error) });
+      if (SMOKE_TEST) exitSmoke(6, 'load-file-rejected', { error: error?.message || String(error) });
     });
 }
 
-if (SMOKE_TEST) writeSmokeStatus('main-start', { argv:process.argv.slice(1) });
+if (SMOKE_TEST) writeSmokeStatus('main-start', { argv: process.argv.slice(1) });
 
 app.whenReady().then(() => {
   if (SMOKE_TEST) {
