@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { packageSemverFor } from './versioning.mjs';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const tactical = read('game/src/ui/TacticalHUD.js');
@@ -7,6 +8,7 @@ const css = read('game/src/ui-2.4.1.2.css');
 const phase241 = read('game/src/phase241-runtime.js');
 const constants = read('game/src/engine/constants.js');
 const weapons = read('game/src/data/weapons.js');
+const syncBuild = read('scripts/sync-build-info.mjs');
 
 for (const token of [
   'phase3BlueScoreRows',
@@ -36,4 +38,9 @@ assert.ok(phase241.includes("document.body.classList.add('ui-241', 'ui-2412')"),
 assert.ok(constants.includes('DASH_STAMINA_COST = 0'), 'Dash stamina independence from 2.3.4 must remain intact.');
 assert.ok(weapons.includes('fireInterval: 0.22') && weapons.includes('damage: 148'), '2.4.1 player-authored balance values must remain intact.');
 
-console.log('Skirmish Arena 2.4.1.2 checks passed: larger round/timer readout, separated Blue/Red scoreboard, Top 3 preservation, and 2.4.1 gameplay compatibility.');
+assert.equal(packageSemverFor('2.4.1.2'), '2.4.1-2', 'Four-part public hotfix version must map to valid Electron SemVer.');
+assert.equal(packageSemverFor('2.4.1'), '2.4.1', 'Normal three-part SemVer must remain unchanged.');
+assert.equal(packageSemverFor('3.1.0.12'), '3.1.0-12', 'Future numeric four-part hotfix versions must remain package-safe.');
+assert.ok(syncBuild.includes('packageSemverFor(plan.gameVersion)'), 'Build sync must never write a four-part display version directly into package.json.');
+
+console.log('Skirmish Arena 2.4.1.2 checks passed: larger round/timer readout, separated Blue/Red scoreboard, Top 3 preservation, package-safe hotfix versioning, and 2.4.1 gameplay compatibility.');
