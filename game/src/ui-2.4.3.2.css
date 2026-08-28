@@ -1,0 +1,12 @@
+body.ui-2432 .arena-rank-badge[data-arena-emblem="authored"]{filter:drop-shadow(0 7px 15px rgba(0,0,0,.34));transition:transform .16s ease,filter .16s ease}
+body.ui-2432 .arena-strip:hover .arena-rank-badge[data-arena-emblem="authored"],body.ui-2432 .arena-rank-card.current .arena-rank-badge[data-arena-emblem="authored"]{transform:translateY(-1px) scale(1.025);filter:drop-shadow(0 8px 18px rgba(0,0,0,.38)) drop-shadow(0 0 8px color-mix(in srgb,var(--arena-rank-tone) 28%,transparent))}
+body.ui-2432 .arena-rank-card{min-height:96px}
+body.ui-2432 .arena-rank-card .arena-rank-badge{width:56px;height:66px}
+body.ui-2432 .arena-rank-card[data-rank="omnipotent"],body.ui-2432 .arena-rank-card.current{background:linear-gradient(90deg,rgba(58,196,245,.055),#0a151c 34%)}
+.arena-map-chip{display:inline-flex;align-items:center;width:max-content;margin-top:12px;padding:7px 9px;border:1px solid #304b59;border-left:3px solid #718a97;background:#08141b;color:#a7bbc5;font:800 8px/1 Consolas,monospace;letter-spacing:.12em}
+.arena-mode-card.arena .arena-map-chip{border-color:#325767;border-left-color:#55d3ff;color:#79dcff;background:#081820}
+.arena-mode-card.casual .arena-map-chip{color:#98aab3}
+body[data-active-map="foundry-zero"] .minimap-shell{border-color:rgba(78,204,245,.58);box-shadow:0 0 0 1px rgba(74,195,236,.08),0 10px 34px rgba(0,0,0,.3)}
+body[data-active-map="foundry-zero"] .phase3-map-shell{border-top-color:#52d0fb}
+body[data-match-mode="arena"] #roundOverlay::after{content:"ARENA · FOUNDRY ZERO";display:block;margin-top:9px;color:#63d4fa;font:800 9px/1 Consolas,monospace;letter-spacing:.14em}
+@media(max-width:900px){.arena-map-chip{margin-top:8px}.arena-rank-card .arena-rank-badge{width:50px;height:58px}}
