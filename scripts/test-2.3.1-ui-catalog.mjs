@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { WEAPON_LIST, WEAPONS } from '../game/src/data/weapons.js';
+import { DASH_STAMINA_COST } from '../game/src/engine/constants.js';
 
 const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const menu = read('game/src/ui/MainMenu.js');
@@ -9,6 +10,7 @@ const runtime = read('game/src/phase231-runtime.js');
 const css = read('game/src/ui-2.3.1.css');
 const css232 = read('game/src/ui-2.3.2.css');
 const css233 = read('game/src/ui-2.3.3.css');
+const css234 = read('game/src/ui-2.3.4.css');
 const debug = read('game/src/debug-tuning.js');
 const settings = read('game/src/engine/GameSettings.js');
 const loadouts = read('game/src/data/LoadoutStore.js');
@@ -31,13 +33,16 @@ assert.ok(runtime.includes("document.body.classList.toggle('ui231-weapon-page'")
 assert.ok(runtime.includes("document.body.classList.remove('ui221-weapon-page')"), '2.3.x must clean stale 2.2.1 Weapon Info page state when leaving the page.');
 assert.ok(runtime.includes('hydrateWeaponModelCanvases(document)'), 'Real in-game weapon models must be hydrated throughout the UI.');
 assert.ok(runtime.includes('hydrateGameplayCrosshairCanvases(document)'), 'Spread visualizers must use the live gameplay crosshair renderer.');
-assert.ok(runtime.includes("setText(eyebrow, 'BUILD 2.3.3')"), 'Home eyebrow must use the 2.3.3 fallback build label with an idempotent write.');
+assert.ok(runtime.includes("setText(eyebrow, 'BUILD 2.3.4')"), 'Home eyebrow must use the 2.3.4 fallback build label with an idempotent write.');
 assert.ok(runtime.includes("ensureStyle('ui-2.3.2.css')"), '2.3.2 Home cleanup stylesheet must remain loaded.');
-assert.ok(runtime.includes("ensureStyle('ui-2.3.3.css')"), '2.3.3 Loadouts stylesheet must load through the stable presentation runtime.');
-assert.ok(runtime.includes("document.body.classList.add('ui-231', 'ui-232', 'ui-233')"), '2.3.3 must layer on top of the stable 2.3.x presentation runtime.');
+assert.ok(runtime.includes("ensureStyle('ui-2.3.3.css')"), '2.3.3 Loadouts stylesheet must remain loaded.');
+assert.ok(runtime.includes("ensureStyle('ui-2.3.4.css')"), '2.3.4 HUD/header stylesheet must load through the stable presentation runtime.');
+assert.ok(runtime.includes("document.body.classList.add('ui-231', 'ui-232', 'ui-233', 'ui-234')"), '2.3.4 must layer on top of the stable 2.3.x presentation runtime.');
 assert.ok(runtime.includes('ui232-blueprint-icon'), 'Weapon Info tile must retain the simplified blue manual/gun sketch.');
 assert.equal(runtime.includes('linearGradient id="ui231BlueprintEdge"'), false, 'Simplified Weapon Info art must not regress to the over-detailed gradient treatment.');
 assert.equal(runtime.includes("button.addEventListener('click', () => queueMicrotask"), false, '2.3.x must not double-bind Weapon Info navigation over the canonical MainMenu controller.');
+assert.ok(runtime.includes("title.querySelectorAll('[data-ui221-weapon-back], .ui221-page-back')"), '2.3.4 must actively remove the legacy 2.2.1 Weapon Info Back control.');
+assert.ok(runtime.includes('modernButtons.slice(1)'), '2.3.4 must collapse any duplicate modern Weapon Info Back controls.');
 
 assert.ok(debug.includes("import('./phase231-runtime.js')"), '2.3.x presentation runtime must load after the known-good 2.2.1 runtime.');
 assert.equal(debug.includes("import('./weapon-info-hotfix.js')"), false, 'The rollback-only Weapon Info click hotfix must not remain active.');
@@ -73,10 +78,19 @@ assert.ok(loadoutScreen.includes('data-loadout-index'), 'Saved loadout selection
 assert.ok(loadoutScreen.includes('data-slot="primary"') && loadoutScreen.includes('data-slot="secondary"'), 'Primary and secondary slot switching must remain functional.');
 assert.ok(loadoutScreen.includes('id="selectWeapon"'), 'Explicit weapon equip action must remain available.');
 assert.ok(loadoutScreen.includes('id="deployButton"'), 'Save/deploy flow must remain available.');
-assert.ok(css233.includes('height:clamp(72px,10.5vh,112px)'), 'Weapon-card model stages must be materially larger than the old 34px treatment.');
-assert.ok(css233.includes('width:min(96%,220px)'), 'Weapon-card canvases must fill substantially more of their card.');
-assert.ok(css233.includes('width:min(92%,620px)'), 'Selected weapon preview must use the available detail area.');
-assert.ok(css233.includes('height:clamp(180px,30vh,310px)'), 'Selected weapon preview must be visually dominant.');
+assert.ok(css233.includes('height:clamp(72px,10.5vh,112px)'), 'Weapon-card model stages must remain materially larger than the old 34px treatment.');
+assert.ok(css233.includes('width:min(96%,220px)'), 'Weapon-card canvases must continue to fill substantially more of their card.');
+assert.ok(css233.includes('width:min(92%,620px)'), 'Selected weapon preview must continue to use the available detail area.');
+assert.ok(css233.includes('height:clamp(180px,30vh,310px)'), 'Selected weapon preview must remain visually dominant.');
+
+assert.ok(css234.includes('body.ui-234 .ui221-page-back{display:none!important}'), 'Legacy Weapon Info Back control must be visually impossible to duplicate.');
+assert.ok(css234.includes('grid-template-areas:'), 'Weapon Info header must explicitly group title/copy and its one Back control.');
+for (const token of ['.health-hud', '.stamina-hud', '.dash-hud', '.weapon-hud', '.match-hud', '.phase3-feed-row']) {
+  assert.ok(css234.includes(token), `2.3.4 transparent HUD missing ${token}.`);
+}
+assert.ok(css234.includes('background:transparent!important'), 'Persistent match HUD surfaces must be transparent rather than boxed panels.');
+assert.ok(css234.includes('left:calc(var(--ui234-edge) + 312px)'), 'Dash HUD must have its own non-overlapping anchor beside Health/Stamina.');
+assert.ok(css234.includes('right:var(--ui234-edge)!important'), 'Weapon HUD must remain independently anchored at the bottom-right.');
 
 assert.ok(settings.includes("map: 'KeyM'"), 'Tactical Map must remain rebindable with M as the default.');
 assert.ok(settings.includes("scoreboard: 'Tab'"), 'Scoreboard must remain rebindable with Tab as the default.');
@@ -88,6 +102,8 @@ assert.ok(tactical.includes('<span>K</span><span>D</span><span>A</span><span>K/D
 assert.ok(career.includes('MAX_CAREER_LEVEL'), 'The existing 1-1000 Career runtime must remain part of the game.');
 assert.ok(career.includes('LEVEL ${profile.level}'), 'Career level presentation must remain intact.');
 
+assert.equal(DASH_STAMINA_COST, 0, '2.3.4 dashes must not require or consume stamina.');
+
 assert.ok(fs.existsSync(logoUrl), 'Supplied metallic Skirmish Arena logo asset must ship with 2.3.x.');
 const logo = fs.readFileSync(logoUrl);
 assert.ok(logo.length > 10000, 'Home logo must be the real image asset, not a placeholder.');
@@ -97,12 +113,12 @@ assert.equal(logo.subarray(8, 12).toString('ascii'), 'WEBP', 'Packaged logo must
 assert.deepEqual(
   [WEAPONS.shotgun.damage, WEAPONS.shotgun.pelletCount, WEAPONS.shotgun.fullDamageRangeTiles, WEAPONS.shotgun.maxRangeTiles, WEAPONS.shotgun.falloffDamage],
   [16, 8, 2, 2.5, 5],
-  '2.3.3 must preserve the approved Shotgun 2.0/2.5-tile contract.'
+  '2.3.4 must preserve the approved Shotgun 2.0/2.5-tile contract.'
 );
 assert.deepEqual(
   [WEAPONS.assaultRifle.damage, WEAPONS.smg.damage, WEAPONS.sniper.damage, WEAPONS.lmg.damage, WEAPONS.pistol.damage, WEAPONS.launcher.damage, WEAPONS.melee.damage],
   [20, 11, 145, 24, 15, 125, 75],
-  '2.3.3 is UI-only work and must not rebalance weapons.'
+  '2.3.4 must not include the pending 2.4 weapon rebalance.'
 );
 
-console.log('Skirmish Arena 2.3.3 checks passed: stable boot/Home/Career foundation, focused Loadouts, larger real weapon models, Weapon Info-only deep stats, and preserved competitive contracts.');
+console.log('Skirmish Arena 2.3.4 checks passed: one Weapon Info Back control, transparent non-overlapping persistent HUD, zero-stamina dash cost, and weapon balance isolated for 2.4.');
