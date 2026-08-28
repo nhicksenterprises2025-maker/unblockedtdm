@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { packageSemverFor } from './versioning.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const plan = JSON.parse(fs.readFileSync(path.join(root, 'release-plan.json'), 'utf8'));
@@ -21,7 +22,7 @@ for (const target of ['game/src/build-info.json', 'launcher/src/build-info.json'
 
 const gamePackagePath = path.join(root, 'game/package.json');
 const gamePackage = JSON.parse(fs.readFileSync(gamePackagePath, 'utf8'));
-gamePackage.version = plan.gameVersion;
+gamePackage.version = packageSemverFor(plan.gameVersion);
 fs.writeFileSync(gamePackagePath, `${JSON.stringify(gamePackage, null, 2)}\n`);
 
-console.log(`Synced ${plan.title}`);
+console.log(`Synced ${plan.title} (package ${gamePackage.version})`);
