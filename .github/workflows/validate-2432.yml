@@ -1,0 +1,19 @@
+name: Validate Arena Phase 2
+
+on:
+  push:
+    branches: [phase/2.4.3.2-arena-map-ranks]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm run check
