@@ -1,9 +1,6 @@
 function playerLabel(row) {
   if (row.isLocal) return 'YOU';
-  const blue = row.id.match(/^blue-bot-(\d+)$/);
-  if (blue) return `BLUE ${Number(blue[1]) + 1}`;
-  const red = row.id.match(/^red-bot-(\d+)$/);
-  if (red) return `RED ${red[1]}`;
+  if (row.displayName) return String(row.displayName);
   return row.id.replace(/-/g, ' ').toUpperCase();
 }
 
