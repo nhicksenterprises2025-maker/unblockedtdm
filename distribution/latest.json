@@ -1,14 +1,14 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.3.1",
-  "build": 2,
-  "sequence": 47,
-  "phase": "2.3.1 — Deterministic Boot Integrity Hard Patch",
-  "tag": "build-2.3.1-v2",
-  "title": "Skirmish Arena 2.3.1 — Build 2",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.1-v2/UnblockedTDM-2.3.1-v2.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.1-v2/SkirmishArena-Setup-2.3.1-v2.exe",
-  "sha256": "492977f01e89d217f395b236c2b4b2c8e66989aa6371f55192514daa1727b1a5",
-  "installerSha256": "7c4dc6177e46e581171f34cd8bdfac35c6ce6498607875f6c851f0bb333e7921",
-  "publishedAt": "2026-08-27T23:05:10.000Z"
+  "gameVersion": "2.3.2",
+  "build": 1,
+  "sequence": 48,
+  "phase": "2.3.2 — Home Command Deck Cleanup",
+  "tag": "build-2.3.2-v1",
+  "title": "Skirmish Arena 2.3.2 — Build 1",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.2-v1/UnblockedTDM-2.3.2-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.2-v1/SkirmishArena-Setup-2.3.2-v1.exe",
+  "sha256": "85798f7318a172a72b23f753d18264fcc46a802c1b284150370d2c7b9d79fda4",
+  "installerSha256": "bb60248247c94b342955006ebb56e53eb405a34645643a04e69b30da6c2b95ee",
+  "publishedAt": "2026-08-28T00:44:43.529Z"
 }
