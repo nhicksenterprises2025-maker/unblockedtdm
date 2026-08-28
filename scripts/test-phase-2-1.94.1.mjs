@@ -28,8 +28,10 @@ assert.equal(css.includes('pointer-events: none'), false, 'Phase 2 stylesheet mu
 
 for (const token of ['weaponModelSvg', 'statBarsHtml', 'spreadVisualHtml']) {
   assert.ok(menu.includes(token), `Weapon Info must use ${token}.`);
-  assert.ok(loadouts.includes(token), `Loadouts must use ${token}.`);
 }
+assert.ok(loadouts.includes('weaponModelSvg'), 'Loadouts must continue using actual gameplay weapon models.');
+assert.equal(loadouts.includes('statBarsHtml'), false, '2.3.3 intentionally moves stat bars out of Loadouts and keeps them in Weapon Info.');
+assert.equal(loadouts.includes('spreadVisualHtml'), false, '2.3.3 intentionally moves spread reference data out of Loadouts and keeps it in Weapon Info.');
 for (const id of ['assault-rifle', 'smg', 'sniper', 'shotgun', 'lmg', 'pistol', 'launcher', 'melee']) {
   assert.ok(presentation.includes(id), `Missing authored weapon model for ${id}.`);
 }
@@ -46,4 +48,4 @@ for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12
   assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
 }
 
-console.log('1.94.1 Phase 2 checks passed: full-screen hierarchy, working delegated controls, weapon presentation, and unchanged gameplay contracts.');
+console.log('1.94.1 Phase 2 checks passed: full-screen hierarchy, working delegated controls, real weapon presentation, dedicated Weapon Info reference data, and unchanged gameplay contracts.');
