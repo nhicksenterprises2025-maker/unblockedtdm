@@ -1,4 +1,5 @@
 import { DASH_DISTANCE_TILES, TILE_SIZE } from '../engine/constants.js';
+import { lowAmmoState } from '../combat/AmmoState.js';
 
 export const TEAM_PALETTES = {
   blue: { ring:'#4aaeff', ringGlow:'rgba(74,174,255,.32)', uniform:'#4d96cf', uniformMid:'#397dad', uniformDark:'#245574', accent:'#9ee1ff', vest:'#203f52' },
@@ -16,6 +17,7 @@ export class PlayerRenderer {
     this.drawShadowAndRing(player);
     this.drawLegs(player);
     this.drawUpperBody(player, weaponManager);
+    this.drawLowAmmoIndicator(player, weaponManager);
   }
 
   drawTrail(player){
@@ -43,6 +45,20 @@ export class PlayerRenderer {
     if(player.isInvulnerable()){ctx.globalAlpha=.28;ctx.strokeStyle=p.accent;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,5,player.radius+12,0,Math.PI*2);ctx.stroke();}ctx.restore();
   }
 
+  drawLowAmmoIndicator(player,weaponManager){
+    if(!player?.isLocal||!player.health?.alive||!weaponManager)return;
+    const weapon=weaponManager.currentWeapon?.();
+    const ammo=weaponManager.currentAmmo?.();
+    const state=lowAmmoState(weapon,ammo);
+    if(!state.active)return;
+    const ctx=this.ctx,w=42,h=4,x=player.x-w/2,y=player.y+player.radius+20;
+    ctx.save();
+    ctx.fillStyle='rgba(36,5,8,.78)';ctx.fillRect(x,y,w,h);
+    ctx.strokeStyle='rgba(255,71,84,.72)';ctx.lineWidth=1;ctx.strokeRect(x-.5,y-.5,w+1,h+1);
+    if(state.progress>0){ctx.fillStyle='#ff4658';ctx.fillRect(x,y,w*state.progress,h);}
+    ctx.restore();
+  }
+
   drawLegs(player){
     const ctx=this.ctx,p=TEAM_PALETTES[player.team]||TEAM_PALETTES.blue,phase=player.animationPhase*Math.PI*2;
     const stride=Math.sin(phase),amp=(7.8+player.sprintBlend*5.4+player.dashBlend*1.5)*player.motionBlend;
@@ -63,27 +79,17 @@ export class PlayerRenderer {
     const ctx=this.ctx,p=TEAM_PALETTES[player.team]||TEAM_PALETTES.blue,phase=player.animationPhase*Math.PI*2;
     const locomotionBob=Math.abs(Math.sin(phase))*.72*player.motionBlend,breath=Math.sin(player.animationTime*2.1)*.4*(1-player.motionBlend),lean=player.bodyLean*4.7;
     ctx.save();ctx.translate(player.x,player.y-locomotionBob);ctx.rotate(player.visualAimAngle);
-
-    // Back/shoulder silhouette gives the body a readable humanoid shape at game scale.
     ctx.fillStyle=p.uniformDark;ctx.strokeStyle=OUTLINE;ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(-14-lean,-8);ctx.quadraticCurveTo(-5-lean,-14.5,7-lean,-12);ctx.lineTo(12-lean,-7.5);ctx.lineTo(12-lean,7.5);ctx.quadraticCurveTo(-5-lean,14.5,-14-lean,8);ctx.closePath();ctx.fill();ctx.stroke();
-
-    // Shirt/chest and vest panel.
     ctx.fillStyle=p.uniform;ctx.beginPath();ctx.roundRect(-9-lean,-9.5,20,19,7);ctx.fill();
     ctx.fillStyle=p.vest;ctx.beginPath();ctx.roundRect(-5-lean,-7.2,14,14.4,4);ctx.fill();
     ctx.fillStyle=p.accent;ctx.globalAlpha=.82;ctx.fillRect(-4-lean,-1.5,10,3);ctx.globalAlpha=1;
     ctx.strokeStyle='rgba(10,30,40,.35)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(0-lean,-7);ctx.lineTo(0-lean,7);ctx.stroke();
-
-    // Shoulder pads sit where weapon arms actually originate.
     for(const side of [-1,1]){ctx.fillStyle=p.uniformMid;ctx.strokeStyle=OUTLINE;ctx.lineWidth=1.4;ctx.beginPath();ctx.ellipse(1-lean,side*10.2,6.5,4.6,0,0,Math.PI*2);ctx.fill();ctx.stroke();}
-
     if(!weaponManager?.currentWeapon?.()) this.drawRelaxedArms(ctx,p,lean,phase,player.motionBlend);
-
-    // Neck and head are slightly forward of the chest, but no longer dominate the silhouette.
     ctx.fillStyle=SKIN_DARK;ctx.beginPath();ctx.ellipse(4-lean,0,5.5,6.2,0,0,Math.PI*2);ctx.fill();
     const headX=8.5-lean+player.bodyLean*.8;
     ctx.fillStyle=SKIN;ctx.strokeStyle=SKIN_DARK;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(headX,0,10.2,9.2,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-    // Ear + nose/face direction make aim orientation obvious.
     ctx.fillStyle=SKIN_LIGHT;ctx.beginPath();ctx.arc(headX-1,-8.2,2.3,0,Math.PI*2);ctx.arc(headX-1,8.2,2.3,0,Math.PI*2);ctx.fill();
     ctx.fillStyle=SKIN_DARK;ctx.beginPath();ctx.moveTo(headX+8,-2.4);ctx.lineTo(headX+12,0);ctx.lineTo(headX+8,2.4);ctx.closePath();ctx.fill();
     ctx.fillStyle=HAIR;ctx.beginPath();ctx.arc(headX-3,0,8.8,Math.PI*.55,Math.PI*1.45);ctx.quadraticCurveTo(headX+1,-8.8,headX+4,-6.5);ctx.lineTo(headX+2.5,0);ctx.lineTo(headX+4,6.5);ctx.quadraticCurveTo(headX+1,8.8,headX-3,8.6);ctx.closePath();ctx.fill();
