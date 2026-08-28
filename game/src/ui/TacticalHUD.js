@@ -24,6 +24,12 @@ function teamClass(team) {
   return team === 'blue' ? 'team-blue' : team === 'red' ? 'team-red' : 'team-world';
 }
 
+function rankRows(rows = []) {
+  return [...rows].sort((a, b) =>
+    (b.kills - a.kills) || (b.damage - a.damage) || (a.deaths - b.deaths) || String(a.id).localeCompare(String(b.id))
+  );
+}
+
 export class TacticalHUD {
   constructor({ minimapRenderer, players, localPlayer, settings = null } = {}) {
     this.minimapRenderer = minimapRenderer;
@@ -50,8 +56,18 @@ export class TacticalHUD {
         <div class="phase3-scoreboard-shell">
           <header><div><small>SKIRMISH ARENA // LIVE MATCH</small><h2>SCOREBOARD</h2></div><div class="phase3-score-summary"><span class="team-blue">BLUE <b id="phase3BlueScore">0</b></span><em>:</em><span class="team-red"><b id="phase3RedScore">0</b> RED</span></div></header>
           <div class="phase3-top-three" id="phase3TopThree"></div>
-          <div class="phase3-score-head"><span>RANK / PLAYER</span><span>K</span><span>D</span><span>A</span><span>K/D</span><span>DMG</span></div>
-          <div class="phase3-score-rows" id="phase3ScoreRows"></div>
+          <div class="phase3-team-scoreboards">
+            <section class="phase3-team-board blue" aria-label="Blue team scoreboard">
+              <div class="phase3-team-title"><strong>BLUE TEAM</strong><span id="phase3BlueTeamCount">3 PLAYERS</span></div>
+              <div class="phase3-team-score-head"><span>PLAYER</span><span>K</span><span>D</span><span>A</span><span>K/D</span><span>DMG</span></div>
+              <div class="phase3-team-score-rows" id="phase3BlueScoreRows"></div>
+            </section>
+            <section class="phase3-team-board red" aria-label="Red team scoreboard">
+              <div class="phase3-team-title"><strong>RED TEAM</strong><span id="phase3RedTeamCount">3 PLAYERS</span></div>
+              <div class="phase3-team-score-head"><span>PLAYER</span><span>K</span><span>D</span><span>A</span><span>K/D</span><span>DMG</span></div>
+              <div class="phase3-team-score-rows" id="phase3RedScoreRows"></div>
+            </section>
+          </div>
           <footer>HOLD <b data-scoreboard-binding>TAB</b> TO VIEW · #1 OVERALL = MVP</footer>
         </div>
       </section>
@@ -66,7 +82,10 @@ export class TacticalHUD {
     this.root = root;
     this.killFeedRoot = root.querySelector('#phase3KillFeed');
     this.scoreboardRoot = root.querySelector('#phase3Scoreboard');
-    this.scoreRows = root.querySelector('#phase3ScoreRows');
+    this.blueScoreRows = root.querySelector('#phase3BlueScoreRows');
+    this.redScoreRows = root.querySelector('#phase3RedScoreRows');
+    this.blueTeamCount = root.querySelector('#phase3BlueTeamCount');
+    this.redTeamCount = root.querySelector('#phase3RedTeamCount');
     this.topThree = root.querySelector('#phase3TopThree');
     this.mapRoot = root.querySelector('#phase3Map');
     this.mapCanvas = root.querySelector('#phase3MapCanvas');
@@ -176,24 +195,31 @@ export class TacticalHUD {
       </div>`).join('');
   }
 
+  renderTeamRows(rows, team) {
+    return rankRows(rows).map((row, index) => `
+      <div class="phase3-team-score-row ${team} ${row.isLocal ? 'local' : ''}">
+        <span><i>${index + 1}</i><b class="${teamClass(row.team)}">${safe(playerLabel(row))}</b></span>
+        <strong>${row.kills}</strong><strong>${row.deaths}</strong><strong>${row.assists}</strong><strong>${kdLabel(row)}</strong><strong>${row.damage}</strong>
+      </div>`).join('');
+  }
+
   update(snapshot = {}, stats = []) {
     this.renderFeed();
     if (!this.active) return;
 
-    const ranked = [...stats].sort((a, b) =>
-      (b.kills - a.kills) || (b.damage - a.damage) || (a.deaths - b.deaths) || String(a.id).localeCompare(String(b.id))
-    );
+    const ranked = rankRows(stats);
+    const blueRows = stats.filter((row) => row.team === 'blue');
+    const redRows = stats.filter((row) => row.team === 'red');
     document.getElementById('phase3BlueScore').textContent = snapshot.kills?.blue ?? 0;
     document.getElementById('phase3RedScore').textContent = snapshot.kills?.red ?? 0;
 
     this.topThree.innerHTML = ranked.slice(0, 3).map((row, index) => `
       <div class="rank-${index + 1} ${row.isLocal ? 'local' : ''}"><span>#${index + 1}${index === 0 ? ' MVP' : ''}</span><strong class="${teamClass(row.team)}">${safe(playerLabel(row))}</strong><small>${row.kills} K · ${row.damage} DMG</small></div>`).join('');
 
-    this.scoreRows.innerHTML = ranked.map((row, index) => `
-      <div class="phase3-score-row ${row.team} ${row.isLocal ? 'local' : ''} ${index < 3 ? `top-${index + 1}` : ''}">
-        <span><i>${index + 1}</i><b class="${teamClass(row.team)}">${safe(playerLabel(row))}</b><small>${row.team.toUpperCase()}</small></span>
-        <strong>${row.kills}</strong><strong>${row.deaths}</strong><strong>${row.assists}</strong><strong>${kdLabel(row)}</strong><strong>${row.damage}</strong>
-      </div>`).join('');
+    this.blueScoreRows.innerHTML = this.renderTeamRows(blueRows, 'blue');
+    this.redScoreRows.innerHTML = this.renderTeamRows(redRows, 'red');
+    this.blueTeamCount.textContent = `${blueRows.length} PLAYER${blueRows.length === 1 ? '' : 'S'}`;
+    this.redTeamCount.textContent = `${redRows.length} PLAYER${redRows.length === 1 ? '' : 'S'}`;
 
     if (this.mapVisible) this.minimapRenderer?.drawFullMap?.(this.mapCanvas, { players: this.players, localPlayer: this.localPlayer });
   }
