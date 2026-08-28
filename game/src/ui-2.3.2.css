@@ -1,0 +1,31 @@
+/* Skirmish Arena 2.3.2 — home-screen declutter only.
+   This layer intentionally does not replace the working 2.3.1 menu/Career runtime. */
+
+/* Remove tutorial-style summary cards from Home. Players discover these systems in play. */
+body.ui-232 #mainMenu [data-menu-view="home"] .menu-feature-grid{
+  display:none!important;
+}
+
+/* Let the Career strip become the next major information block after the hero. */
+body.ui-232 #mainMenu [data-menu-view="home"] .career-strip-211{
+  margin-top:clamp(18px,2.1vh,30px)!important;
+}
+
+/* Cleaner Weapon Info command art: one blue manual outline + one gun sketch. */
+body.ui-232 #mainMenu .phase2-weapon-info .ui232-info-art{
+  width:clamp(76px,5.1vw,100px)!important;
+  height:clamp(64px,4.3vw,86px)!important;
+  right:clamp(15px,1.1vw,22px)!important;
+  top:clamp(14px,1vw,20px)!important;
+  filter:drop-shadow(0 7px 10px rgba(30,181,239,.16))!important;
+}
+body.ui-232 #mainMenu .ui232-blueprint-icon{
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+/* Preserve the exact stable home layout dimensions after the summary cards leave. */
+body.ui-232 #mainMenu [data-menu-view="home"]{
+  align-content:start;
+}
