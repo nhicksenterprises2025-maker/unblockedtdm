@@ -6,11 +6,7 @@ const FEED_LIFETIME_MS = 6500;
 
 function playerLabel(row = {}) {
   if (row.isLocal || row.id === 'local-blue') return 'YOU';
-  if (row.id === 'blue-bot-1') return 'BLUE 2';
-  if (row.id === 'blue-bot-2') return 'BLUE 3';
-  if (row.id === 'red-bot-1') return 'RED 1';
-  if (row.id === 'red-bot-2') return 'RED 2';
-  if (row.id === 'red-bot-3') return 'RED 3';
+  if (row.displayName) return String(row.displayName);
   return String(row.id || 'UNKNOWN').replaceAll('-', ' ').toUpperCase();
 }
 
@@ -22,6 +18,10 @@ function kdLabel(row = {}) {
 
 function safe(value) {
   return String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
+function teamClass(team) {
+  return team === 'blue' ? 'team-blue' : team === 'red' ? 'team-red' : 'team-world';
 }
 
 export class TacticalHUD {
@@ -48,7 +48,7 @@ export class TacticalHUD {
       <aside id="phase3KillFeed" class="phase3-kill-feed" aria-live="polite"></aside>
       <section id="phase3Scoreboard" class="phase3-scoreboard" aria-hidden="true">
         <div class="phase3-scoreboard-shell">
-          <header><div><small>SKIRMISH ARENA // LIVE MATCH</small><h2>SCOREBOARD</h2></div><div class="phase3-score-summary"><span>BLUE <b id="phase3BlueScore">0</b></span><em>:</em><span><b id="phase3RedScore">0</b> RED</span></div></header>
+          <header><div><small>SKIRMISH ARENA // LIVE MATCH</small><h2>SCOREBOARD</h2></div><div class="phase3-score-summary"><span class="team-blue">BLUE <b id="phase3BlueScore">0</b></span><em>:</em><span class="team-red"><b id="phase3RedScore">0</b> RED</span></div></header>
           <div class="phase3-top-three" id="phase3TopThree"></div>
           <div class="phase3-score-head"><span>RANK / PLAYER</span><span>K</span><span>D</span><span>A</span><span>K/D</span><span>DMG</span></div>
           <div class="phase3-score-rows" id="phase3ScoreRows"></div>
@@ -148,13 +148,17 @@ export class TacticalHUD {
   }
 
   recordKill(event = {}, meta = {}) {
-    const attacker = event.attacker ? playerLabel({ id: event.attacker.id, isLocal: event.attacker.isLocal }) : 'WORLD';
-    const victim = playerLabel({ id: event.victim?.id, isLocal: event.victim?.isLocal });
+    const attackerRow = event.attacker || null;
+    const victimRow = event.victim || null;
+    const attacker = attackerRow ? playerLabel(attackerRow) : 'WORLD';
+    const victim = playerLabel(victimRow || {});
     const weapon = WEAPON_BY_ID.get(meta.weaponId);
     const weaponLabel = weapon?.shortName || String(meta.weaponId || '—').toUpperCase();
     this.feed.unshift({
       attacker,
+      attackerTeam: attackerRow?.team || null,
       victim,
+      victimTeam: victimRow?.team || null,
       weapon: weaponLabel,
       critical: Boolean(meta.critical),
       at: performance.now()
@@ -168,7 +172,7 @@ export class TacticalHUD {
     this.feed = this.feed.filter((entry) => now - entry.at <= FEED_LIFETIME_MS);
     this.killFeedRoot.innerHTML = this.feed.map((entry) => `
       <div class="phase3-feed-row ${entry.critical ? 'critical' : ''}">
-        <strong>${safe(entry.attacker)}</strong><span>${safe(entry.weapon)}</span><b>${safe(entry.victim)}</b>${entry.critical ? '<em>CRITICAL</em>' : ''}
+        <strong class="${teamClass(entry.attackerTeam)}">${safe(entry.attacker)}</strong><span>${safe(entry.weapon)}</span><b class="${teamClass(entry.victimTeam)}">${safe(entry.victim)}</b>${entry.critical ? '<em>CRITICAL</em>' : ''}
       </div>`).join('');
   }
 
@@ -183,11 +187,11 @@ export class TacticalHUD {
     document.getElementById('phase3RedScore').textContent = snapshot.kills?.red ?? 0;
 
     this.topThree.innerHTML = ranked.slice(0, 3).map((row, index) => `
-      <div class="rank-${index + 1} ${row.isLocal ? 'local' : ''}"><span>#${index + 1}${index === 0 ? ' MVP' : ''}</span><strong>${safe(playerLabel(row))}</strong><small>${row.kills} K · ${row.damage} DMG</small></div>`).join('');
+      <div class="rank-${index + 1} ${row.isLocal ? 'local' : ''}"><span>#${index + 1}${index === 0 ? ' MVP' : ''}</span><strong class="${teamClass(row.team)}">${safe(playerLabel(row))}</strong><small>${row.kills} K · ${row.damage} DMG</small></div>`).join('');
 
     this.scoreRows.innerHTML = ranked.map((row, index) => `
       <div class="phase3-score-row ${row.team} ${row.isLocal ? 'local' : ''} ${index < 3 ? `top-${index + 1}` : ''}">
-        <span><i>${index + 1}</i><b>${safe(playerLabel(row))}</b><small>${row.team.toUpperCase()}</small></span>
+        <span><i>${index + 1}</i><b class="${teamClass(row.team)}">${safe(playerLabel(row))}</b><small>${row.team.toUpperCase()}</small></span>
         <strong>${row.kills}</strong><strong>${row.deaths}</strong><strong>${row.assists}</strong><strong>${kdLabel(row)}</strong><strong>${row.damage}</strong>
       </div>`).join('');
 

@@ -1,0 +1,36 @@
+/* Skirmish Arena 2.4.1 — combat readability, team identity, and low-ammo state. */
+
+/* Top match strip: only the actual team-name labels take team color. */
+body.ui-241.match-started .match-hud .blue:first-child span{
+  color:#4aaeff!important;
+  text-shadow:0 1px 4px rgba(35,126,202,.72)!important;
+}
+body.ui-241.match-started .match-hud .red:last-child span{
+  color:#ff5f73!important;
+  text-shadow:0 1px 4px rgba(205,56,76,.72)!important;
+}
+
+/* Low magazine state: magazine count flips red at the same threshold as the world indicator. */
+body.ui-241.match-started #weaponRoot.low-ammo #ammoMagazine{
+  color:#ff4658!important;
+  text-shadow:0 1px 5px rgba(255,54,74,.42),0 2px 4px rgba(0,0,0,.9)!important;
+}
+body.ui-241.match-started #weaponRoot.low-ammo #weaponState{
+  color:#ff6a78!important;
+}
+
+/* Kill feed and tactical score surfaces use player team colors without adding new boxes. */
+body.ui-241 .phase3-feed-row .team-blue,
+body.ui-241 .phase3-score-row .team-blue,
+body.ui-241 .phase3-top-three .team-blue,
+body.ui-241 .phase3-score-summary .team-blue{
+  color:#59baff!important;
+}
+body.ui-241 .phase3-feed-row .team-red,
+body.ui-241 .phase3-score-row .team-red,
+body.ui-241 .phase3-top-three .team-red,
+body.ui-241 .phase3-score-summary .team-red{
+  color:#ff6b7d!important;
+}
+body.ui-241 .phase3-feed-row .team-world{color:#b8c5cd!important}
+body.ui-241 .phase3-feed-row.critical em{color:#ffd85a!important}

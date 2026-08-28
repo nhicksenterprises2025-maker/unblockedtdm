@@ -1,4 +1,5 @@
 import { hydrateGameplayCrosshairCanvases, hydrateWeaponModelCanvases } from './ui/WeaponPresentation.js';
+import './phase241-runtime.js';
 
 function ensureStyle(href) {
   if ([...document.querySelectorAll('link[rel="stylesheet"]')].some((link) => link.getAttribute('href') === href)) return;
@@ -46,10 +47,10 @@ function updateHomeBuildLabel() {
     buildInfoPromise = window.gameAPI?.getBuildInfo?.()
       ?.catch?.(() => null) || Promise.resolve(null);
   }
-  setText(eyebrow, 'BUILD 2.3.4');
+  setText(eyebrow, 'BUILD 2.4.1');
   buildInfoPromise.then((info) => {
     if (!eyebrow.isConnected) return;
-    setText(eyebrow, `BUILD ${info?.gameVersion || '2.3.4'}`);
+    setText(eyebrow, `BUILD ${info?.gameVersion || '2.4.1'}`);
   });
 }
 
@@ -142,6 +143,7 @@ ensureStyle('ui-2.3.4.css');
 document.body.classList.add('ui-231', 'ui-232', 'ui-233', 'ui-234');
 
 // 2.3.x remains the final presentation runtime in the deterministic boot chain.
+// 2.4.1 is a static dependency above so the boot gate waits for it as well.
 // Refresh only from explicit application events and resize. Never observe and
 // mutate the same menu subtree; that old feedback loop could starve Electron.
 window.addEventListener('skirmish:menu-view-change', scheduleRefresh);

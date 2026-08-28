@@ -34,13 +34,14 @@ assert.equal(loadouts.includes('statBarsHtml'), false, '2.3.3 intentionally move
 assert.equal(loadouts.includes('spreadVisualHtml'), false, '2.3.3 intentionally moves spread reference data out of Loadouts and keeps it in Weapon Info.');
 for (const id of ['assault-rifle', 'smg', 'sniper', 'shotgun', 'lmg', 'pistol', 'launcher', 'melee']) {
   assert.ok(presentation.includes(id), `Missing authored weapon model for ${id}.`);
+  assert.ok(weapons.includes(`id: '${id}'`), `Eight-weapon data roster missing ${id}.`);
 }
 
-for (const token of [
-  'damage: 20, critChance: 0.02, critDamage: 32',
-  'damage: 145, critChance: 0.35, critDamage: 200',
-  'damage: 125, critChance: 0, critDamage: 125'
-]) assert.ok(weapons.includes(token), `Canonical weapon contract changed: ${token}`);
+// 2.4.1 intentionally opens weapon balance for tuning. Preserve the historical
+// Phase 2 weapon roster/presentation contract without freezing obsolete values.
+for (const field of ['damage:', 'critChance:', 'critDamage:', 'fireInterval:', 'magazineSize:', 'reloadTime:']) {
+  assert.ok(weapons.includes(field), `Weapon data schema missing ${field}`);
+}
 for (const token of ['PLAYER_SPEED_TILES = 5', 'SPRINT_SPEED_MULTIPLIER = 1.35', 'DASH_CHARGES_MAX = 4', 'DASH_DISTANCE_TILES = 3']) {
   assert.ok(constants.includes(token), `Canonical movement contract changed: ${token}`);
 }
@@ -48,4 +49,4 @@ for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12
   assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
 }
 
-console.log('1.94.1 Phase 2 checks passed: full-screen hierarchy, working delegated controls, real weapon presentation, dedicated Weapon Info reference data, and unchanged gameplay contracts.');
+console.log('1.94.1 Phase 2 checks passed: full-screen hierarchy, working delegated controls, real weapon presentation, dedicated Weapon Info reference data, and balance-ready weapon schema.');

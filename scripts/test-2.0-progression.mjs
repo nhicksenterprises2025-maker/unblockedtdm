@@ -67,22 +67,16 @@ assert.equal(restored.matches, 1, 'Career match count must persist across restar
 assert.equal(restored.level, 9, 'Derived Career level must restore from persisted XP.');
 assert.equal(restored.kd, 15 / 8);
 
-assert.ok(debug.includes("import('./phase10-runtime.js')"), 'Historical Phase 10 entrypoint must stay in the runtime stack.');
-assert.ok(bridge.includes("import('./phase211-runtime.js')"), 'Phase 10 must bridge to the single active 2.1.1 Career runtime.');
-assert.equal(bridge.includes('unblockedtdm:match-complete'), false, 'Legacy bridge must not award XP a second time.');
-for (const token of ['ProgressionStore', 'unblockedtdm:match-complete', 'dataset.careerStrip', 'career-postgame', 'MATCH XP', 'RANK PROMOTION']) {
-  assert.ok(runtime.includes(token), `2.1.1 Career runtime missing ${token}.`);
-}
-for (const token of ['.career-strip', '.career-postgame', '.career-xp-track', '.career-recent']) assert.ok(css.includes(token), `Base Career presentation missing ${token}.`);
+assert.ok(debug.includes("import('./phase10-runtime.js')"));
+assert.ok(bridge.includes("import('./phase211-runtime.js')"));
+assert.equal(bridge.includes('unblockedtdm:match-complete'), false);
+for (const token of ['ProgressionStore','unblockedtdm:match-complete','dataset.careerStrip','career-postgame','MATCH XP','RANK PROMOTION']) assert.ok(runtime.includes(token), `2.1.1 Career runtime missing ${token}.`);
+for (const token of ['.career-strip','.career-postgame','.career-xp-track','.career-recent']) assert.ok(css.includes(token), `Base Career presentation missing ${token}.`);
+for (const forbidden of ["from './data/weapons.js'","from './actors/Player.js'","from './ai/BotController.js'","from './match/MatchManager.js'","from './engine/constants.js'","from './world/map01.js'"]) assert.equal(runtime.includes(forbidden), false, `Career runtime must not import gameplay system ${forbidden}.`);
 
-for (const forbidden of ["from './data/weapons.js'", "from './actors/Player.js'", "from './ai/BotController.js'", "from './match/MatchManager.js'", "from './engine/constants.js'", "from './world/map01.js'"]) {
-  assert.equal(runtime.includes(forbidden), false, `Career runtime must not import gameplay system ${forbidden}.`);
-}
+for (const id of ['assault-rifle','smg','sniper','shotgun','lmg','pistol','launcher','melee']) assert.ok(weapons.includes(`id: '${id}'`), `Career compatibility lost weapon ${id}.`);
+for (const field of ['damage:', 'critChance:', 'fireInterval:', 'magazineSize:']) assert.ok(weapons.includes(field), `Weapon schema missing ${field}`);
+for (const token of ['PLAYER_SPEED_TILES = 5','SPRINT_SPEED_MULTIPLIER = 1.35','DASH_CHARGES_MAX = 4','DASH_DISTANCE_TILES = 3']) assert.ok(constants.includes(token), `Canonical movement contract changed: ${token}`);
+for (const token of ['const ROUND_DURATION = 90;','const ROUND_KILL_TARGET = 12;','const ROUND_WINS_TO_MATCH = 5;']) assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
 
-for (const token of ['damage: 20, critChance: 0.02, critDamage: 32', 'damage: 145, critChance: 0.35, critDamage: 200', 'damage: 125, critChance: 0, critDamage: 125']) {
-  assert.ok(weapons.includes(token), `Canonical weapon contract changed: ${token}`);
-}
-for (const token of ['PLAYER_SPEED_TILES = 5', 'SPRINT_SPEED_MULTIPLIER = 1.35', 'DASH_CHARGES_MAX = 4', 'DASH_DISTANCE_TILES = 3']) assert.ok(constants.includes(token), `Canonical movement contract changed: ${token}`);
-for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12;', 'const ROUND_WINS_TO_MATCH = 5;']) assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
-
-console.log('Skirmish Arena progression compatibility checks passed: Phase 10 bridge, 1000-level Career, agreed XP economy, persistence, and unchanged competitive gameplay.');
+console.log('Skirmish Arena progression compatibility checks passed: Phase 10 bridge, 1000-level Career, agreed XP economy, persistence, and balance-ready weapon schema.');
