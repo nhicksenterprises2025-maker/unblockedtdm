@@ -1,3 +1,4 @@
+import './phase2431-runtime.js';
 import { WEAPON_LIST } from './data/weapons.js';
 import { lowAmmoState } from './combat/AmmoState.js';
 import { MatchManager } from './match/MatchManager.js';
