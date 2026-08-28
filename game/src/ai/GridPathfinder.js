@@ -18,16 +18,31 @@ export class GridPathfinder {
     this.radius = Math.max(1, radius);
     this.clearance = clearance;
     this.walkable = new Uint8Array(this.cols * this.rows);
+    this.mapRevision = -1;
     this.rebuild();
   }
 
+  syncMap() {
+    const nextCols = this.map.definition.cols;
+    const nextRows = this.map.definition.rows;
+    const revision = Number(this.map.revision || 0);
+    if (revision === this.mapRevision && nextCols === this.cols && nextRows === this.rows) return false;
+    this.cols = nextCols;
+    this.rows = nextRows;
+    if (this.walkable.length !== this.cols * this.rows) this.walkable = new Uint8Array(this.cols * this.rows);
+    this.rebuild();
+    return true;
+  }
+
   rebuild() {
+    if (this.walkable.length !== this.cols * this.rows) this.walkable = new Uint8Array(this.cols * this.rows);
     for (let row = 0; row < this.rows; row += 1) {
       for (let col = 0; col < this.cols; col += 1) {
         const point = this.tileCenter(col, row);
         this.walkable[this.index(col, row)] = this.isWorldWalkable(point.x, point.y) ? 1 : 0;
       }
     }
+    this.mapRevision = Number(this.map.revision || 0);
   }
 
   index(col, row) {
@@ -102,6 +117,7 @@ export class GridPathfinder {
   }
 
   findPath(startWorld, goalWorld) {
+    this.syncMap();
     const rawStart = this.worldToTile(startWorld.x, startWorld.y);
     const rawGoal = this.worldToTile(goalWorld.x, goalWorld.y);
     const start = this.nearestWalkable(rawStart);
