@@ -21,7 +21,7 @@ export const SPRINT_REGEN_PER_SECOND = SPRINT_STAMINA_MAX / SPRINT_REGEN_FULL_TI
 
 export const DASH_CHARGES_MAX = 4;
 export const DASH_DISTANCE_TILES = 3;
-export const DASH_STAMINA_COST = 15;
+export const DASH_STAMINA_COST = 0;
 export const DASH_COOLDOWN = 0.3;
 export const DASH_INVULNERABILITY = 0.5;
 export const DASH_DURATION = 0.18;
