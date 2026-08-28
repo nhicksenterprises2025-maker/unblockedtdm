@@ -1,4 +1,5 @@
 import { TILE_SIZE } from '../engine/constants.js';
+import { Camera } from '../world/Camera.js';
 
 const ENEMY_REVEAL_SECONDS = 1.5;
 const MINIMAP_FRAME_MS = 1000 / 30;
@@ -37,7 +38,7 @@ export class MinimapRenderer {
     return (this.revealUntil.get(actor.id) || 0) > nowSeconds;
   }
 
-  updatePlayerOverlap(localPlayer, camera) {
+  updatePlayerOverlap(localPlayer, camera = Camera.active) {
     const shell = this.canvas?.closest?.('.minimap-shell') || this.canvas;
     if (!shell) return;
 
@@ -48,15 +49,13 @@ export class MinimapRenderer {
     }
 
     const rect = shell.getBoundingClientRect();
-    const zoom = Number(camera.zoom) || 1;
-    const screenX = camera.width / 2 + (localPlayer.x - camera.x) * zoom;
-    const screenY = camera.height / 2 + (localPlayer.y - camera.y) * zoom;
-    const actorRadius = Math.max(18, (Number(localPlayer.radius) || 18) * zoom);
+    const point = camera.worldToScreen(localPlayer.x, localPlayer.y);
+    const actorRadius = Math.max(18, (Number(localPlayer.radius) || 18) * (Number(camera.zoom) || 1));
     const pad = MINIMAP_OCCLUSION_PADDING + actorRadius;
-    const overlaps = screenX >= rect.left - pad
-      && screenX <= rect.right + pad
-      && screenY >= rect.top - pad
-      && screenY <= rect.bottom + pad;
+    const overlaps = point.x >= rect.left - pad
+      && point.x <= rect.right + pad
+      && point.y >= rect.top - pad
+      && point.y <= rect.bottom + pad;
 
     if (overlaps === this.playerOverlap) return;
     this.playerOverlap = overlaps;
@@ -238,7 +237,7 @@ export class MinimapRenderer {
     ctx.fillText('N', width / 2, Math.max(20, top - 8));
   }
 
-  draw({ players, localPlayer, camera = null }) {
+  draw({ players, localPlayer, camera = Camera.active }) {
     if (!this.canvas || !localPlayer) return;
     this.updatePlayerOverlap(localPlayer, camera);
 
