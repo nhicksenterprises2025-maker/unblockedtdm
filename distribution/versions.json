@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "Skirmish Arena",
+      "gameVersion": "2.4.2.1",
+      "build": 1,
+      "sequence": 53,
+      "phase": "2.4.2.1 — Adaptive HUD Occlusion + Kill Feed Readability",
+      "tag": "build-2.4.2.1-v1",
+      "title": "Skirmish Arena 2.4.2.1 — Build 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.2.1-v1/UnblockedTDM-2.4.2.1-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.2.1-v1/SkirmishArena-Setup-2.4.2.1-v1.exe",
+      "sha256": "4e17ae99b524d8fa1c444d74da003f06972c3b2f644c9afa9c9eb1ffc01735bf",
+      "installerSha256": "d140fa47b36e8da3e48d44324be8e096fbfd1caeafac9a6249bdd96bbb353893",
+      "publishedAt": "2026-08-28T03:31:12.427Z"
+    },
+    {
+      "product": "Skirmish Arena",
       "gameVersion": "2.4.1.2",
       "build": 1,
       "sequence": 52,
