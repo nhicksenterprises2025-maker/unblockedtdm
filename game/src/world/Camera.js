@@ -1,12 +1,15 @@
 import { CAMERA_LERP, DEFAULT_ZOOM, WORLD_HEIGHT, WORLD_WIDTH } from '../engine/constants.js';
 
 export class Camera {
+  static active = null;
+
   constructor() {
     this.x = WORLD_WIDTH / 2;
     this.y = WORLD_HEIGHT / 2;
     this.width = innerWidth;
     this.height = innerHeight;
     this.zoom = DEFAULT_ZOOM;
+    Camera.active = this;
   }
 
   resize(width, height) {
@@ -38,6 +41,13 @@ export class Camera {
 
   end(ctx) {
     ctx.restore();
+  }
+
+  worldToScreen(worldX, worldY) {
+    return {
+      x: this.width / 2 + (worldX - this.x) * this.zoom,
+      y: this.height / 2 + (worldY - this.y) * this.zoom
+    };
   }
 
   screenToWorld(screenX, screenY) {

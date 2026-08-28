@@ -1,7 +1,9 @@
 import { TILE_SIZE } from '../engine/constants.js';
+import { Camera } from '../world/Camera.js';
 
 const ENEMY_REVEAL_SECONDS = 1.5;
 const MINIMAP_FRAME_MS = 1000 / 30;
+const MINIMAP_OCCLUSION_PADDING = 14;
 
 function readMode() {
   try {
@@ -18,6 +20,7 @@ export class MinimapRenderer {
     this.map = map;
     this.revealUntil = new Map();
     this.lastDrawTime = 0;
+    this.playerOverlap = false;
   }
 
   observeEnemyFire(players, localPlayer, nowSeconds) {
@@ -33,6 +36,30 @@ export class MinimapRenderer {
 
   isEnemyRevealed(actor, nowSeconds) {
     return (this.revealUntil.get(actor.id) || 0) > nowSeconds;
+  }
+
+  updatePlayerOverlap(localPlayer, camera = Camera.active) {
+    const shell = this.canvas?.closest?.('.minimap-shell') || this.canvas;
+    if (!shell) return;
+
+    if (!localPlayer?.health?.alive || !camera) {
+      this.playerOverlap = false;
+      shell.classList.remove('player-overlap');
+      return;
+    }
+
+    const rect = shell.getBoundingClientRect();
+    const point = camera.worldToScreen(localPlayer.x, localPlayer.y);
+    const actorRadius = Math.max(18, (Number(localPlayer.radius) || 18) * (Number(camera.zoom) || 1));
+    const pad = MINIMAP_OCCLUSION_PADDING + actorRadius;
+    const overlaps = point.x >= rect.left - pad
+      && point.x <= rect.right + pad
+      && point.y >= rect.top - pad
+      && point.y <= rect.bottom + pad;
+
+    if (overlaps === this.playerOverlap) return;
+    this.playerOverlap = overlaps;
+    shell.classList.toggle('player-overlap', overlaps);
   }
 
   mapPointNorthUp(x, y, size, padding) {
@@ -210,8 +237,10 @@ export class MinimapRenderer {
     ctx.fillText('N', width / 2, Math.max(20, top - 8));
   }
 
-  draw({ players, localPlayer }) {
+  draw({ players, localPlayer, camera = Camera.active }) {
     if (!this.canvas || !localPlayer) return;
+    this.updatePlayerOverlap(localPlayer, camera);
+
     const nowMs = performance.now();
     if (nowMs - this.lastDrawTime < MINIMAP_FRAME_MS) return;
     this.lastDrawTime = nowMs;

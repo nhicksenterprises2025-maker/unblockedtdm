@@ -34,7 +34,7 @@ assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'), 'Deskto
 assert.ok(css.includes('.phase3-team-board.blue') && css.includes('.phase3-team-board.red'), 'Both team scoreboard treatments must exist.');
 
 assert.ok(phase241.includes("ensureStyle('ui-2.4.1.2.css')"), '2.4.1.2 stylesheet must load through the deterministic runtime.');
-assert.ok(phase241.includes("document.body.classList.add('ui-241', 'ui-2412')"), '2.4.1.2 body scope must activate.');
+assert.ok(phase241.includes("'ui-241'") && phase241.includes("'ui-2412'"), '2.4.1.2 body scopes must remain active through later additive updates.');
 assert.ok(constants.includes('DASH_STAMINA_COST = 0'), 'Dash stamina independence from 2.3.4 must remain intact.');
 assert.ok(weapons.includes('fireInterval: 0.22') && weapons.includes('damage: 148'), '2.4.1 player-authored balance values must remain intact.');
 

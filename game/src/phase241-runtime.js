@@ -75,7 +75,8 @@ function syncLowAmmoHud() {
 
 ensureStyle('ui-2.4.1.css');
 ensureStyle('ui-2.4.1.2.css');
-document.body.classList.add('ui-241', 'ui-2412');
+ensureStyle('ui-2.4.2.1.css');
+document.body.classList.add('ui-241', 'ui-2412', 'ui-2421');
 hydrateWeaponModelCanvases(document);
 syncLowAmmoHud();
 
