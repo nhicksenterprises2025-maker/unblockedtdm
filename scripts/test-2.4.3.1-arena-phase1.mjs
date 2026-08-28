@@ -111,8 +111,8 @@ const runner = read('scripts/check-all.mjs');
 
 for (const token of [
   "dataset.arenaReady = 'true'",
-  'data-arena-strip',
-  'data-arena-mode-select',
+  'dataset.arenaStrip',
+  'dataset.arenaModeSelect',
   'data-arena-select-mode="casual"',
   'data-arena-select-mode="arena"',
   'skirmish:match-started',
