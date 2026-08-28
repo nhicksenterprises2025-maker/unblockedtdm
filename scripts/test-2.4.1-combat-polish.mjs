@@ -32,9 +32,13 @@ assert.ok(phase241.includes("root.classList.toggle('low-ammo'"), 'Bottom-right a
 assert.ok(css.includes('#weaponRoot.low-ammo #ammoMagazine'), 'Magazine count must turn red during low ammo.');
 
 assert.ok(phase241.includes('WeaponRenderer.prototype.drawShotgun'), '2.4.1 must replace the shotgun presentation through the shared gameplay renderer.');
-for (const token of ['Classic pump-stock silhouette', 'Ribbed wooden pump/fore-end', 'Long barrel + magazine tube']) {
-  assert.ok(phase241.includes(token), `Pump shotgun renderer missing ${token}.`);
-}
+for (const token of [
+  "ctx.moveTo(-22,-6)",
+  'const pumpX = 27 - pumpSlide',
+  "ctx.roundRect(pumpX,-6.2,20,12.4,3)",
+  "ctx.fillRect(44,-3.4,25,3.4)",
+  "ctx.fillRect(44,1.1,21,3.1)"
+]) assert.ok(phase241.includes(token), `Pump shotgun renderer missing structural token ${token}.`);
 assert.ok(phase241.includes('hydrateWeaponModelCanvases(document)'), 'UI weapon canvases must rehydrate from the same pump shotgun renderer.');
 
 assert.ok(css.includes('.match-hud .blue:first-child span'), 'BLUE ROUNDS label must receive blue team color.');
