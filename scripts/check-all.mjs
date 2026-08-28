@@ -24,6 +24,7 @@ const testFiles = [
   'scripts/test-2.4.1.2-scoreboard-teams.mjs',
   'scripts/test-2.4.2.1-hud-occlusion.mjs',
   'scripts/test-2.4.3.1-arena-phase1.mjs',
+  'scripts/test-2.4.3.2-arena-phase2.mjs',
   'scripts/test-2.01.1-weapon-model-ui.mjs',
   'scripts/test-2.01.2-crosshair-layout.mjs',
   'scripts/test-2.01.3-loadout-onepage.mjs',
