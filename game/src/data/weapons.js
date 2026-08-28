@@ -12,40 +12,40 @@ export const WEAPONS = {
   assaultRifle: {
     ...common,
     id: 'assault-rifle', name: 'Assault Rifle', shortName: 'AR', slot: 'primary', kind: 'hitscan', fireMode: 'auto',
-    damage: 20, critChance: 0.02, critDamage: 32, fireInterval: 0.30, magazineSize: 32, reloadTime: 2.5,
-    fullDamageRangeTiles: 13.5, falloffDamage: 13, baseSpreadDegrees: 4, movingSpreadDegrees: 4.6,
+    damage: 20, critChance: 0.02, critDamage: 32, fireInterval: 0.22, magazineSize: 36, reloadTime: 2.7,
+    fullDamageRangeTiles: 9.5, falloffDamage: 11.5, baseSpreadDegrees: 4, movingSpreadDegrees: 4.6,
     adsTime: 0.4, movementMultiplier: 0.80, swapTier: 2, swapTime: 0.8,
     render: { muzzleForward: 67, shoulderSide: 10.5, adsForwardShift: 4, adsSideShift: 2.0, kick: 3.2 }
   },
   smg: {
     ...common,
     id: 'smg', name: 'SMG', shortName: 'SMG', slot: 'primary', kind: 'hitscan', fireMode: 'auto',
-    damage: 11, critChance: 0.018, critDamage: 19, fireInterval: 0.14, magazineSize: 40, reloadTime: 2.1,
-    fullDamageRangeTiles: 10, falloffDamage: 7, baseSpreadDegrees: 4.5, movingSpreadDegrees: 5,
+    damage: 9, critChance: 0.018, critDamage: 20, fireInterval: 0.11, magazineSize: 44, reloadTime: 2.2,
+    fullDamageRangeTiles: 7, falloffDamage: 7.5, baseSpreadDegrees: 4.5, movingSpreadDegrees: 5,
     adsTime: 0.25, movementMultiplier: 1, swapTier: 1, swapTime: 0.45,
     render: { muzzleForward: 53, shoulderSide: 9.5, adsForwardShift: 5, adsSideShift: 2.5, kick: 2.4 }
   },
   sniper: {
     ...common,
     id: 'sniper', name: 'Sniper Rifle', shortName: 'SNIPER', slot: 'primary', kind: 'projectile', projectileType: 'sniper', fireMode: 'semi',
-    damage: 145, critChance: 0.35, critDamage: 200, fireInterval: 1.4, magazineSize: 4, reloadTime: 3.5,
+    damage: 148, critChance: 0.35, critDamage: 200, fireInterval: 1.3, magazineSize: 6, reloadTime: 3.2,
     fullDamageRangeTiles: 25, falloffDamage: 112, baseSpreadDegrees: 2, movingSpreadDegrees: 8,
-    adsTime: 0.8, movementMultiplier: 0.60, swapTier: 3, swapTime: 1.3, projectileSpeedTiles: 25,
+    adsTime: 0.8, movementMultiplier: 0.60, swapTier: 3, swapTime: 1.3, projectileSpeedTiles: 40,
     render: { muzzleForward: 88, shoulderSide: 9, adsForwardShift: 3, adsSideShift: 2.5, kick: 5.2 }
   },
   shotgun: {
     ...common,
     id: 'shotgun', name: 'Shotgun', shortName: 'SHOTGUN', slot: 'both', kind: 'shotgun', fireMode: 'semi',
     damage: 16, critChance: 0.007, critDamage: 21, fireInterval: 0.8, magazineSize: 6, reloadTime: 1.0, reloadStyle: 'shell',
-    fullDamageRangeTiles: 2, maxRangeTiles: 2.5, falloffDamage: 5, baseSpreadDegrees: 6, movingSpreadDegrees: 7.5, pelletCount: 8,
+    fullDamageRangeTiles: 3.5, maxRangeTiles: 4, falloffDamage: 5, baseSpreadDegrees: 6, movingSpreadDegrees: 7.5, pelletCount: 8,
     adsTime: 0.55, movementMultiplier: 0.80, swapTier: 3, swapTime: 1.3,
     render: { muzzleForward: 70, shoulderSide: 10.5, adsForwardShift: 3, adsSideShift: 2.2, kick: 5.5 }
   },
   lmg: {
     ...common,
     id: 'lmg', name: 'LMG', shortName: 'LMG', slot: 'primary', kind: 'hitscan', fireMode: 'auto',
-    damage: 24, critChance: 0.025, critDamage: 51, fireInterval: 0.5, magazineSize: 75, reloadTime: 4.3,
-    fullDamageRangeTiles: 16, falloffDamage: 13, baseSpreadDegrees: 5.5, movingSpreadDegrees: 10,
+    damage: 24, critChance: 0.025, critDamage: 56, fireInterval: 0.36, magazineSize: 75, reloadTime: 4.3,
+    fullDamageRangeTiles: 10, falloffDamage: 10.5, baseSpreadDegrees: 5.0, movingSpreadDegrees: 9,
     adsTime: 0.6, movementMultiplier: 0.60, swapTier: 4, swapTime: 1.7,
     render: { muzzleForward: 75, shoulderSide: 12, adsForwardShift: 2.5, adsSideShift: 2.0, kick: 4.3 }
   },
