@@ -1,0 +1,141 @@
+/* Skirmish Arena 2.3.3 — Loadouts focus pass.
+   Presentation only: enlarge real weapon renders and remove Weapon Info-style clutter from Loadouts. */
+
+body.ui-233 .loadout-screen:not(.hidden) .loadout-body{
+  grid-template-columns:minmax(420px,40%) minmax(0,1fr)!important;
+  gap:12px!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-list{
+  gap:8px!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-rows:minmax(0,1fr) auto!important;
+  align-items:end!important;
+  min-height:0!important;
+  padding:10px 12px!important;
+  column-gap:10px!important;
+  row-gap:5px!important;
+  overflow:hidden!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card .phase2-card-model{
+  grid-column:1 / -1!important;
+  grid-row:1!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:clamp(72px,10.5vh,112px)!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card .phase2-card-model .phase2011-weapon-canvas,
+body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card .phase2-card-model canvas[data-game-weapon-model]{
+  display:block!important;
+  width:min(96%,220px)!important;
+  height:clamp(68px,9.5vh,102px)!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card strong{
+  grid-column:1!important;
+  grid-row:2!important;
+  align-self:center!important;
+  font-size:clamp(12px,.9vw,16px)!important;
+  line-height:1!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card i{
+  grid-column:2!important;
+  grid-row:2!important;
+  align-self:center!important;
+  justify-self:end!important;
+  font-size:7px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail{
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto auto!important;
+  padding:14px 18px 12px!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail .weapon-detail-title{
+  padding-bottom:8px!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail .weapon-detail-title h2{
+  font-size:clamp(24px,2.3vw,40px)!important;
+  margin:3px 0 0!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail .phase2-weapon-stage{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:0!important;
+  height:100%!important;
+  margin:6px 0 10px!important;
+  border-bottom:1px solid rgba(82,117,138,.35)!important;
+  overflow:hidden!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail .phase2-weapon-stage .phase2011-weapon-canvas,
+body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail .phase2-weapon-stage canvas[data-game-weapon-model]{
+  display:block!important;
+  width:min(92%,620px)!important;
+  height:clamp(180px,30vh,310px)!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail .select-weapon{
+  min-height:40px!important;
+  padding:10px 14px!important;
+  font-size:9px!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail .loadout-message{
+  min-height:18px!important;
+  margin-top:5px!important;
+  font-size:7px!important;
+  line-height:1.2!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .loadout-foot{
+  padding-top:7px!important;
+}
+
+body.ui-233 .loadout-screen:not(.hidden) .loadout-foot small{display:none!important}
+
+@media (max-width:1180px){
+  body.ui-233 .loadout-screen:not(.hidden) .loadout-body{
+    grid-template-columns:minmax(360px,44%) minmax(0,1fr)!important;
+  }
+  body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card .phase2-card-model .phase2011-weapon-canvas,
+  body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card .phase2-card-model canvas[data-game-weapon-model]{
+    width:min(96%,175px)!important;
+  }
+}
+
+@media (max-height:800px){
+  body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card{
+    padding:7px 10px!important;
+  }
+  body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card .phase2-card-model{
+    height:clamp(54px,8.5vh,76px)!important;
+  }
+  body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card .phase2-card-model .phase2011-weapon-canvas,
+  body.ui-233 .loadout-screen:not(.hidden) .weapon-card.ui233-weapon-card .phase2-card-model canvas[data-game-weapon-model]{
+    height:clamp(50px,8vh,70px)!important;
+  }
+  body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail .phase2-weapon-stage .phase2011-weapon-canvas,
+  body.ui-233 .loadout-screen:not(.hidden) .weapon-detail.ui233-weapon-detail .phase2-weapon-stage canvas[data-game-weapon-model]{
+    height:clamp(120px,23vh,190px)!important;
+  }
+}
