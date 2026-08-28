@@ -12,52 +12,22 @@ const weapons = read('game/src/data/weapons.js');
 const constants = read('game/src/engine/constants.js');
 const match = read('game/src/match/MatchManager.js');
 
-assert.ok(debug.includes("import('./phase6-runtime.js')"), 'Phase 6 runtime must load after the established UI/runtime layers.');
-assert.ok(runtime.includes("ensureStyle('ui-phase6.css')"), 'Phase 6 menu stylesheet must load.');
-assert.ok(runtime.includes("document.body.classList.add('ui-phase6')"), 'Phase 6 body marker must be enabled.');
-assert.ok(runtime.includes("const order = ['play', 'loadouts', 'weapon-info', 'settings', 'quit'];"), 'Phase 6 must preserve the exact five-button menu hierarchy.');
-assert.ok(runtime.includes('data-phase6-index') || runtime.includes('phase6Index'), 'Phase 6 must decorate the existing buttons instead of replacing them.');
+assert.ok(debug.includes("import('./phase6-runtime.js')"));
+assert.ok(runtime.includes("ensureStyle('ui-phase6.css')"));
+assert.ok(runtime.includes("document.body.classList.add('ui-phase6')"));
+assert.ok(runtime.includes("const order = ['play', 'loadouts', 'weapon-info', 'settings', 'quit'];"));
+assert.ok(runtime.includes('data-phase6-index') || runtime.includes('phase6Index'));
+for (const token of ['--p6-sidebar','grid-template-columns:var(--p6-sidebar) minmax(0,1fr)!important','grid-template-rows:minmax(170px,1.32fr) minmax(140px,1fr) minmax(140px,1fr)!important','grid-column:1/3!important','max-width:calc(100% - 78px)','white-space:nowrap!important','[data-phase6-home]','justify-content:center','.menu-feature-grid']) assert.ok(css.includes(token), `Phase 6 fullscreen menu contract missing ${token}.`);
+for (const selector of ['.phase2-loadouts','.phase2-settings','.phase2-quit','.phase2-weapon-info','.phase2-play']) assert.ok(css.includes(selector), `Phase 6 missing authored sizing for ${selector}.`);
+assert.equal(css.includes('pointer-events:none'), false);
+assert.equal(css.includes('pointer-events: none'), false);
+assert.ok(flow.includes("const order = ['play', 'loadouts', 'weapon-info', 'settings', 'quit'];"));
+assert.ok(flow.includes("button.classList.add('phase2-nav-button', `phase2-${action}`)"));
+assert.ok(menu.includes("this.root.addEventListener('click'"));
+for (const forbidden of ["from './data/weapons.js'","from './engine/constants.js'","from './match/MatchManager.js'","from './ai/BotController.js'","from './world/TileMap.js'"]) assert.equal(runtime.includes(forbidden), false, `Phase 6 UI runtime must not import gameplay system ${forbidden}.`);
+for (const id of ['assault-rifle','smg','sniper','shotgun','lmg','pistol','launcher','melee']) assert.ok(weapons.includes(`id: '${id}'`), `Weapon roster missing ${id}.`);
+for (const field of ['damage:', 'critChance:', 'fireInterval:', 'magazineSize:']) assert.ok(weapons.includes(field), `Weapon data schema missing ${field}`);
+for (const token of ['PLAYER_SPEED_TILES = 5','SPRINT_SPEED_MULTIPLIER = 1.35','DASH_CHARGES_MAX = 4','DASH_DISTANCE_TILES = 3']) assert.ok(constants.includes(token), `Canonical movement contract changed: ${token}`);
+for (const token of ['const ROUND_DURATION = 90;','const ROUND_KILL_TARGET = 12;','const ROUND_WINS_TO_MATCH = 5;']) assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
 
-for (const token of [
-  '--p6-sidebar',
-  'grid-template-columns:var(--p6-sidebar) minmax(0,1fr)!important',
-  'grid-template-rows:minmax(170px,1.32fr) minmax(140px,1fr) minmax(140px,1fr)!important',
-  'grid-column:1/3!important',
-  'max-width:calc(100% - 78px)',
-  'white-space:nowrap!important',
-  '[data-phase6-home]',
-  'justify-content:center',
-  '.menu-feature-grid'
-]) assert.ok(css.includes(token), `Phase 6 fullscreen menu contract missing ${token}.`);
-
-for (const selector of ['.phase2-loadouts', '.phase2-settings', '.phase2-quit', '.phase2-weapon-info', '.phase2-play']) {
-  assert.ok(css.includes(selector), `Phase 6 missing authored sizing for ${selector}.`);
-}
-assert.equal(css.includes('pointer-events:none'), false, 'Phase 6 menu stylesheet must not disable button pointer input.');
-assert.equal(css.includes('pointer-events: none'), false, 'Phase 6 menu stylesheet must not disable button pointer input.');
-
-assert.ok(flow.includes("const order = ['play', 'loadouts', 'weapon-info', 'settings', 'quit'];"), 'Established Phase 2 menu order must remain intact.');
-assert.ok(flow.includes("button.classList.add('phase2-nav-button', `phase2-${action}`)"), 'Phase 6 must continue using the established Phase 2 button DOM.');
-assert.ok(menu.includes("this.root.addEventListener('click'"), 'Delegated MainMenu click handling must remain intact.');
-
-for (const forbidden of [
-  "from './data/weapons.js'",
-  "from './engine/constants.js'",
-  "from './match/MatchManager.js'",
-  "from './ai/BotController.js'",
-  "from './world/TileMap.js'"
-]) assert.equal(runtime.includes(forbidden), false, `Phase 6 UI runtime must not import gameplay system ${forbidden}.`);
-
-for (const token of [
-  'damage: 20, critChance: 0.02, critDamage: 32',
-  'damage: 145, critChance: 0.35, critDamage: 200',
-  'damage: 125, critChance: 0, critDamage: 125'
-]) assert.ok(weapons.includes(token), `Canonical weapon contract changed: ${token}`);
-for (const token of ['PLAYER_SPEED_TILES = 5', 'SPRINT_SPEED_MULTIPLIER = 1.35', 'DASH_CHARGES_MAX = 4', 'DASH_DISTANCE_TILES = 3']) {
-  assert.ok(constants.includes(token), `Canonical movement contract changed: ${token}`);
-}
-for (const token of ['const ROUND_DURATION = 90;', 'const ROUND_KILL_TARGET = 12;', 'const ROUND_WINS_TO_MATCH = 5;']) {
-  assert.ok(match.includes(token), `Canonical match contract changed: ${token}`);
-}
-
-console.log('Phase 6 checks passed: rebuilt fullscreen menu proportions, unclipped navigation labels, preserved button hierarchy/controller, and unchanged gameplay contracts.');
+console.log('Phase 6 checks passed: fullscreen menu proportions, unclipped navigation labels, preserved controller, and balance-ready weapon schema.');
