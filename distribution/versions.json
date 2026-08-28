@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "Skirmish Arena",
+      "gameVersion": "2.4.1.2",
+      "build": 1,
+      "sequence": 52,
+      "phase": "2.4.1.2 — Round HUD + Team Scoreboard",
+      "tag": "build-2.4.1.2-v1",
+      "title": "Skirmish Arena 2.4.1.2 — Build 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.1.2-v1/UnblockedTDM-2.4.1.2-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.1.2-v1/SkirmishArena-Setup-2.4.1.2-v1.exe",
+      "sha256": "0e1f1820f50e02fee693b9aea768f8d6b183bcbe9a89db3272b814f24d4f3e28",
+      "installerSha256": "7b97dec0603e6fb7a400cd6db82ac74821b0325d74eb6caa785b472388088756",
+      "publishedAt": "2026-08-28T02:14:42.678Z"
+    },
+    {
+      "product": "Skirmish Arena",
       "gameVersion": "2.4.1",
       "build": 1,
       "sequence": 51,
