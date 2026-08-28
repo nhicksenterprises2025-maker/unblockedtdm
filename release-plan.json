@@ -1,11 +1,11 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.3.2",
+  "gameVersion": "2.3.3",
   "build": 1,
-  "phase": "2.3.2 — Home Command Deck Cleanup",
-  "tag": "build-2.3.2-v1",
-  "title": "Skirmish Arena 2.3.2 — Build 1",
-  "notesFile": "docs/releases/build-2.3.2-v1.md",
-  "sequence": 48,
+  "phase": "2.3.3 — Loadouts Focus + Weapon Scale",
+  "tag": "build-2.3.3-v1",
+  "title": "Skirmish Arena 2.3.3 — Build 1",
+  "notesFile": "docs/releases/build-2.3.3-v1.md",
+  "sequence": 49,
   "releaseRevision": 1
 }
