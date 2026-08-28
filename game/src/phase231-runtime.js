@@ -13,22 +13,11 @@ function setText(node, value) {
 }
 
 function weaponInfoBlueprintIcon() {
-  return `<svg class="ui231-blueprint-icon" viewBox="0 0 150 110" aria-hidden="true">
-    <defs>
-      <linearGradient id="ui231BlueprintEdge" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#67d6ff"/><stop offset=".48" stop-color="#25b9ff"/><stop offset="1" stop-color="#087fc9"/>
-      </linearGradient>
-      <filter id="ui231BlueprintGlow"><feDropShadow dx="0" dy="0" stdDeviation="2.2" flood-color="#2fc1ff" flood-opacity=".34"/></filter>
-    </defs>
-    <path d="M17 10h94c11 0 20 9 20 20v67H38c-12 0-21-9-21-21Z" fill="#071a27" stroke="url(#ui231BlueprintEdge)" stroke-width="3"/>
-    <path d="M38 10v87" fill="none" stroke="#169eda" stroke-width="2" opacity=".78"/>
-    <path d="M48 24h67M48 87h53" fill="none" stroke="#1a8fca" stroke-width="1.4" stroke-dasharray="5 5" opacity=".58"/>
-    <g fill="none" stroke="#62d4ff" stroke-linejoin="round" stroke-linecap="round" filter="url(#ui231BlueprintGlow)">
-      <path d="M48 50h45l8 6h21v10H94l-10 8H61l-5-8H46V56h9Z" stroke-width="3"/>
-      <path d="M67 74v11h15l6-12M59 56l6-10h20l7 10M101 56v-8h14" stroke-width="2.3"/>
-      <path d="M50 38h54M50 80h43" stroke-width="1.2" stroke-dasharray="4 4" opacity=".64"/>
-    </g>
-    <circle cx="119" cy="22" r="3" fill="#70dcff"/>
+  return `<svg class="ui232-blueprint-icon" viewBox="0 0 150 110" aria-hidden="true">
+    <rect x="18" y="12" width="112" height="86" rx="10" fill="#071923" stroke="#34c4ff" stroke-width="3"/>
+    <path d="M38 12v86" fill="none" stroke="#1b95c7" stroke-width="2"/>
+    <path d="M52 50h42l8 6h17v10H94l-9 8H63l-5-8H49V56h9Z" fill="none" stroke="#6ddaff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M67 74v11h14l6-12" fill="none" stroke="#37bdf3" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"/>
   </svg>`;
 }
 
@@ -57,10 +46,10 @@ function updateHomeBuildLabel() {
     buildInfoPromise = window.gameAPI?.getBuildInfo?.()
       ?.catch?.(() => null) || Promise.resolve(null);
   }
-  setText(eyebrow, 'BUILD 2.3.1');
+  setText(eyebrow, 'BUILD 2.3.2');
   buildInfoPromise.then((info) => {
     if (!eyebrow.isConnected) return;
-    setText(eyebrow, `BUILD ${info?.gameVersion || '2.3.1'}`);
+    setText(eyebrow, `BUILD ${info?.gameVersion || '2.3.2'}`);
   });
 }
 
@@ -74,10 +63,10 @@ function installWeaponInfoTileArt() {
     art.setAttribute('aria-hidden', 'true');
     button.insertAdjacentElement('afterbegin', art);
   }
-  if (art.dataset.ui231Blueprint === 'true') return;
-  art.className = 'ui221-nav-art ui231-info-art';
+  if (art.dataset.ui232Simplified === 'true') return;
+  art.className = 'ui221-nav-art ui231-info-art ui232-info-art';
   art.innerHTML = weaponInfoBlueprintIcon();
-  art.dataset.ui231Blueprint = 'true';
+  art.dataset.ui232Simplified = 'true';
 }
 
 function configureWeaponInfoHeader() {
@@ -145,13 +134,12 @@ function scheduleRefresh() {
 }
 
 ensureStyle('ui-2.3.1.css');
-document.body.classList.add('ui-231');
+ensureStyle('ui-2.3.2.css');
+document.body.classList.add('ui-231', 'ui-232');
 
-// 2.3.1 is the final runtime in the deterministic boot chain. Earlier builds
-// used a subtree-wide MutationObserver here; refresh231 itself mutates that same
-// subtree, allowing a self-triggering microtask loop that could starve Electron
-// and leave the historical 1.6 shell visible/unresponsive. Refresh only from
-// explicit application events and resize, and make all writes idempotent.
+// 2.3.x remains the final presentation runtime in the deterministic boot chain.
+// Refresh only from explicit application events and resize. Never observe and
+// mutate the same menu subtree; that old feedback loop could starve Electron.
 window.addEventListener('skirmish:menu-view-change', scheduleRefresh);
 window.addEventListener('skirmish:show-menu-home', scheduleRefresh);
 window.addEventListener('resize', scheduleRefresh);
