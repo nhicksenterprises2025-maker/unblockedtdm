@@ -1,14 +1,14 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.3.4",
+  "gameVersion": "2.4.1",
   "build": 1,
-  "sequence": 50,
-  "phase": "2.3.4 — Transparent Combat HUD + Dash Independence",
-  "tag": "build-2.3.4-v1",
-  "title": "Skirmish Arena 2.3.4 — Build 1",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.4-v1/UnblockedTDM-2.3.4-v1.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.3.4-v1/SkirmishArena-Setup-2.3.4-v1.exe",
-  "sha256": "75f787ae6a966d6a1f89bc50cbf8f2a5136bc3461aca55b2a2c054e860761b1f",
-  "installerSha256": "686797bf72c68a0c283a0c6f111dcda3f9751075bbaeec4e4ed355c62fe51159",
-  "publishedAt": "2026-08-28T01:16:58.296Z"
+  "sequence": 51,
+  "phase": "2.4.1 — Combat Readability + Arsenal Balance",
+  "tag": "build-2.4.1-v1",
+  "title": "Skirmish Arena 2.4.1 — Build 1",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.1-v1/UnblockedTDM-2.4.1-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.1-v1/SkirmishArena-Setup-2.4.1-v1.exe",
+  "sha256": "9e0886767b22c1534d086d2aa333f41d7a9210ff258cd54d8039cdddedbbf207",
+  "installerSha256": "a54514af94421d3980d341ae46323430a6c3df436f48af139e6b1b6455701cba",
+  "publishedAt": "2026-08-28T01:52:36.700Z"
 }
