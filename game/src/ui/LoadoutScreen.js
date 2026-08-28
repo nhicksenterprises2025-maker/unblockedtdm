@@ -1,5 +1,5 @@
-import { PRIMARY_WEAPONS, SECONDARY_WEAPONS, formatWeaponStats } from '../data/weapons.js';
-import { spreadVisualHtml, statBarsHtml, weaponModelSvg } from './WeaponPresentation.js';
+import { PRIMARY_WEAPONS, SECONDARY_WEAPONS } from '../data/weapons.js';
+import { weaponModelSvg } from './WeaponPresentation.js';
 
 export class LoadoutScreen {
   constructor(root, store, onComplete) {
@@ -24,15 +24,15 @@ export class LoadoutScreen {
     this.selection = { primary: active.primary, secondary: active.secondary };
     this.activeSlot = 'primary';
     this.previewWeapon = this.selection.primary;
-    this.message = 'Choose a saved slot, then click weapon cards to edit it.';
+    this.message = 'Choose a saved slot, then click a weapon to equip it.';
   }
 
   open(mode = 'play') {
     this.mode = mode === 'manage' ? 'manage' : 'play';
     this.loadFromStore();
     this.message = this.mode === 'play'
-      ? 'Choose your saved loadout, inspect weapon stats, then start the match.'
-      : 'Edit created loadout slots or add more when you need them.';
+      ? 'Choose your saved loadout, then start the match.'
+      : 'Edit your primary and secondary weapons or create another loadout slot.';
     this.root.classList.remove('hidden');
     this.render();
   }
@@ -61,7 +61,7 @@ export class LoadoutScreen {
     this.selectedIndex = saved.index;
     this.selection = { primary: saved.primary, secondary: saved.secondary };
     this.previewWeapon = this.selection[this.activeSlot];
-    this.message = `${saved.name} created. ${this.store.count()} / ${this.store.capacity()} slots in use.`;
+    this.message = `${saved.name} created.`;
     this.render();
   }
 
@@ -80,14 +80,14 @@ export class LoadoutScreen {
   select(weapon) {
     const otherSlot = this.activeSlot === 'primary' ? 'secondary' : 'primary';
     if (this.selection[otherSlot]?.id === weapon.id) {
-      this.message = 'That exact weapon is already equipped in the other slot.';
+      this.message = 'That weapon is already equipped in the other slot.';
       this.render();
       return false;
     }
     this.selection[this.activeSlot] = weapon;
     this.previewWeapon = weapon;
     const saved = this.persistSelection();
-    this.message = `${weapon.name} saved to ${saved.name} as ${this.activeSlot.toUpperCase()}.`;
+    this.message = `${weapon.name} equipped as ${this.activeSlot.toUpperCase()}.`;
     this.render();
     return true;
   }
@@ -115,7 +115,6 @@ export class LoadoutScreen {
 
   render() {
     const weapon = this.previewWeapon;
-    const stats = formatWeaponStats(weapon);
     const list = this.weaponsFor(this.activeSlot);
     const otherSlot = this.activeSlot === 'primary' ? 'secondary' : 'primary';
     const selectedHere = this.selection[this.activeSlot]?.id === weapon.id;
@@ -127,14 +126,14 @@ export class LoadoutScreen {
       ? `<button type="button" id="addLoadoutSlot" class="loadout-preset loadout-add-slot"><b>+</b><span>ADD SLOT</span><small>${this.store.count()} / ${this.store.capacity()} CREATED</small></button>`
       : `<div class="loadout-preset loadout-add-slot maxed"><b>25</b><span>MAX SLOTS</span><small>CAPACITY REACHED</small></div>`;
 
-    this.root.innerHTML = `<div class="loadout-shell loadout-shell-v16" data-ui-surface>
-      <div class="loadout-head"><div><span class="eyebrow">SKIRMISH ARENA · LOADOUT CLIENT</span><h1>${this.mode === 'play' ? 'CHOOSE YOUR LOADOUT' : 'LOADOUTS'}</h1><p>${this.mode === 'play' ? 'Choose a saved setup before deployment. Add more slots only when you need them.' : `Three slots are available by default. Create additional slots up to ${this.store.capacity()} total.`}</p></div><div class="selected-summary"><span>PRIMARY <b>${this.selection.primary?.name || '—'}</b></span><span>SECONDARY <b>${this.selection.secondary?.name || '—'}</b></span></div></div>
+    this.root.innerHTML = `<div class="loadout-shell loadout-shell-v16 ui233-loadout-shell" data-ui-surface>
+      <div class="loadout-head"><div><span class="eyebrow">SKIRMISH ARENA · LOADOUT CLIENT</span><h1>${this.mode === 'play' ? 'CHOOSE YOUR LOADOUT' : 'LOADOUTS'}</h1><p>${this.mode === 'play' ? 'Choose a saved setup before deployment.' : 'Build and save your primary + secondary combinations.'}</p></div><div class="selected-summary"><span>PRIMARY <b>${this.selection.primary?.name || '—'}</b></span><span>SECONDARY <b>${this.selection.secondary?.name || '—'}</b></span></div></div>
       <div class="loadout-presets">${savedSlots.map((slot) => `<button type="button" data-loadout-index="${slot.index}" class="loadout-preset ${slot.index === this.selectedIndex ? 'active' : ''}"><b>${String(slot.index + 1).padStart(2, '0')}</b><span>${slot.name}</span><small>${slot.primary.shortName} + ${slot.secondary.shortName}</small></button>`).join('')}${addSlot}</div>
       <div class="loadout-name-row"><label>ACTIVE SLOT <strong>${String(this.selectedIndex + 1).padStart(2, '0')}</strong></label><input id="loadoutName" maxlength="24" value="${esc(current.name)}"><button type="button" id="saveLoadoutName">SAVE NAME</button><button type="button" id="resetLoadoutSlot" class="muted">RESET SLOT</button></div>
       <div class="slot-tabs"><button type="button" data-slot="primary" class="${this.activeSlot === 'primary' ? 'active' : ''}">1 · PRIMARY</button><button type="button" data-slot="secondary" class="${this.activeSlot === 'secondary' ? 'active' : ''}">2 · SECONDARY</button></div>
-      <div class="loadout-body"><div class="weapon-list">${list.map((item) => { const selected = this.selection[this.activeSlot]?.id === item.id; const blocked = this.selection[otherSlot]?.id === item.id; return `<button type="button" class="weapon-card ${selected ? 'selected' : ''} ${blocked ? 'blocked' : ''}" data-weapon="${item.id}" ${blocked ? 'disabled' : ''}><span class="phase2-card-model">${weaponModelSvg(item)}</span><span class="weapon-class">${item.kind.toUpperCase()}</span><strong>${item.name}</strong><small>${item.fireMode.toUpperCase()} · SWAP T${item.swapTier}</small>${selected ? '<i>EQUIPPED</i>' : '<i>CLICK TO EQUIP</i>'}</button>`; }).join('')}</div>
-      <div class="weapon-detail"><div class="weapon-detail-title"><div><span>${this.activeSlot.toUpperCase()} WEAPON</span><h2>${weapon.name}</h2></div><b>${weapon.shortName}</b></div><div class="phase2-weapon-stage">${weaponModelSvg(weapon)}</div>${statBarsHtml(weapon)}${spreadVisualHtml(weapon)}<div class="stat-grid">${stats.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join('')}</div><div class="weapon-rule">${this.description(weapon)}</div><button type="button" id="selectWeapon" class="select-weapon" ${blockedPreview ? 'disabled' : ''}>${selectedHere ? `EQUIPPED AS ${this.activeSlot.toUpperCase()}` : `SELECT ${weapon.name.toUpperCase()}`}</button><div class="loadout-message">${this.message}</div></div></div>
-      <div class="loadout-foot"><div><span>ACTIVE SAVED LOADOUT · SLOT ${String(this.selectedIndex + 1).padStart(2, '0')}</span><strong>${current.name} · ${this.selection.primary?.name || '—'} + ${this.selection.secondary?.name || '—'}</strong><small>${this.store.count()} CREATED · ${this.store.capacity()} MAX · Round-break changes stay limited to the 10-second break.</small></div><div class="loadout-foot-actions"><button type="button" id="loadoutBackButton" class="select-weapon">BACK TO MAIN MENU</button><button type="button" id="deployButton" class="deploy-button">${this.mode === 'play' ? 'START MATCH' : 'SAVE & BACK'}</button></div></div>
+      <div class="loadout-body"><div class="weapon-list">${list.map((item) => { const selected = this.selection[this.activeSlot]?.id === item.id; const blocked = this.selection[otherSlot]?.id === item.id; return `<button type="button" class="weapon-card ui233-weapon-card ${selected ? 'selected' : ''} ${blocked ? 'blocked' : ''}" data-weapon="${item.id}" ${blocked ? 'disabled' : ''}><span class="phase2-card-model">${weaponModelSvg(item)}</span><strong>${item.name}</strong>${selected ? '<i>EQUIPPED</i>' : '<i>CLICK TO EQUIP</i>'}</button>`; }).join('')}</div>
+      <div class="weapon-detail ui233-weapon-detail"><div class="weapon-detail-title"><div><span>${this.activeSlot.toUpperCase()} WEAPON</span><h2>${weapon.name}</h2></div></div><div class="phase2-weapon-stage">${weaponModelSvg(weapon)}</div><button type="button" id="selectWeapon" class="select-weapon" ${blockedPreview ? 'disabled' : ''}>${selectedHere ? `EQUIPPED AS ${this.activeSlot.toUpperCase()}` : `EQUIP ${weapon.name.toUpperCase()}`}</button><div class="loadout-message">${this.message}</div></div></div>
+      <div class="loadout-foot"><div><span>ACTIVE LOADOUT · SLOT ${String(this.selectedIndex + 1).padStart(2, '0')}</span><strong>${current.name} · ${this.selection.primary?.name || '—'} + ${this.selection.secondary?.name || '—'}</strong></div><div class="loadout-foot-actions"><button type="button" id="loadoutBackButton" class="select-weapon">BACK TO MAIN MENU</button><button type="button" id="deployButton" class="deploy-button">${this.mode === 'play' ? 'START MATCH' : 'SAVE & BACK'}</button></div></div>
     </div>`;
 
     for (const button of this.root.querySelectorAll('[data-loadout-index]')) button.addEventListener('click', () => this.loadSavedSlot(Number(button.dataset.loadoutIndex)));
@@ -147,16 +146,5 @@ export class LoadoutScreen {
     this.root.querySelector('#resetLoadoutSlot')?.addEventListener('click', () => this.resetCurrent());
     this.root.querySelector('#loadoutBackButton')?.addEventListener('click', () => this.back());
     this.root.querySelector('#deployButton')?.addEventListener('click', () => this.complete());
-  }
-
-  description(weapon) {
-    if (weapon.id === 'sniper') return 'Physical high-speed projectile. No piercing. Strongest single-target critical damage.';
-    if (weapon.id === 'shotgun') return 'Eight-pellet circular spread. One critical roll controls the entire blast. Shell-by-shell reload can be interrupted to fire.';
-    if (weapon.id === 'launcher') return 'Physical explosive projectile. 2.5-tile blast radius, full self-damage, zero friendly fire and no splash falloff.';
-    if (weapon.id === 'melee') return 'Two-tile melee reach with no lunge. Can attack while moving and carries the fastest movement modifier.';
-    if (weapon.id === 'pistol') return 'Semi-auto sidearm. Every click fires one round with no artificial repeat-fire cadence beyond the trigger press.';
-    if (weapon.id === 'lmg') return 'Heavy 75-round primary with strong per-shot damage, long reload and substantial movement cost.';
-    if (weapon.id === 'smg') return 'Fast automatic primary built around close-range pressure, quick handling and neutral movement speed.';
-    return 'Balanced automatic rifle with predictable spread, medium-range falloff and moderate handling penalties.';
   }
 }
