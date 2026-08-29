@@ -431,15 +431,17 @@ function renderModeOverlay() {
   const shell = root.querySelector('[data-arena-mode-shell]');
   const profile = arena.snapshot();
   shell.innerHTML = `
-    <header class="arena-mode-head"><div><span>PLAY // SELECT MODE</span><h2>CHOOSE YOUR MATCH</h2></div><button type="button" data-arena-mode-close>BACK</button></header>
+    <header class="arena-mode-head"><div><span>PLAY // DEPLOYMENT ROUTE</span><h2>CHOOSE YOUR MATCH</h2><p>Two rulesets. Two purpose-built battlegrounds. Career progression remains active in both.</p></div><button type="button" data-arena-mode-close>BACK</button></header>
     <div class="arena-mode-grid">
       <button type="button" class="arena-mode-card casual" data-arena-select-mode="casual">
-        <small>STANDARD PLAY</small><h3>CASUAL</h3><p>Standard Skirmish Arena. Career progression remains active; Arena Points and seasonal rank are not affected.</p>
-        <footer><span>3V3 TDM</span><strong>NO RANKED AP</strong></footer>
+        <span class="arena-mode-number">01</span><small>STANDARD ROTATION</small><h3>CASUAL</h3><p>Standard Skirmish Arena. Career progression remains active; Arena Points and seasonal rank are not affected.</p>
+        <div class="arena-mode-route" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <footer><span><b>TRAINING COMPLEX</b><em>3V3 TDM · FIRST TO 5</em></span><strong>NO RANKED AP</strong></footer>
       </button>
       <button type="button" class="arena-mode-card arena" data-arena-select-mode="arena">
-        <small>MONTHLY COMPETITIVE</small><h3>ARENA</h3><p>Ranked 3v3 competition with Arena Points, performance bonuses, loss penalties, promotions and demotions.</p>
-        <footer><span class="arena-mode-rank">${arenaBadgeMarkup(profile.rank)}<b>${safe(profile.rank.title)}</b></span><strong>${ap(profile.ap)} AP</strong></footer>
+        <span class="arena-mode-number">02</span><small>MONTHLY COMPETITIVE</small><h3>ARENA</h3><p>Ranked 3v3 competition with Arena Points, performance bonuses, loss penalties, promotions and demotions.</p>
+        <div class="arena-mode-route forge" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <footer><span class="arena-mode-rank">${arenaBadgeMarkup(profile.rank)}<span><b>FOUNDRY ZERO</b><em>${safe(profile.rank.title)} · ${ap(profile.ap)} AP</em></span></span><strong>RANKED</strong></footer>
       </button>
     </div>`;
 }

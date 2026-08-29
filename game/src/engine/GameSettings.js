@@ -9,11 +9,18 @@ export const GAMEPLAY_DEFAULTS = Object.freeze({
   sensitivity: 1,
   aiDifficulty: 'Average',
   minimapMode: 'north-up',
+  minimapScale: 1,
+  minimapOpacity: 0.92,
   screenShake: true,
+  screenShakeStrength: 0.75,
   damageVignette: true,
+  damageVignetteIntensity: 0.8,
   autoSprint: true,
   audioEnabled: true,
-  masterVolume: 0.75
+  masterVolume: 0.75,
+  hudScale: 1,
+  killFeedScale: 1,
+  showFps: false
 });
 
 export const DEFAULT_BINDINGS = Object.freeze({
@@ -98,15 +105,27 @@ export class GameSettings {
   gameplay() {
     const storedDifficulty = this.readRaw('aiDifficulty', GAMEPLAY_DEFAULTS.aiDifficulty);
     const storedVolume = Number(this.readRaw('masterVolume', String(GAMEPLAY_DEFAULTS.masterVolume)));
+    const numeric = (key) => Number(this.readRaw(key, String(GAMEPLAY_DEFAULTS[key])));
+    const bounded = (key, min, max) => {
+      const value = numeric(key);
+      return clamp(Number.isFinite(value) ? value : GAMEPLAY_DEFAULTS[key], min, max);
+    };
     return {
       sensitivity: clamp(Number(this.readRaw('sensitivity', '1')) || 1, 0.35, 2.5),
       aiDifficulty: AI_MULTIPLIERS[storedDifficulty] ? storedDifficulty : GAMEPLAY_DEFAULTS.aiDifficulty,
       minimapMode: this.readRaw('minimapMode', GAMEPLAY_DEFAULTS.minimapMode) === 'rotate' ? 'rotate' : 'north-up',
+      minimapScale: bounded('minimapScale', 0.75, 1.25),
+      minimapOpacity: bounded('minimapOpacity', 0.45, 1),
       screenShake: this.readRaw('screenShake', 'true') !== 'false',
+      screenShakeStrength: bounded('screenShakeStrength', 0, 1),
       damageVignette: this.readRaw('damageVignette', 'true') !== 'false',
+      damageVignetteIntensity: bounded('damageVignetteIntensity', 0, 1),
       autoSprint: this.readRaw('autoSprint', 'true') !== 'false',
       audioEnabled: this.readRaw('audioEnabled', 'true') !== 'false',
-      masterVolume: clamp(Number.isFinite(storedVolume) ? storedVolume : GAMEPLAY_DEFAULTS.masterVolume, 0, 1)
+      masterVolume: clamp(Number.isFinite(storedVolume) ? storedVolume : GAMEPLAY_DEFAULTS.masterVolume, 0, 1),
+      hudScale: bounded('hudScale', 0.8, 1.2),
+      killFeedScale: bounded('killFeedScale', 0.8, 1.2),
+      showFps: this.readRaw('showFps', 'false') === 'true'
     };
   }
 
@@ -114,13 +133,19 @@ export class GameSettings {
     if (!(key in GAMEPLAY_DEFAULTS)) return this.gameplay();
     let normalized = value;
     if (key === 'sensitivity') normalized = clamp(Number(value) || 1, 0.35, 2.5).toFixed(2);
-    if (key === 'masterVolume') {
+    if (['masterVolume', 'minimapOpacity', 'screenShakeStrength', 'damageVignetteIntensity'].includes(key)) {
       const numeric = Number(value);
-      normalized = clamp(Number.isFinite(numeric) ? numeric : GAMEPLAY_DEFAULTS.masterVolume, 0, 1).toFixed(2);
+      normalized = clamp(Number.isFinite(numeric) ? numeric : GAMEPLAY_DEFAULTS[key], 0, 1).toFixed(2);
+    }
+    if (['minimapScale', 'hudScale', 'killFeedScale'].includes(key)) {
+      const numeric = Number(value);
+      const lower = key === 'minimapScale' ? 0.75 : 0.8;
+      const upper = key === 'minimapScale' ? 1.25 : 1.2;
+      normalized = clamp(Number.isFinite(numeric) ? numeric : GAMEPLAY_DEFAULTS[key], lower, upper).toFixed(2);
     }
     if (key === 'aiDifficulty') normalized = AI_MULTIPLIERS[value] ? value : GAMEPLAY_DEFAULTS.aiDifficulty;
     if (key === 'minimapMode') normalized = value === 'rotate' ? 'rotate' : 'north-up';
-    if (['screenShake', 'damageVignette', 'autoSprint', 'audioEnabled'].includes(key)) normalized = Boolean(value);
+    if (['screenShake', 'damageVignette', 'autoSprint', 'audioEnabled', 'showFps'].includes(key)) normalized = Boolean(value);
     try { this.storage.setItem(`unblockedtdm.${key}`, String(normalized)); } catch {}
     const gameplay = this.gameplay();
     emitChange({ gameplay, bindings: this.bindings() });

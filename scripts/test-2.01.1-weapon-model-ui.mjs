@@ -12,7 +12,10 @@ const constants = read('game/src/engine/constants.js');
 const match = read('game/src/match/MatchManager.js');
 
 assert.ok(debug.includes("import('./phase2011-runtime.js')"));
-assert.ok(presentation.includes("import { WeaponRenderer } from '../render/WeaponRenderer.js';"));
+assert.ok(presentation.includes("import { SideViewWeaponRenderer } from '../render/WeaponRenderer.js';"));
+assert.ok(presentation.includes('new SideViewWeaponRenderer(ctx)'));
+assert.ok(presentation.includes('data-weapon-presentation="side-view"'));
+assert.ok(presentation.includes('data-weapon-halo="none"'));
 assert.ok(presentation.includes('data-game-weapon-model'));
 assert.ok(presentation.includes('renderer[method](ctx, state, 0)'));
 assert.equal(presentation.includes('legacyWeaponModelSvg'), false);
@@ -29,4 +32,4 @@ for (const field of ['damage:', 'critChance:', 'critDamage:', 'fireInterval:', '
 for (const token of ['PLAYER_SPEED_TILES = 5','SPRINT_SPEED_MULTIPLIER = 1.35','DASH_CHARGES_MAX = 4','DASH_DISTANCE_TILES = 3']) assert.ok(constants.includes(token));
 for (const token of ['const ROUND_DURATION = 90;','const ROUND_KILL_TARGET = 12;','const ROUND_WINS_TO_MATCH = 5;']) assert.ok(match.includes(token));
 
-console.log('Skirmish Arena 2.01.1 checks passed: actual gameplay weapon models remain shared across UI and gameplay with a balance-ready weapon schema.');
+console.log('Skirmish Arena 2.01.1 compatibility checks passed: the authored weapon family remains shared while 2.5 correctly separates side-view menu references from top-down gameplay models.');

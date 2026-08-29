@@ -10,11 +10,18 @@ const SNAPSHOT_KEYS = [
   'unblockedtdm.sensitivity',
   'unblockedtdm.aiDifficulty',
   'unblockedtdm.minimapMode',
+  'unblockedtdm.minimapScale',
+  'unblockedtdm.minimapOpacity',
   'unblockedtdm.screenShake',
+  'unblockedtdm.screenShakeStrength',
   'unblockedtdm.damageVignette',
+  'unblockedtdm.damageVignetteIntensity',
   'unblockedtdm.autoSprint',
   'unblockedtdm.audioEnabled',
-  'unblockedtdm.masterVolume'
+  'unblockedtdm.masterVolume',
+  'unblockedtdm.hudScale',
+  'unblockedtdm.killFeedScale',
+  'unblockedtdm.showFps'
 ];
 
 function ensureStyle(href) {

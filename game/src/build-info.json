@@ -1,10 +1,10 @@
 {
-  "product":"UnblockedTDM",
-  "gameVersion":"1.9.2",
-  "build":1,
-  "sequence":18,
-  "phase":"Loadout UI Hotfix",
-  "tag":"build-1.9.2-v1",
-  "title":"UnblockedTDM Build 1.9.2 — Version 1",
-  "repository":"nhicksenterprises2025-maker/unblockedtdm"
+  "product": "Skirmish Arena",
+  "gameVersion": "2.5.0",
+  "build": 1,
+  "sequence": 57,
+  "phase": "2.5.0 — Presentation and Map Overhaul",
+  "tag": "build-2.5.0-v1",
+  "title": "Skirmish Arena 2.5.0 — Build 1",
+  "repository": "nhicksenterprises2025-maker/unblockedtdm"
 }

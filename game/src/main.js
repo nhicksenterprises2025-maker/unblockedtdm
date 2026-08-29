@@ -63,6 +63,32 @@ async function runPackagedSmokeTest(target) {
             window.skirmishArenaPhase3?.integrity?.weapons &&
             window.skirmishArenaPhase3?.integrity?.foundry
           ),
+          phase250: Boolean(
+            document.body?.dataset?.phase250Ready === 'true' &&
+            document.body?.classList?.contains('ui-250') &&
+            window.skirmishArena250?.version === '2.5.0'
+          ),
+          phase250Integrity: Boolean(
+            window.skirmishArena250?.integrity?.sideViewMenuModels &&
+            window.skirmishArena250?.integrity?.topDownGameplayModels &&
+            window.skirmishArena250?.integrity?.arenaEmblems &&
+            window.skirmishArena250?.integrity?.settingsTabs === 5 &&
+            window.skirmishArena250?.integrity?.pauseTabs === 5 &&
+            window.skirmishArena250?.integrity?.performanceSafeguards
+          ),
+          phase250Surfaces: Boolean(
+            document.querySelector('.ui231-home-logo[data-logo-version="2.5-vector"]') &&
+            document.querySelector('[data-arena-strip][data-layout-version="2.5"]') &&
+            document.querySelector('[data-loadout-version="2.5"]') &&
+            document.querySelector('#mainSettingsPanel[data-settings-version="2.5"]') &&
+            document.querySelectorAll('.settings-250-tabs [data-settings-tab]').length === 10 &&
+            document.querySelectorAll('.pause-tabs [data-pause-tab]').length === 5 &&
+            !document.querySelector('canvas[data-game-weapon-model][data-weapon-halo]:not([data-weapon-halo="none"])')
+          ),
+          viewIsolation: (() => {
+            const views = [...document.querySelectorAll('#mainMenu .main-content>[data-menu-view]')];
+            return views.filter((view) => getComputedStyle(view).display !== 'none').length === 1;
+          })(),
           foundryPresentation: Boolean(
             window.skirmishArenaPhase3?.foundryPresentation?.enabled &&
             window.skirmishArenaPhase3?.foundryPresentation?.nonBlocking &&
@@ -71,7 +97,10 @@ async function runPackagedSmokeTest(target) {
             window.skirmishArenaPhase3?.foundryPresentation?.budgets?.maxAmbientSources <= 48
           ),
           catalog: Boolean(document.querySelector('[data-weapon-info-catalog]')),
-          logo: Boolean(document.querySelector('.ui231-home-logo'))
+          logo: (() => {
+            const asset = document.querySelector('.ui231-home-logo[data-logo-version="2.5-vector"]');
+            return Boolean(asset?.complete && asset?.naturalWidth > 0);
+          })()
         }))()`),
         new Promise((_, reject) => setTimeout(() => reject(new Error('Renderer probe did not answer within 3000ms.')), 3000))
       ]);
@@ -94,6 +123,10 @@ async function runPackagedSmokeTest(target) {
         state.arenaPhase3 &&
         state.foundry &&
         state.phase3Integrity &&
+        state.phase250 &&
+        state.phase250Integrity &&
+        state.phase250Surfaces &&
+        state.viewIsolation &&
         state.foundryPresentation &&
         state.catalog &&
         state.logo

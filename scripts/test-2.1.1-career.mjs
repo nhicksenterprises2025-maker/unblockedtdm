@@ -92,7 +92,8 @@ assert.equal(new ProgressionStore(storage).snapshot().claimedMilestones.kills, 3
 
 for (const rank of CAREER_RANKS) assert.ok(badges.includes(`id="rank-${rank.id}"`), `Missing authored emblem symbol for ${rank.title}.`);
 assert.equal((badges.match(/<symbol id="rank-/g) || []).length, 26);
-for (const token of ['singularity','obsidian','prism','galaxy','crystal','blueDiamond','gold']) assert.ok(badges.includes(token));
+for (const token of ['career-service-shield','career-angular-shield','career-command-star','career-round-medal','career-diamond-shield','career-prism','career-gold']) assert.ok(badges.includes(token));
+for (const forbidden of ['singularity','obsidian','galaxy','deepGlow']) assert.equal(badges.includes(forbidden), false, `2.5 authored rank system must not restore overworked ${forbidden} effects.`);
 assert.ok(badgeHelper.includes('assets/ranks/rank-badges.svg'));
 assert.equal(badgeHelper.toLowerCase().includes('placeholder'), false);
 for (const token of ["view.dataset.menuView = 'career'",'OVERVIEW','RANKS','MILESTONES','RANK PROMOTION','TOTAL CAREER XP GAINED','VIEW CAREER']) assert.ok(runtime.includes(token));

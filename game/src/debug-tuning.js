@@ -1,6 +1,6 @@
 (()=>{
   const DIFFICULTIES={Beginner:.80,Average:1.00,Sweat:1.35,Pro:1.75};
-  const RUNTIME_COUNT=16;
+  const RUNTIME_COUNT=17;
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const sleep=(ms)=>new Promise((resolve)=>setTimeout(resolve,ms));
   let bootState='pending';
@@ -121,10 +121,12 @@
       document.body.classList.contains('ui-phase6')&&
       document.body.classList.contains('ui-211')&&
       document.body.classList.contains('ui-231')&&
+      document.body.classList.contains('ui-250')&&
       brand==='SKIRMISH ARENA'&&
       document.querySelector('[data-career-strip]')&&
       document.querySelector('.ui231-home-logo')&&
-      document.querySelector('[data-weapon-info-catalog]')
+      document.querySelector('[data-weapon-info-catalog]')&&
+      document.body.dataset.phase250Ready==='true'
     );
   }
 
@@ -165,6 +167,7 @@
       await loadRuntime('CAREER',()=>careerBridge.loadCareerRuntime(),15);
       await loadRuntime('2.2.1 CONTROLS',()=>import('./phase221-runtime.js'),16);
       await loadRuntime('2.3.1 UI',()=>import('./phase231-runtime.js'),17);
+      await loadRuntime('2.5 PRESENTATION',()=>import('./phase250-runtime.js'),18);
 
       document.body.dataset.skirmishBootStage='VERIFY MODERN CLIENT';
       updateBoot('Verifying modern client ownership…',RUNTIME_COUNT+1);

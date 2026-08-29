@@ -15,7 +15,7 @@ const settings = read('game/src/engine/GameSettings.js');
 const loadouts = read('game/src/data/LoadoutStore.js');
 const tactical = read('game/src/ui/TacticalHUD.js');
 const career = read('game/src/phase211-runtime.js');
-const logoUrl = new URL('../game/src/assets/skirmish-arena-main-logo.webp', import.meta.url);
+const logoUrl = new URL('../game/src/assets/skirmish-arena-main-logo.svg', import.meta.url);
 
 assert.equal(WEAPON_LIST.length, 8);
 assert.ok(menu.includes('WEAPON_LIST.map(weaponCatalogCard)'));
@@ -26,7 +26,8 @@ assert.ok(menu.includes('spreadVisualHtml(weapon)'));
 assert.ok(menu.includes('data-weapon-info-catalog'));
 assert.equal(menu.includes('detail.innerHTML ='), false);
 
-assert.ok(runtime.includes("assets/skirmish-arena-main-logo.webp"));
+assert.ok(runtime.includes("assets/skirmish-arena-main-logo.svg"));
+assert.ok(runtime.includes('skirmish-arena-main-logo-2.5'));
 assert.ok(runtime.includes("document.body.classList.toggle('ui231-weapon-page'"));
 assert.ok(runtime.includes('hydrateWeaponModelCanvases(document)'));
 assert.ok(runtime.includes('hydrateGameplayCrosshairCanvases(document)'));
@@ -80,10 +81,11 @@ assert.ok(career.includes('LEVEL ${profile.level}'));
 assert.equal(DASH_STAMINA_COST, 0);
 
 assert.ok(fs.existsSync(logoUrl));
-const logo = fs.readFileSync(logoUrl);
-assert.ok(logo.length > 10000);
-assert.equal(logo.subarray(0, 4).toString('ascii'), 'RIFF');
-assert.equal(logo.subarray(8, 12).toString('ascii'), 'WEBP');
+const logo = fs.readFileSync(logoUrl, 'utf8');
+assert.ok(logo.length > 2500);
+assert.ok(logo.includes('<svg'));
+assert.ok(logo.includes('>SKIRMISH</text>'));
+assert.ok(logo.includes('>ARENA</text>'));
 
 for (const weapon of WEAPON_LIST) {
   assert.ok(weapon.id && weapon.name && weapon.kind && weapon.slot);

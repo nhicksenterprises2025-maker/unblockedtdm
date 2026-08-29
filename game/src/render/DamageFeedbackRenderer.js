@@ -89,14 +89,15 @@ export class DamageFeedbackRenderer {
     ctx.restore();
   }
 
-  drawScreen(player, width, height, { vignette = true } = {}) {
+  drawScreen(player, width, height, { vignette = true, vignetteIntensity = 1 } = {}) {
     const health = player.health;
     if (!health) return;
 
     if (vignette) {
       const recentHit = health.vignettePercent();
       const lowHealth = health.alive ? Math.max(0, (0.5 - health.healthPercent()) / 0.5) : 0;
-      const intensity = Math.min(0.55, recentHit * 0.28 + lowHealth * 0.24);
+      const strength = Math.max(0, Math.min(1, Number(vignetteIntensity) || 0));
+      const intensity = Math.min(0.55, recentHit * 0.28 + lowHealth * 0.24) * strength;
       if (intensity > 0.002) {
         const ctx = this.ctx;
         const gradient = ctx.createRadialGradient(width / 2, height / 2, Math.min(width, height) * 0.24, width / 2, height / 2, Math.max(width, height) * 0.72);

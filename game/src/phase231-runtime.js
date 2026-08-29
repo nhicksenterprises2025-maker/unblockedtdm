@@ -29,7 +29,6 @@ function installHomeLogo() {
   if (!logo) {
     logo = document.createElement('img');
     logo.className = 'ui231-home-logo';
-    logo.src = 'assets/skirmish-arena-main-logo.webp';
     logo.alt = 'Skirmish Arena';
     logo.decoding = 'async';
     logo.draggable = false;
@@ -37,6 +36,10 @@ function installHomeLogo() {
     if (heading) heading.insertAdjacentElement('beforebegin', logo);
     else hero.prepend(logo);
   }
+  if (!logo.src.endsWith('/assets/skirmish-arena-main-logo.svg')) {
+    logo.src = 'assets/skirmish-arena-main-logo.svg';
+  }
+  logo.dataset.brandAsset = 'skirmish-arena-main-logo-2.5';
 }
 
 let buildInfoPromise = null;
@@ -57,6 +60,7 @@ function updateHomeBuildLabel() {
 function installWeaponInfoTileArt() {
   const button = document.querySelector('#mainMenu [data-menu-action="weapon-info"]');
   if (!button) return;
+  if (button.querySelector('[data-home-command-icon="weapon-info"][data-home-icon-version="2.5"]')) return;
   let art = button.querySelector('.ui221-nav-art');
   if (!art) {
     art = document.createElement('span');

@@ -110,6 +110,17 @@ const flames = [
   point(16, 15.33, { scale:1.08, phase:.72, directionX:0, cullRadius:92, kind:'furnace' })
 ];
 
+// Every flame is mounted to a visible burner or furnace throat. These housings
+// are presentation-only and never alter collision, pathfinding or damage.
+const burnerHousings = flames.map((source) => ({
+  x:source.x - (source.kind === 'furnace' ? .62 : .42) * T,
+  y:source.y - .14 * T,
+  w:(source.kind === 'furnace' ? 1.24 : .84) * T,
+  h:(source.kind === 'furnace' ? .34 : .26) * T,
+  type:source.kind === 'furnace' ? 'furnaceThroat' : 'pipeBurner',
+  mirrored:source.mirrored === true
+}));
+
 const emberEmitters = flames.map((source) => ({
   x:source.x,
   y:source.y,
@@ -193,14 +204,15 @@ export const MAP_02 = {
     nonBlocking:true,
     deterministicSeed:243303,
     deterministic:true,
-    systems:['furnaceFlames', 'pipeFire', 'embers', 'heatShimmer', 'warmLights', 'lightSmoke', 'steamBursts', 'fans', 'gears', 'pistons'],
+    systems:['burnerHousings', 'furnaceFlames', 'pipeFire', 'embers', 'heatShimmer', 'warmLights', 'lightSmoke', 'steamBursts', 'fans', 'gears', 'pistons'],
     budgets:presentationBudgets,
     limits:presentationBudgets,
     fixtures: {
       floorPlates,
       warningBands,
       pipes,
-      scorchMarks
+      scorchMarks,
+      burnerHousings
     },
     ambience: {
       flames,
@@ -208,6 +220,19 @@ export const MAP_02 = {
       smokeEmitters,
       steamVents,
       warmLights
-    }
+    },
+    architecture:Object.freeze({
+      routes:Object.freeze(['north-forge-hall', 'center-core', 'south-forge-hall']),
+      fireSources:'mounted-burners-and-furnace-throats',
+      coolant:'mirrored-closed-loop-blocks',
+      machinery:'guarded-behind-cover-footprints'
+    }),
+    safety:Object.freeze({
+      fireDamage:false,
+      fireCollision:false,
+      fireSourcesBounded:true,
+      sourceCount:flames.length,
+      visualOnly:true
+    })
   }
 };

@@ -53,6 +53,7 @@ function syncPhase4Controls() {
 
 function installPhase4Settings() {
   for (const grid of document.querySelectorAll('.settings-panel .settings-grid')) {
+    if (grid.closest('[data-settings-version="2.5"]')) continue;
     if (grid.querySelector('[data-phase4-settings]')) continue;
     grid.insertAdjacentHTML('beforeend', phase4Cards());
   }

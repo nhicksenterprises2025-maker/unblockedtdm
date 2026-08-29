@@ -7,7 +7,7 @@ import { WeaponManager } from './combat/WeaponManager.js';
 import { LoadoutStore } from './data/LoadoutStore.js';
 import { WEAPONS } from './data/weapons.js';
 import { GameLoop } from './engine/GameLoop.js';
-import { GameSettings, bindingLabel } from './engine/GameSettings.js';
+import { BINDING_ACTIONS, GameSettings, bindingLabel } from './engine/GameSettings.js';
 import { Input } from './engine/Input.js';
 import { AIM_CAMERA_LEAD_TILES, DASH_CHARGES_MAX, TILE_SIZE } from './engine/constants.js';
 import { MatchManager } from './match/MatchManager.js';
@@ -378,7 +378,9 @@ function render(dt, now, isPaused) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.fillStyle = '#142b36';
   ctx.fillRect(0, 0, innerWidth, innerHeight);
-  const shake = gameplaySettings.screenShake ? combatFeedback.shakeOffset() : { x: 0, y: 0 };
+  const rawShake = gameplaySettings.screenShake ? combatFeedback.shakeOffset() : { x: 0, y: 0 };
+  const shakeStrength = gameplaySettings.screenShakeStrength ?? 1;
+  const shake = { x: rawShake.x * shakeStrength, y: rawShake.y * shakeStrength };
   ctx.save();
   ctx.translate(shake.x, shake.y);
   camera.begin(ctx);
@@ -405,7 +407,10 @@ function render(dt, now, isPaused) {
   ctx.restore();
 
   if (matchStarted) {
-    damageFeedback.drawScreen(player, innerWidth, innerHeight, { vignette: gameplaySettings.damageVignette });
+    damageFeedback.drawScreen(player, innerWidth, innerHeight, {
+      vignette: gameplaySettings.damageVignette,
+      vignetteIntensity: gameplaySettings.damageVignetteIntensity
+    });
     const pointer = input.pointerPosition();
     combatFeedback.drawCrosshair(pointer, weapons);
     combatFeedback.drawHitmarker(pointer);
@@ -514,9 +519,65 @@ function updateMatchHud() {
   roundLoadoutPanel.classList.toggle('visible', matchStarted && snapshot.canChangeLoadout && !paused);
   const active = loadoutStore.get();
   document.getElementById('roundLoadoutCurrent').textContent = `SLOT ${String(active.index + 1).padStart(2, '0')} · ${active.name.toUpperCase()} · ${active.primary.shortName} + ${active.secondary.shortName}`;
+  updatePauseHub(snapshot, active);
+}
+
+function escapeMarkup(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
+}
+
+function renderPauseControlRows() {
+  const controls = document.getElementById('pauseControlRows');
+  if (!controls) return;
+  controls.innerHTML = `${BINDING_ACTIONS.map(([action, label]) => `<div><span>${label}</span><strong>${bindingLabel(settings.binding(action))}</strong></div>`).join('')}<div><span>Cycle Weapon</span><strong>MOUSE WHEEL</strong></div><div><span>Pause</span><strong>ESC</strong></div>`;
+}
+
+function updatePauseHub(snapshot, active) {
+  // This hub contains roster and saved-loadout markup. The game HUD updates at
+  // 20 Hz, but these larger surfaces only need hydration while actually paused.
+  if (!paused) return;
   document.getElementById('pauseRound').textContent = `${snapshot.round || 1} / 9`;
   document.getElementById('pauseScore').textContent = `${snapshot.kills.blue} - ${snapshot.kills.red}`;
   document.getElementById('pauseLoadout').textContent = `${String(active.index + 1).padStart(2, '0')} · ${active.name.toUpperCase()}`;
+  document.getElementById('pauseTimer').textContent = snapshot.timerLabel;
+  const activeMapName = map.definition?.name || 'Training Complex';
+  document.getElementById('pauseContext').textContent = `${activeMapName} · Round ${snapshot.round || 1} · ${String(snapshot.state || 'live').replace(/-/g, ' ')}`;
+  document.getElementById('pauseBlueSummary').textContent = `BLUE · ${snapshot.wins.blue} ROUND${snapshot.wins.blue === 1 ? '' : 'S'}`;
+  document.getElementById('pauseRedSummary').textContent = `RED · ${snapshot.wins.red} ROUND${snapshot.wins.red === 1 ? '' : 'S'}`;
+  const ranked = document.body.dataset.matchMode === 'arena';
+  const currentWeapon = weapons.currentWeapon();
+  document.getElementById('pauseMap').textContent = activeMapName.toUpperCase();
+  document.getElementById('pauseMode').textContent = ranked ? 'ARENA · RANKED 3V3' : 'CASUAL · 3V3 TDM';
+  document.getElementById('pauseSide').textContent = `${String(player.team || 'blue').toUpperCase()} TEAM`;
+  document.getElementById('pauseWeapon').textContent = currentWeapon?.name?.toUpperCase() || '—';
+  document.getElementById('pauseObjective').textContent = snapshot.state === 'sudden-death'
+    ? 'SUDDEN DEATH · NEXT CREDITED KILL WINS THE ROUND'
+    : 'FIRST TO 12 ROUND KILLS · FIRST TO 5 ROUNDS';
+  const stats = match.statsSnapshot();
+  const rowsRoot = document.getElementById('pauseScoreboardRows');
+  if (rowsRoot) {
+    rowsRoot.innerHTML = ['blue', 'red'].map((team) => {
+      const teamRows = stats.filter((row) => row.team === team).sort((a, b) => b.kills - a.kills || b.damage - a.damage);
+      return `<div class="pause-team ${team}"><header><span>${team.toUpperCase()} TEAM</span><b>${teamRows.reduce((sum, row) => sum + row.kills, 0)} KILLS</b></header><div class="pause-score-row labels"><strong>PLAYER</strong><span>K</span><span>D</span><span>A</span><span>K/D</span><span>DMG</span></div>${teamRows.map((row) => `<div class="pause-score-row ${row.id === player.id ? 'local' : ''}"><strong>${escapeMarkup(row.displayName || row.id)}</strong><span>${row.kills}</span><span>${row.deaths}</span><span>${row.assists}</span><span>${row.deaths ? (row.kills / row.deaths).toFixed(2) : row.kills.toFixed(2)}</span><span>${row.damage}</span></div>`).join('')}</div>`;
+    }).join('');
+  }
+  const topPerformer = [...stats].sort((a, b) => b.kills - a.kills || b.damage - a.damage || a.deaths - b.deaths)[0];
+  const topRoot = document.getElementById('pauseTopPerformer');
+  if (topRoot) topRoot.innerHTML = topPerformer
+    ? `<span>TOP PERFORMER</span><strong>${escapeMarkup(topPerformer.displayName || topPerformer.id)}</strong><small>${String(topPerformer.team || '').toUpperCase()} · ${topPerformer.kills} KILLS · ${topPerformer.damage} DAMAGE</small>`
+    : '<span>TOP PERFORMER</span><strong>NO COMBAT DATA</strong>';
+  const detail = document.getElementById('pauseLoadoutDetail');
+  if (detail) detail.innerHTML = `<div><span>PRIMARY</span><strong>${active.primary.name}</strong><small>${active.primary.shortName}</small></div><i>+</i><div><span>SECONDARY</span><strong>${active.secondary.name}</strong><small>${active.secondary.shortName}</small></div>`;
+  const activeAmmo = weapons.currentAmmo();
+  const equippedMelee = [active.primary, active.secondary].find((weapon) => weapon.kind === 'melee');
+  const ammoLabel = currentWeapon?.magazineSize > 0 ? `${activeAmmo?.magazine ?? 0} MAG · ${activeAmmo?.reserve ?? 0} RESERVE` : 'NO AMMUNITION REQUIRED';
+  const loadoutStatus = document.getElementById('pauseLoadoutStatus');
+  if (loadoutStatus) loadoutStatus.innerHTML = `<div><span>ACTIVE WEAPON</span><strong>${escapeMarkup(currentWeapon?.name || '—')}</strong><small>${ammoLabel}</small></div><div><span>MELEE</span><strong>${escapeMarkup(equippedMelee?.name || 'NOT EQUIPPED')}</strong><small>${equippedMelee ? 'AVAILABLE IN SAVED CONFIGURATION' : 'PRIMARY + SECONDARY CONFIGURATION'}</small></div>`;
+  const slots = document.getElementById('pauseLoadoutSlots');
+  if (slots) slots.innerHTML = loadoutStore.all().map((slot) => `<button type="button" data-pause-loadout="${slot.index}" class="${slot.index === active.index ? 'active' : ''}" ${snapshot.canChangeLoadout ? '' : 'disabled'}><b>${String(slot.index + 1).padStart(2, '0')}</b><span>${escapeMarkup(slot.name)}</span><small>${slot.primary.name} + ${slot.secondary.name}</small></button>`).join('');
+  const rule = document.getElementById('pauseLoadoutRule');
+  if (rule) rule.textContent = snapshot.canChangeLoadout ? 'Round break active — select a saved configuration for the next round.' : 'Loadout changes unlock during the between-round window.';
+  renderPauseControlRows();
 }
 
 function updateBindingDiagnostics() {
@@ -555,10 +616,9 @@ function updateDiagnostics() {
 }
 
 function showPauseTab(tab) {
-  const settingsTab = tab === 'settings';
-  pauseMatchView.classList.toggle('active', !settingsTab);
-  pauseSettingsView.classList.toggle('active', settingsTab);
-  for (const button of document.querySelectorAll('[data-pause-tab]')) button.classList.toggle('active', button.dataset.pauseTab === (settingsTab ? 'settings' : 'match'));
+  const target = document.querySelector(`[data-pause-view="${tab}"]`) ? tab : 'match';
+  for (const view of document.querySelectorAll('[data-pause-view]')) view.classList.toggle('active', view.dataset.pauseView === target);
+  for (const button of document.querySelectorAll('[data-pause-tab]')) button.classList.toggle('active', button.dataset.pauseTab === target);
 }
 
 function setPaused(value) {
@@ -580,10 +640,20 @@ document.getElementById('pauseSettingsButton').addEventListener('click', () => s
 document.getElementById('settingsBackButton').addEventListener('click', () => showPauseTab('match'));
 document.getElementById('resumeButton').addEventListener('click', () => setPaused(false));
 document.getElementById('pauseMainMenuButton').addEventListener('click', () => returnToMainMenu());
+document.getElementById('pauseLoadoutSlots').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-pause-loadout]');
+  if (!button || !match.canChangeLoadout()) return;
+  const saved = loadoutStore.setActive(Number(button.dataset.pauseLoadout));
+  weapons.setLoadout(saved.primary, saved.secondary);
+  renderRoundLoadoutPanel();
+  updateWeaponHud();
+  updateMatchHud();
+});
 
 window.addEventListener('unblockedtdm:settings-change', () => {
   gameplaySettings = settings.gameplay();
   updateBindingDiagnostics();
+  if (paused) renderPauseControlRows();
 });
 
 const loop = new GameLoop(update, render);

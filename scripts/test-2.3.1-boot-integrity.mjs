@@ -11,7 +11,7 @@ const runner = read('scripts/check-all.mjs');
 const pkg = JSON.parse(read('package.json'));
 
 const orderedRuntimes = [
-  './flow-v18.js','./phase3-runtime.js','./phase4-runtime.js','./phase5-runtime.js','./phase6-runtime.js','./phase7-runtime.js','./phase8-runtime.js','./phase9-runtime.js','./phase10-runtime.js','./phase2011-runtime.js','./phase2012-runtime.js','./phase2013-runtime.js','./phase2014-runtime.js','./phase221-runtime.js','./phase231-runtime.js'
+  './flow-v18.js','./phase3-runtime.js','./phase4-runtime.js','./phase5-runtime.js','./phase6-runtime.js','./phase7-runtime.js','./phase8-runtime.js','./phase9-runtime.js','./phase10-runtime.js','./phase2011-runtime.js','./phase2012-runtime.js','./phase2013-runtime.js','./phase2014-runtime.js','./phase221-runtime.js','./phase231-runtime.js','./phase250-runtime.js'
 ];
 
 assert.ok(debug.includes("document.body.classList.add('skirmish-booting')"));
@@ -25,6 +25,7 @@ assert.ok(debug.includes('modernUiReady'));
 assert.ok(debug.includes("brand==='SKIRMISH ARENA'"));
 assert.ok(debug.includes("document.querySelector('[data-career-strip]')"));
 assert.ok(debug.includes("document.querySelector('[data-weapon-info-catalog]')"));
+assert.ok(debug.includes("document.body.dataset.phase250Ready==='true'"));
 
 let previous = -1;
 for (const runtime of orderedRuntimes) {
