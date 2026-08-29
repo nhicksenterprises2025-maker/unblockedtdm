@@ -3,6 +3,20 @@
   "versions": [
     {
       "product": "Skirmish Arena",
+      "gameVersion": "2.5.0",
+      "build": 1,
+      "sequence": 57,
+      "phase": "2.5.0 — Presentation and Map Overhaul",
+      "tag": "build-2.5.0-v1",
+      "title": "Skirmish Arena 2.5.0 — Build 1",
+      "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.5.0-v1/UnblockedTDM-2.5.0-v1.exe",
+      "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.5.0-v1/SkirmishArena-Setup-2.5.0-v1.exe",
+      "sha256": "21270be093765687bd0c921876aea4ec45722ba08486ef716ee2e5fa73c0ac4f",
+      "installerSha256": "4708198c59a1eea5b429669eb65b5b2b31c7fc23d42220b22e7b2e1043c81927",
+      "publishedAt": "2026-08-29T18:02:01.239Z"
+    },
+    {
+      "product": "Skirmish Arena",
       "gameVersion": "2.4.3.3",
       "build": 1,
       "sequence": 56,
