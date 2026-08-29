@@ -1,11 +1,11 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.4.3.2",
+  "gameVersion": "2.4.3.3",
   "build": 1,
-  "phase": "2.4.3.2 — Arena Phase 2",
-  "tag": "build-2.4.3.2-v1",
-  "title": "Skirmish Arena 2.4.3.2 — Build 1",
-  "notesFile": "docs/releases/build-2.4.3.2-v1.md",
-  "sequence": 55,
+  "phase": "2.4.3.3 — Arena Phase 3",
+  "tag": "build-2.4.3.3-v1",
+  "title": "Skirmish Arena 2.4.3.3 — Build 1",
+  "notesFile": "docs/releases/build-2.4.3.3-v1.md",
+  "sequence": 56,
   "releaseRevision": 1
 }
