@@ -9,6 +9,7 @@ import {
   arenaRankIndex
 } from './arena/ArenaStore.js';
 import { arenaBadgeMarkup } from './arena/ArenaBadges.js';
+import { arenaOpponentTeam, refreshTeamWipeLatch, resolveTeamWipe } from './arena/ArenaTelemetry.js';
 
 function ensureStyle(href) {
   if ([...document.querySelectorAll('link[rel="stylesheet"]')].some((link) => link.getAttribute('href') === href)) return;
@@ -91,6 +92,11 @@ if (!MatchManager.prototype.__arena2431Bridge) {
     const roundBefore = this.round;
     const credited = live ? this.resolveCreditedKiller(attacker, victim, result) : null;
     if (live) {
+      const aliveByTeam = {
+        blue:this.players.filter((player) => player.team === 'blue' && player.health?.alive).map((player) => player.id),
+        red:this.players.filter((player) => player.team === 'red' && player.health?.alive).map((player) => player.id)
+      };
+      const localTeam = this.players.find((player) => player.isLocal || player.id === LOCAL_ID)?.team || 'blue';
       window.dispatchEvent(new CustomEvent('skirmish:arena-elimination-pre', {
         detail: {
           attackerId:credited?.id || null,
@@ -99,14 +105,27 @@ if (!MatchManager.prototype.__arena2431Bridge) {
           victimTeam:victim.team,
           critical:Boolean(result?.critical),
           stateBefore,
-          round:roundBefore
+          round:roundBefore,
+          localTeam,
+          aliveByTeam
         }
       }));
     }
     const outcome = originalRecordElimination.call(this, attacker, victim, result);
     if (live) {
       window.dispatchEvent(new CustomEvent('skirmish:arena-elimination-post', {
-        detail: { round:roundBefore, stats:this.statsSnapshot() }
+        detail: {
+          round:roundBefore,
+          attackerId:credited?.id || null,
+          attackerTeam:credited?.team || null,
+          victimId:victim.id,
+          victimTeam:victim.team,
+          aliveByTeam:{
+            blue:this.players.filter((player) => player.team === 'blue' && player.health?.alive).map((player) => player.id),
+            red:this.players.filter((player) => player.team === 'red' && player.health?.alive).map((player) => player.id)
+          },
+          stats:this.statsSnapshot()
+        }
       }));
     }
     return outcome;
@@ -132,6 +151,7 @@ if (!MatchManager.prototype.__arena2431Bridge) {
 }
 
 window.__SKIRMISH_MATCH_MODE__ = window.__SKIRMISH_MATCH_MODE__ === 'arena' ? 'arena' : 'casual';
+document.body.dataset.matchMode = window.__SKIRMISH_MATCH_MODE__;
 
 let telemetry = {
   active:false,
@@ -140,16 +160,16 @@ let telemetry = {
   criticalKills:0,
   teamWipes:0,
   suddenDeathClutches:0,
-  victims:new Set()
+  teamWipeLatched:false
 };
 
 function resetTelemetry() {
-  telemetry = { active:false, matchId:null, round:1, criticalKills:0, teamWipes:0, suddenDeathClutches:0, victims:new Set() };
+  telemetry = { active:false, matchId:null, round:1, criticalKills:0, teamWipes:0, suddenDeathClutches:0, teamWipeLatched:false };
 }
 
 function beginArenaMatch() {
   const matchId = randomMatchId();
-  telemetry = { active:true, matchId, round:1, criticalKills:0, teamWipes:0, suddenDeathClutches:0, victims:new Set() };
+  telemetry = { active:true, matchId, round:1, criticalKills:0, teamWipes:0, suddenDeathClutches:0, teamWipeLatched:false };
   arena.beginMatch({ id:matchId, team:'blue', startedAt:Date.now() });
   return matchId;
 }
@@ -185,31 +205,41 @@ window.addEventListener('skirmish:arena-elimination-pre', (event) => {
   const round = Number(detail.round || 1);
   if (round !== telemetry.round) {
     telemetry.round = round;
-    telemetry.victims.clear();
+    telemetry.teamWipeLatched = false;
   }
-  if (detail.victimId === LOCAL_ID) telemetry.victims.clear();
+  const localTeam = detail.localTeam === 'red' ? 'red' : 'blue';
+  const opponentTeam = arenaOpponentTeam(localTeam);
+  telemetry.teamWipeLatched = refreshTeamWipeLatch(telemetry.teamWipeLatched, detail.aliveByTeam?.[opponentTeam]?.length || 0);
   if (detail.attackerId !== LOCAL_ID) return;
   if (detail.critical) telemetry.criticalKills += 1;
   if (detail.stateBefore === 'sudden-death') telemetry.suddenDeathClutches += 1;
-  if (detail.victimId) {
-    telemetry.victims.add(detail.victimId);
-    if (telemetry.victims.size >= 3) {
-      telemetry.teamWipes += 1;
-      telemetry.victims.clear();
-    }
-  }
   activeTelemetryPatch();
 });
 
 window.addEventListener('skirmish:arena-elimination-post', (event) => {
   if (!telemetry.active) return;
-  const local = (event.detail?.stats || []).find((row) => row.isLocal || row.id === LOCAL_ID);
+  const detail = event.detail || {};
+  const local = (detail.stats || []).find((row) => row.isLocal || row.id === LOCAL_ID);
+  if (local) {
+    const opponentTeam = arenaOpponentTeam(local.team);
+    const opponentsAlive = detail.aliveByTeam?.[opponentTeam]?.length ?? 1;
+    const wipe = resolveTeamWipe({
+      latched:telemetry.teamWipeLatched,
+      attackerTeam:detail.attackerTeam,
+      localTeam:local.team,
+      opponentsAliveAfter:opponentsAlive
+    });
+    telemetry.teamWipeLatched = wipe.latched;
+    if (wipe.awarded) {
+      telemetry.teamWipes += 1;
+    }
+  }
   activeTelemetryPatch(local);
 });
 
 window.addEventListener('skirmish:arena-round-end', (event) => {
   if (!telemetry.active) return;
-  telemetry.victims.clear();
+  telemetry.teamWipeLatched = false;
   const history = event.detail?.history || [];
   const local = (event.detail?.stats || []).find((row) => row.isLocal || row.id === LOCAL_ID);
   const rounds = roundRecord(history, local?.team || 'blue');
@@ -332,7 +362,7 @@ function arenaRanksHtml(profile) {
   const currentIndex = arenaRankIndex(profile.rank);
   return `<div class="arena-rank-grid">${ARENA_RANKS.map((rank, index) => {
     const state = index === currentIndex ? 'current' : index < currentIndex ? 'earned' : 'locked';
-    return `<article class="arena-rank-card ${state}">
+    return `<article class="arena-rank-card ${state}" data-rank="${safe(rank.id)}">
       ${arenaBadgeMarkup(rank)}
       <div><span>${ap(rank.threshold)} AP</span><strong>${safe(rank.title)}</strong><span>${safe(rank.material)}</span></div>
       <b>${state === 'current' ? 'CURRENT' : state === 'earned' ? 'PASSED' : `+${ap(Math.max(0, rank.threshold - profile.ap))} AP`}</b>
@@ -450,7 +480,6 @@ function chooseMode(value) {
   const mode = value === 'arena' ? 'arena' : 'casual';
   window.__SKIRMISH_MATCH_MODE__ = mode;
   document.body.dataset.matchMode = mode;
-  try { localStorage.setItem('skirmisharena.lastMode', mode); } catch {}
   syncLoadoutMode(mode);
   hideModeSelector();
   const play = document.querySelector('#mainMenu [data-menu-action="play"]');
@@ -458,6 +487,13 @@ function chooseMode(value) {
   allowPlayPass = true;
   play.click();
   allowPlayPass = false;
+}
+
+function resetModeState() {
+  window.__SKIRMISH_MATCH_MODE__ = 'casual';
+  document.body.dataset.matchMode = 'casual';
+  try { localStorage.removeItem('skirmisharena.lastMode'); } catch {}
+  syncLoadoutMode('casual');
 }
 
 const menu = document.getElementById('mainMenu');
@@ -520,20 +556,32 @@ function arenaPostgamePanel(result) {
 }
 
 let rankChangeTimer = null;
+let rankChangeDelayTimer = null;
+
+function cancelArenaRankChange() {
+  clearTimeout(rankChangeTimer);
+  clearTimeout(rankChangeDelayTimer);
+  rankChangeTimer = null;
+  rankChangeDelayTimer = null;
+  document.querySelector('[data-arena-rank-change]')?.remove();
+}
+
 function showArenaRankChange(result) {
   if (!result?.promoted && !result?.demoted) return;
   const show = () => {
-    document.querySelector('[data-arena-rank-change]')?.remove();
+    rankChangeDelayTimer = null;
+    if (!document.body.classList.contains('postgame-open')) return;
+    cancelArenaRankChange();
     const overlay = document.createElement('section');
     overlay.className = 'arena-rank-change';
     overlay.dataset.arenaRankChange = '';
     overlay.innerHTML = `<div class="arena-rank-change-shell"><span>${result.promoted ? 'ARENA PROMOTION' : 'ARENA DEMOTION'}</span>${arenaBadgeMarkup(result.rankAfter)}<h2>${safe(result.rankAfter.title)}</h2><b>${safe(result.rankBefore.title)} → ${safe(result.rankAfter.title)}</b><small>${ap(result.apAfter)} ARENA POINTS</small></div>`;
-    const dismiss = () => { clearTimeout(rankChangeTimer); overlay.remove(); };
+    const dismiss = () => { clearTimeout(rankChangeTimer); rankChangeTimer = null; overlay.remove(); };
     overlay.addEventListener('click', dismiss);
     document.body.appendChild(overlay);
     rankChangeTimer = setTimeout(dismiss, 3600);
   };
-  if (document.querySelector('[data-rank-promotion]')) setTimeout(show, 4700);
+  if (document.querySelector('[data-rank-promotion]')) rankChangeDelayTimer = setTimeout(show, 4700);
   else show();
 }
 
@@ -601,11 +649,19 @@ window.addEventListener('storage', (event) => {
 });
 
 window.addEventListener('skirmish:show-menu-home', () => {
+  cancelArenaRankChange();
+  resetModeState();
   renderArenaStrip();
   hideModeSelector();
 });
 window.addEventListener('skirmish:menu-view-change', (event) => {
   if (event.detail?.view === 'arena') renderArenaPage();
+  if (event.detail?.view === 'home') {
+    cancelArenaRankChange();
+    resetModeState();
+    hideModeSelector();
+    renderArenaStrip();
+  }
 });
 
 let seasonTimer = 0;
@@ -628,6 +684,9 @@ renderArenaStrip();
 renderArenaPage('overview');
 scheduleSeasonBoundary();
 document.body.dataset.arenaReady = 'true';
+
+window.addEventListener('skirmish:match-started', cancelArenaRankChange);
+window.addEventListener('beforeunload', cancelArenaRankChange, { once:true });
 
 window.skirmishArena = Object.freeze({
   snapshot:() => arena.snapshot(),

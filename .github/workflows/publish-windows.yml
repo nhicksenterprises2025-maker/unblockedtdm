@@ -38,7 +38,10 @@ jobs:
             exit 0
           fi
 
-          files="$(git diff-tree --no-commit-id --name-only -r HEAD)"
+          # `-m` exposes each parent diff for merge commits. Without it a PR
+          # merge that changes release-plan.json can start this workflow via
+          # the path filter but incorrectly skip both release jobs.
+          files="$(git diff-tree --no-commit-id --name-only -r -m HEAD | sort -u)"
           if printf '%s\n' "$files" | grep -Fxq 'release-plan.json'; then
             echo "game=true" >> "$GITHUB_OUTPUT"
           else

@@ -4,9 +4,21 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const unpackedExecutable = path.resolve(here, '../dist-game/win-unpacked/UnblockedTDM.exe');
-const portableExecutable = path.resolve(here, '../dist-game/UnblockedTDM.exe');
-const smokeOutputDir = path.resolve(here, '../dist-game/smoke-results');
+// The production and CI path remains dist-game. A caller may point the exact
+// same smoke gate at an alternate build output when a synchronized workspace
+// or desktop capture process has a generated staging file open.
+const configuredGameDistDir = process.env.SKIRMISH_DIST_GAME_DIR
+  ? path.resolve(process.env.SKIRMISH_DIST_GAME_DIR)
+  : null;
+const unpackedExecutable = configuredGameDistDir
+  ? path.resolve(configuredGameDistDir, 'win-unpacked/UnblockedTDM.exe')
+  : path.resolve(here, '../dist-game/win-unpacked/UnblockedTDM.exe');
+const portableExecutable = configuredGameDistDir
+  ? path.resolve(configuredGameDistDir, 'UnblockedTDM.exe')
+  : path.resolve(here, '../dist-game/UnblockedTDM.exe');
+const smokeOutputDir = configuredGameDistDir
+  ? path.resolve(configuredGameDistDir, 'smoke-results')
+  : path.resolve(here, '../dist-game/smoke-results');
 const timeoutMs = 55000;
 
 if (process.platform !== 'win32') {

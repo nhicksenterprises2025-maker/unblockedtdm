@@ -46,7 +46,7 @@ export class PostgameScreen {
 
     this.root.innerHTML = `<div class="postgame-shell" data-ui-surface>
       <header class="postgame-titlebar">
-        <div><span>UNBLOCKEDTDM // MATCH COMPLETE</span><h1>${snapshot.matchWinner?.toUpperCase() || '—'} TEAM WINS</h1></div>
+        <div><span>SKIRMISH ARENA // MATCH COMPLETE</span><h1>${snapshot.matchWinner?.toUpperCase() || '—'} TEAM WINS</h1></div>
         <div class="postgame-final"><small>FINAL ROUNDS</small><strong><i>BLUE ${snapshot.wins.blue}</i><b>${snapshot.wins.red} RED</b></strong></div>
       </header>
       <div class="postgame-summary">

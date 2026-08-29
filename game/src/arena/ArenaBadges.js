@@ -3,8 +3,40 @@ import { ARENA_RANKS } from './ArenaStore.js';
 const safe = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 
 const FRAME = `
+  <path d="M48 3 86 17v37c0 25-15 45-38 57C25 99 10 79 10 54V17Z" fill="#02070b" stroke="#02070b" stroke-width="6"/>
   <path d="M48 4 84 18v35c0 24-14 43-36 55C26 96 12 77 12 53V18Z" fill="#081219" stroke="currentColor" stroke-width="3"/>
-  <path d="M48 11 76 22v30c0 18-10 33-28 44-18-11-28-26-28-44V22Z" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".38"/>`;
+  <path d="M48 10 77 21v32c0 19-10 35-29 46-19-11-29-27-29-46V21Z" fill="currentColor" opacity=".075" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M17 25 8 31v17M79 25l9 6v17M21 88l-9-4M75 88l9-4" fill="none" stroke="currentColor" stroke-width="2.4" opacity=".56"/>
+  <path d="M26 17 48 9l22 8M25 91c7 7 14 12 23 17 9-5 16-10 23-17" fill="none" stroke="#f4fbff" stroke-width="1.2" opacity=".28"/>
+  <g fill="#dff7ff" opacity=".7"><circle cx="20" cy="28" r="1.5"/><circle cx="76" cy="28" r="1.5"/><circle cx="22" cy="76" r="1.5"/><circle cx="74" cy="76" r="1.5"/></g>`;
+
+const BACKPLATES = Object.freeze({
+  prospect:'<path d="m48 18 22 12-6 10H32l-6-10Z" fill="currentColor" opacity=".12"/>',
+  rookie:'<path d="M20 54 8 61l12 7M76 54l12 7-12 7" fill="none" stroke="currentColor" stroke-width="4" opacity=".65"/>',
+  bronze:'<path d="M19 38 7 48l10 9M77 38l12 10-10 9" fill="currentColor" opacity=".32" stroke="currentColor" stroke-width="2"/>',
+  silver:'<path d="m22 37-16 8 11 9-13 9 24 6M74 37l16 8-11 9 13 9-24 6" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="2"/>',
+  prestige:'<path d="m25 31 8-13 15 9 15-9 8 13" fill="none" stroke="currentColor" stroke-width="3" opacity=".72"/>',
+  crystal:'<path d="m48 13 8 12 14-3-4 13 12 7-13 5M48 13 40 25l-14-3 4 13-12 7 13 5" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="1.8"/>',
+  apex:'<path d="M7 56h13M76 56h13M48 8v13M48 91v14M16 27l10 9M80 27l-10 9" fill="none" stroke="currentColor" stroke-width="3" opacity=".78"/>'
+});
+
+function familyFor(index) {
+  if (index === 0) return 'prospect';
+  if (index <= 2) return 'rookie';
+  if (index <= 5) return 'bronze';
+  if (index <= 7) return 'silver';
+  if (index <= 9) return 'prestige';
+  if (index <= 11) return 'crystal';
+  return 'apex';
+}
+
+function tierMarks(index) {
+  const count = index <= 2 ? index : index >= 3 && index <= 5 ? index - 2 : index >= 6 && index <= 7 ? index - 5 : 0;
+  if (!count) return '';
+  const width = count * 8 - 2;
+  const start = 48 - width / 2;
+  return `<g fill="currentColor" opacity=".82">${Array.from({ length:count }, (_, mark) => `<path d="M${start + mark * 8} 92h6l-1 5h-4Z"/>`).join('')}</g>`;
+}
 
 const ART = Object.freeze({
   prospect: `
@@ -68,9 +100,11 @@ const ART = Object.freeze({
 
 export function arenaBadgeMarkup(rank, className = '') {
   const resolved = ARENA_RANKS.find((entry) => entry.id === rank?.id) || ARENA_RANKS[0];
+  const index = ARENA_RANKS.findIndex((entry) => entry.id === resolved.id);
+  const family = familyFor(index);
   const art = ART[resolved.id] || ART.prospect;
-  return `<span class="arena-rank-badge ${safe(className)}" data-arena-rank-badge="${safe(resolved.id)}" data-arena-emblem="authored" style="--arena-rank-tone:${safe(resolved.tone)}" title="${safe(resolved.title)}">
-    <svg viewBox="0 0 96 112" aria-hidden="true">${FRAME}${art}</svg>
+  return `<span class="arena-rank-badge arena-rank-${safe(family)} ${safe(className)}" data-arena-rank-badge="${safe(resolved.id)}" data-arena-emblem="authored" data-arena-family="${safe(family)}" data-arena-index="${index}" style="--arena-rank-tone:${safe(resolved.tone)}" title="${safe(resolved.title)}">
+    <svg viewBox="0 0 96 112" aria-hidden="true"><g class="arena-emblem-frame">${FRAME}</g><g class="arena-emblem-backplate">${BACKPLATES[family] || ''}</g><g class="arena-emblem-art">${art}</g>${tierMarks(index)}</svg>
   </span>`;
 }
 

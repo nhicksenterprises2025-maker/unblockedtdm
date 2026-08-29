@@ -1,0 +1,66 @@
+name: Validate Skirmish Arena 2.4.3.3
+
+on:
+  push:
+    branches:
+      - codex/2.4.3.3-phase3-final
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: arena-phase3-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression-gate:
+    name: Historical + Phase 3 regression gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install build dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run centralized validation
+        run: npm run check
+
+  windows-package-gate:
+    name: Windows game, launcher and packaged smoke
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install build dependencies
+        shell: pwsh
+        run: npm install --no-audit --no-fund
+
+      - name: Build game, smoke both executables and build launcher
+        shell: pwsh
+        run: npm run build:windows
+
+      - name: Upload validated Windows packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: Skirmish-Arena-2.4.3.3-validation
+          path: |
+            dist-game/UnblockedTDM.exe
+            dist-game/smoke-results/*.json
+            dist-launcher/SkirmishArena-Setup.exe
+          if-no-files-found: error
