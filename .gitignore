@@ -141,3 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Electron build artifacts and project-local transient lockfiles
+/dist-game/
+/dist-game-validation-*/
+/dist-launcher/
+/game/package-lock.json
+/launcher/package-lock.json

@@ -165,6 +165,10 @@ camera.x = player.x;
 camera.y = player.y;
 camera.clamp();
 
+function resetBotNavigation() {
+  for (const brain of botBrains.values()) brain.resetNavigation(map.revision);
+}
+
 function startMatchWithLoadout({ primary, secondary, slotIndex, name }) {
   weapons.setLoadout(primary, secondary);
   loadoutStore.setActive(slotIndex);
@@ -176,6 +180,7 @@ function startMatchWithLoadout({ primary, secondary, slotIndex, name }) {
   mainMenu.hide();
   pausePanel.classList.remove('visible');
   match.startMatch();
+  resetBotNavigation();
   renderRoundLoadoutPanel();
   showCombatBanner(`${name.toUpperCase()} · ${primary.shortName} + ${secondary.shortName}`, false, 1.0);
   updateDiagnostics();
@@ -313,6 +318,7 @@ function update(dt) {
     killStreak = 0;
     recentKills = [];
     match.startMatch();
+    resetBotNavigation();
   }
 
   match.update(dt);
@@ -382,9 +388,13 @@ function render(dt, now, isPaused) {
   combatFeedback.drawWorld();
   drawBotPaths();
 
-  const drawOrder = players.filter((actor) => actor.health.alive).sort((a, b) => a.y - b.y);
+  // Keep eliminated actors in the ordered presentation pass so the authored
+  // death marker remains visible during the respawn window. Live-only weapon
+  // effects stay gated below and can never flash from an eliminated actor.
+  const drawOrder = players.slice().sort((a, b) => a.y - b.y);
   for (const actor of drawOrder) {
     playerRenderer.draw(actor, actor.weaponManager);
+    if (!actor.health.alive) continue;
     weaponRenderer.draw(actor, actor.weaponManager);
     weaponRenderer.drawMuzzleFlash(actor, actor.weaponManager);
     damageFeedback.drawPlayerFeedback(actor);

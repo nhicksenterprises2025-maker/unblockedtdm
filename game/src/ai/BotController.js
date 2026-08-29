@@ -96,6 +96,7 @@ export class BotController {
     this.pathGoal = null;
     this.pathOverrideTimer = 0;
     this.debugPath = [];
+    this.pathMapRevision = null;
     this.setDifficulty(difficulty);
   }
 
@@ -113,6 +114,17 @@ export class BotController {
     this.reloadPulse = false;
     this.primaryPulse = false;
     this.secondaryPulse = false;
+  }
+
+  resetNavigation(mapRevision = null) {
+    this.path = [];
+    this.pathIndex = 0;
+    this.pathGoal = null;
+    this.pathRecalcTimer = 0;
+    this.pathOverrideTimer = 0;
+    this.debugPath = [];
+    this.stuckTimer = 0;
+    this.pathMapRevision = Number.isFinite(Number(mapRevision)) ? Number(mapRevision) : null;
   }
 
   chooseTarget(enemies, targetCounts) {
@@ -229,6 +241,12 @@ export class BotController {
     const liveDifficulty = savedDifficulty();
     if (liveDifficulty !== this.difficultyName) this.setDifficulty(liveDifficulty);
     this.resetTransient();
+    // A TileMap definition can change between Casual and Arena without replacing
+    // the pathfinder or bot controller. Synchronize before any cached-path early
+    // return, then invalidate every route derived from the previous map revision.
+    pathfinder?.syncMap?.();
+    const liveMapRevision = Number(pathfinder?.mapRevision ?? map?.revision ?? 0);
+    if (this.pathMapRevision !== liveMapRevision) this.resetNavigation(liveMapRevision);
     this.camera = camera;
     const skill = this.skillMultiplier;
     this.shotTimer = Math.max(0, this.shotTimer - dt);
@@ -244,8 +262,7 @@ export class BotController {
       this.ads = false;
       this.target = null;
       this.targetLockTimer = 0;
-      this.path = [];
-      this.debugPath = [];
+      this.resetNavigation(liveMapRevision);
       return;
     }
 

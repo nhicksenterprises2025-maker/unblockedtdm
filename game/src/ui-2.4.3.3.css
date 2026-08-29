@@ -1,0 +1,107 @@
+body.ui-2433{
+  --sa-ink:#071017;
+  --sa-panel:#0a151c;
+  --sa-panel-raised:#0d1b23;
+  --sa-line:#2d4350;
+  --sa-line-strong:#46606d;
+  --sa-text:#edf3f5;
+  --sa-muted:#8ba0aa;
+  --sa-cyan:#54ccef;
+  --sa-career:#c6a96a;
+  --sa-danger:#ff6676;
+  --sa-ok:#78d7a0;
+}
+
+body.ui-2433 button,body.ui-2433 input,body.ui-2433 select{transition:border-color .14s ease,color .14s ease,background-color .14s ease,box-shadow .14s ease,transform .14s ease}
+body.ui-2433 button:focus-visible,body.ui-2433 input:focus-visible,body.ui-2433 select:focus-visible{outline:2px solid var(--sa-cyan);outline-offset:2px}
+body.ui-2433 button:not(:disabled):active{transform:translateY(1px)}
+
+/* Career stays permanent/account-oriented; Arena stays monthly/competitive. */
+body.ui-2433 .career-strip:not(.arena-strip){border-left-color:var(--sa-career)!important;background:#0b151a!important}
+body.ui-2433 .career-strip:not(.arena-strip) .career-primary b,body.ui-2433 .career-strip:not(.arena-strip) .career-view-cue{color:var(--sa-career)!important}
+body.ui-2433 .career-strip:not(.arena-strip) .career-xp-track i{background:#b39454!important;box-shadow:0 0 8px rgba(198,169,106,.18)}
+body.ui-2433 .arena-strip{position:relative;background:#08151d!important;border-top-color:#284652!important;border-bottom-color:#284652!important}
+body.ui-2433 .arena-strip::before{content:"MONTHLY SKILL LADDER";position:absolute;right:14px;top:8px;color:#4f8295;font:800 7px/1 Consolas,monospace;letter-spacing:.15em}
+body.ui-2433 .career-rank-badge[data-career-emblem="authored"]{filter:drop-shadow(0 5px 9px rgba(0,0,0,.42)) saturate(.9);isolation:isolate}
+body.ui-2433 .arena-rank-badge[data-arena-emblem="authored"]{filter:drop-shadow(0 7px 12px rgba(0,0,0,.46));isolation:isolate}
+body.ui-2433 .arena-rank-badge .arena-emblem-frame{filter:drop-shadow(0 1px 0 rgba(255,255,255,.12))}
+body.ui-2433 .arena-rank-badge .arena-emblem-art{filter:drop-shadow(0 2px 1px rgba(0,0,0,.58))}
+body.ui-2433 .arena-rank-crystal .arena-emblem-art,body.ui-2433 .arena-rank-apex .arena-emblem-art{filter:drop-shadow(0 0 4px color-mix(in srgb,var(--arena-rank-tone) 35%,transparent)) drop-shadow(0 2px 1px rgba(0,0,0,.7))}
+body.ui-2433 [data-arena-rank-badge="omnipotent"]{filter:drop-shadow(0 8px 14px rgba(0,0,0,.5)) drop-shadow(0 0 7px rgba(69,216,255,.34))}
+
+/* Mode selection: strong hierarchy, compact technical states, no card bloat. */
+body.ui-2433 .arena-mode-select{background:rgba(2,8,12,.91);backdrop-filter:blur(7px)}
+body.ui-2433 .arena-mode-shell{border-color:#38505d;border-top-color:var(--sa-cyan);background:#071118;padding:30px;box-shadow:0 28px 80px rgba(0,0,0,.62),0 0 0 1px rgba(120,204,232,.05) inset}
+body.ui-2433 .arena-mode-head{align-items:center}
+body.ui-2433 .arena-mode-head h2{letter-spacing:-.035em}
+body.ui-2433 .arena-mode-grid{gap:11px}
+body.ui-2433 .arena-mode-card{min-height:292px;border-color:#314853;background:#0a151c;padding:27px}
+body.ui-2433 .arena-mode-card::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:#718892;opacity:.65}
+body.ui-2433 .arena-mode-card.arena::before{background:var(--sa-cyan);opacity:1}
+body.ui-2433 .arena-mode-card:hover,body.ui-2433 .arena-mode-card:focus-visible{background:#0d1b23;border-color:#5a7480;box-shadow:0 0 0 1px rgba(91,205,239,.12) inset}
+body.ui-2433 .arena-mode-card h3{font-size:44px;letter-spacing:-.035em}
+body.ui-2433 .arena-mode-card p{font-size:12px;max-width:42rem}
+body.ui-2433 .arena-map-chip{border-radius:0;background:#071219;padding:7px 10px}
+
+/* Arena page and rank ladder: dense enough for competition, readable at small sizes. */
+body.ui-2433 .arena-page-head{padding:24px 30px 18px}
+body.ui-2433 .arena-page-head h2{letter-spacing:-.045em}
+body.ui-2433 .arena-tabs button{position:relative;color:#91a4ad}
+body.ui-2433 .arena-tabs button:hover{color:var(--sa-text);background:#0b1820}
+body.ui-2433 .arena-tabs button.active{color:#f4f8f9;background:#0c1921;box-shadow:0 -3px 0 var(--sa-cyan) inset}
+body.ui-2433 .arena-overview-hero,body.ui-2433 .arena-stat-grid>div,body.ui-2433 .arena-economy,body.ui-2433 .arena-rank-card,body.ui-2433 .arena-history-row{background:#09141b;border-color:#2d424d}
+body.ui-2433 .arena-overview-hero{box-shadow:7px 0 0 rgba(84,204,239,.035) inset}
+body.ui-2433 .arena-rank-card{min-height:100px;padding:10px 15px}
+body.ui-2433 .arena-rank-card.current{border-color:#59cbed;box-shadow:3px 0 0 #59cbed inset,0 0 0 1px rgba(89,203,237,.07)}
+body.ui-2433 .arena-rank-card.locked{opacity:.68;filter:saturate(.72)}
+body.ui-2433 .arena-rank-card[data-rank="omnipotent"]{background:#08131b;border-color:#47717f;box-shadow:3px 0 0 #67d9f7 inset,0 0 22px rgba(58,190,230,.06) inset}
+body.ui-2433 .arena-ap-track{height:7px;border:1px solid #223844;background:#0c1d25}
+body.ui-2433 .arena-ap-track i{background:#46bada;box-shadow:0 0 8px rgba(76,200,235,.32)}
+
+/* Loadouts and Weapon Info keep actual gameplay canvases and gain cleaner states. */
+body.ui-2433 .loadout-shell,body.ui-2433 .weapon-info-shell{border-color:#334a55;background:#071219}
+body.ui-2433 .loadout-preset,body.ui-2433 .weapon-card,body.ui-2433 .ui231-weapon-card{border-color:#2d434e;background:#0a151c;border-radius:0}
+body.ui-2433 .loadout-preset:hover,body.ui-2433 .weapon-card:hover,body.ui-2433 .ui231-weapon-card:hover{border-color:#52707d;background:#0d1a22}
+body.ui-2433 .loadout-preset.active,body.ui-2433 .weapon-card.selected{border-color:#54ccef;box-shadow:3px 0 0 #54ccef inset;background:#0a1921}
+body.ui-2433 .weapon-card.blocked{opacity:.42;filter:saturate(.5)}
+body.ui-2433 .phase2-weapon-svg[data-weapon-hydrated="true"],body.ui-2433 canvas[data-game-weapon-model][data-weapon-hydrated="true"]{filter:drop-shadow(0 10px 8px rgba(0,0,0,.38))}
+body.ui-2433 .ui231-weapon-card-head{border-bottom-color:#304650}
+body.ui-2433 .phase2-stat-track{border:1px solid #253b46;background:#091820}
+body.ui-2433 .phase2-stat-track i{background:#4bbbd9}
+
+/* Scoreboard, kill feed and postgame prioritize scan speed over decoration. */
+body.ui-2433 .phase3-scoreboard-shell,body.ui-2433 .phase3-map-shell{border-color:#3a525d;background:#071118;box-shadow:0 30px 86px rgba(0,0,0,.68)}
+body.ui-2433 .phase3-team-board,body.ui-2433 .postgame-team{border-color:#304751;background:#09151c}
+body.ui-2433 .phase3-team-score-row.local,body.ui-2433 .postgame-row.local{box-shadow:3px 0 0 var(--sa-cyan) inset;background:#0d2029}
+body.ui-2433 .phase3-feed-row{padding:4px 0;text-shadow:0 2px 3px rgba(0,0,0,.86)}
+body.ui-2433 .phase3-feed-row.critical em{color:#ffd372;border-bottom:1px solid rgba(255,211,114,.55)}
+body.ui-2433 .postgame-shell{border-color:#3a515c;background:#071219;box-shadow:0 28px 90px rgba(0,0,0,.72)}
+body.ui-2433 .postgame-titlebar{border-bottom-color:#38505b}
+body.ui-2433 .postgame-summary>div{background:#0a161d;border-color:#2e444f}
+body.ui-2433 .arena-postgame{border-color:#355564;border-left-color:var(--sa-cyan);background:#08151c}
+body.ui-2433 .arena-postgame-breakdown div{min-height:48px}
+body.ui-2433 .postgame-actions button.primary,body.ui-2433 .deploy-button{background:#3daecc;color:#031017;border-color:#69d7f3}
+
+/* Short-lived feedback uses only class toggles; no per-event DOM allocation. */
+body.ui-2433.phase2433-match-intro #roundOverlay{filter:drop-shadow(0 12px 22px rgba(0,0,0,.48));animation:sa2433-intro .72s ease-out both}
+body.ui-2433.phase2433-round-transition #roundOverlay{animation:sa2433-round .6s ease-out both}
+body.ui-2433.phase2433-critical-elimination #gameCanvas{box-shadow:0 0 0 2px rgba(255,205,108,.22) inset}
+body.ui-2433.phase2433-mvp .postgame-titlebar{box-shadow:0 -3px 0 #d7b765 inset}
+body.ui-2433 .arena-rank-change{background:rgba(2,7,10,.88);backdrop-filter:blur(6px)}
+body.ui-2433 .arena-rank-change-shell{border-color:#48636e;background:#071219;box-shadow:0 28px 80px rgba(0,0,0,.68)}
+body.ui-2433 .arena-rank-change:has([data-arena-rank-badge="omnipotent"]) .arena-rank-change-shell{border-top-color:#a8ecff;box-shadow:0 28px 90px rgba(0,0,0,.72),0 0 34px rgba(68,204,241,.12)}
+
+@keyframes sa2433-intro{0%{opacity:.2;transform:translateY(-8px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes sa2433-round{0%{opacity:.2;letter-spacing:.24em}100%{opacity:1;letter-spacing:normal}}
+
+@media(max-width:900px){
+  body.ui-2433 .arena-mode-shell{padding:22px}
+  body.ui-2433 .arena-mode-card{min-height:225px;padding:22px}
+  body.ui-2433 .arena-mode-card h3{font-size:36px}
+  body.ui-2433 .arena-strip::before{display:none}
+  body.ui-2433 .arena-rank-card{min-height:92px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.ui-2433 *,body.ui-2433 *::before,body.ui-2433 *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}

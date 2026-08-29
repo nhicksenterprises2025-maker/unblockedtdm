@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UnblockedTDM</title>
+  <title>Skirmish Arena</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="ui-v16.css" />
 </head>
@@ -13,7 +13,7 @@
   <section id="mainMenu" class="main-menu visible" data-ui-surface>
     <div class="main-menu-shell">
       <aside class="main-sidebar">
-        <div class="menu-brand"><span class="menu-mark">UT</span><div><strong>UNBLOCKEDTDM</strong><small>3V3 TEAM DEATHMATCH</small></div></div>
+        <div class="menu-brand"><span class="menu-mark">SA</span><div><strong>SKIRMISH ARENA</strong><small>3V3 TEAM DEATHMATCH</small></div></div>
         <nav class="main-nav">
           <button type="button" class="primary" data-menu-action="play">PLAY</button>
           <button type="button" data-menu-action="loadouts">LOADOUTS</button>
@@ -26,7 +26,7 @@
       </aside>
       <main class="main-content">
         <section class="menu-view active" data-menu-view="home">
-          <div class="menu-hero"><span class="menu-eyebrow">BUILD 1.6 · FRONT END</span><h1>UNBLOCKEDTDM</h1><p>Fast 3v3 round-based team deathmatch with directional dashing, eight distinct weapons, persistent loadouts, tactical AI and a full first-to-five match loop.</p></div>
+          <div class="menu-hero"><span class="menu-eyebrow">SKIRMISH ARENA · COMPETITIVE CLIENT</span><h1>SKIRMISH ARENA</h1><p>Fast 3v3 round-based team deathmatch with directional dashing, eight distinct weapons, persistent loadouts, tactical AI and a full first-to-five match loop.</p></div>
           <div class="menu-feature-grid">
             <div><span>MATCH</span><strong>3V3 · FIRST TO 5</strong><small>1:30 rounds. First to 12 kills. Sudden Death decides tied rounds.</small></div>
             <div><span>LOADOUTS</span><strong>25 SAVED SLOTS</strong><small>Primary + Secondary setups persist through restarts and launcher updates.</small></div>
@@ -59,7 +59,7 @@
   <section id="loadoutScreen" class="loadout-screen hidden" data-ui-surface></section>
 
   <section class="minimap-shell"><canvas id="minimapCanvas" width="356" height="356"></canvas></section>
-  <header class="build-hud debug-chrome"><div class="brand"><span class="mark">UT</span><div><strong>UNBLOCKEDTDM</strong><small id="buildLabel">BUILD 1.6 · VERSION 1</small></div></div><div class="map-meta"><strong id="mapLabel">TRAINING COMPLEX</strong><small id="phaseLabel">Main Menu / Settings / Keybinds</small></div></header>
+  <header class="build-hud debug-chrome"><div class="brand"><span class="mark">SA</span><div><strong>SKIRMISH ARENA</strong><small id="buildLabel">BUILD 1 · VERSION 2.4.3.3</small></div></div><div class="map-meta"><strong id="mapLabel">TRAINING COMPLEX</strong><small id="phaseLabel">Arena Phase 3</small></div></header>
 
   <section class="match-hud"><div class="blue"><span>BLUE ROUNDS</span><strong id="blueRoundWins">0</strong></div><div class="blue"><span>KILLS</span><strong id="blueKills">0</strong></div><div class="clock"><span id="roundLabel">ROUND 1 / 9</span><strong id="roundTimer">1:30</strong></div><div class="red"><span>KILLS</span><strong id="redKills">0</strong></div><div class="red"><span>RED ROUNDS</span><strong id="redRoundWins">0</strong></div></section>
 
@@ -82,7 +82,7 @@
 
   <section id="pausePanel" class="pause-panel" data-ui-surface>
     <div class="pause-shell">
-      <div class="pause-head"><p>UNBLOCKEDTDM</p><h1>PAUSED</h1><small>Build 1.6 pause hub · all controls below are live</small></div>
+      <div class="pause-head"><p>SKIRMISH ARENA</p><h1>PAUSED</h1><small>Match controls and settings remain live</small></div>
       <div class="pause-tabs"><button type="button" data-pause-tab="match" class="active">MATCH</button><button type="button" data-pause-tab="settings">SETTINGS</button></div>
       <section id="pauseMatchView" class="pause-view active"><div class="pause-summary"><div><span>ROUND</span><strong id="pauseRound">1 / 9</strong></div><div><span>ROUND KILLS</span><strong id="pauseScore">0 - 0</strong></div><div><span>LOADOUT</span><strong id="pauseLoadout">01 · BALANCED</strong></div></div><div class="pause-actions"><button type="button" id="resumeButton" class="primary">RESUME MATCH</button><button type="button" id="pauseSettingsButton">SETTINGS</button><button type="button" id="pauseMainMenuButton">RETURN TO MAIN MENU</button></div></section>
       <section id="pauseSettingsView" class="pause-view settings-panel" data-ui-surface>

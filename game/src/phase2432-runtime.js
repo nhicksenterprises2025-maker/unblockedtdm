@@ -20,12 +20,17 @@ function selectedMode() {
 }
 
 function definitionForMode(mode = selectedMode()) {
-  return mode === 'arena' ? MAP_02 : MAP_01;
+  const definition = mode === 'arena' ? MAP_02 : MAP_01;
+  if (mode === 'arena' && definition.arenaOnly !== true) throw new Error('Arena requires an Arena-only map definition.');
+  if (mode !== 'arena' && definition.arenaOnly) throw new Error('Casual cannot load an Arena-only map definition.');
+  return definition;
 }
 
 function announceMap(map, mode) {
   document.body.dataset.activeMap = map.id;
   document.body.dataset.activeMapName = map.name;
+  const debugLabel = document.getElementById('mapLabel');
+  if (debugLabel) debugLabel.textContent = map.name;
   window.dispatchEvent(new CustomEvent('skirmish:map-selected', {
     detail:{ id:map.id, name:map.name, mode, arenaOnly:Boolean(map.arenaOnly) }
   }));
@@ -50,7 +55,8 @@ if (!MatchManager.prototype.__arena2432MapBridge) {
 function tacticalMapName(hud) {
   const name = hud?.minimapRenderer?.map?.definition?.name || 'Training Complex';
   const small = hud?.root?.querySelector('.phase3-map-shell header small');
-  if (small) small.textContent = `${name.toUpperCase()} // LIVE TACTICAL DATA`;
+  const label = `${name.toUpperCase()} // LIVE TACTICAL DATA`;
+  if (small && small.textContent !== label) small.textContent = label;
 }
 
 if (!TacticalHUD.prototype.__arena2432MapCopy) {

@@ -55,7 +55,21 @@ async function runPackagedSmokeTest(target) {
           career: Boolean(document.querySelector('[data-career-strip]')),
           arena: document.body?.dataset?.arenaReady === 'true' && Boolean(document.querySelector('[data-arena-strip]')),
           arenaPhase2: document.body?.dataset?.arenaPhase2Ready === 'true',
+          arenaPhase3: document.body?.dataset?.arenaPhase3Ready === 'true',
           foundry: window.skirmishArenaPhase2?.arenaMapId === 'foundry-zero' && window.skirmishArenaPhase2?.emblemIds?.length === 14,
+          phase3Integrity: Boolean(
+            window.skirmishArenaPhase3?.integrity?.arenaEmblems &&
+            window.skirmishArenaPhase3?.integrity?.careerEmblems &&
+            window.skirmishArenaPhase3?.integrity?.weapons &&
+            window.skirmishArenaPhase3?.integrity?.foundry
+          ),
+          foundryPresentation: Boolean(
+            window.skirmishArenaPhase3?.foundryPresentation?.enabled &&
+            window.skirmishArenaPhase3?.foundryPresentation?.nonBlocking &&
+            window.skirmishArenaPhase3?.foundryPresentation?.deterministic &&
+            window.skirmishArenaPhase3?.foundryPresentation?.budgets?.maxParticleSlots <= 112 &&
+            window.skirmishArenaPhase3?.foundryPresentation?.budgets?.maxAmbientSources <= 48
+          ),
           catalog: Boolean(document.querySelector('[data-weapon-info-catalog]')),
           logo: Boolean(document.querySelector('.ui231-home-logo'))
         }))()`),
@@ -77,7 +91,10 @@ async function runPackagedSmokeTest(target) {
         state.career &&
         state.arena &&
         state.arenaPhase2 &&
+        state.arenaPhase3 &&
         state.foundry &&
+        state.phase3Integrity &&
+        state.foundryPresentation &&
         state.catalog &&
         state.logo
       ) {
