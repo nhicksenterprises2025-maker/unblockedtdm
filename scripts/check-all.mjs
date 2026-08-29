@@ -29,6 +29,7 @@ const testFiles = [
   'scripts/test-2.4.3.3-foundry-visuals.mjs',
   'scripts/test-2.4.3.3-render-polish.mjs',
   'scripts/test-2.4.3.3-arena-phase3.mjs',
+  'scripts/test-2.5.0-presentation-map-overhaul.mjs',
   'scripts/test-2.01.1-weapon-model-ui.mjs',
   'scripts/test-2.01.2-crosshair-layout.mjs',
   'scripts/test-2.01.3-loadout-onepage.mjs',

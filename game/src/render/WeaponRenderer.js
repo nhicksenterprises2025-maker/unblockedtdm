@@ -101,7 +101,10 @@ function grip(ctx, x, y, width = 8, height = 14, angle = 0.12, color = BLACK_POL
   ctx.restore();
 }
 
-export class WeaponRenderer {
+// Side-view models are intentionally isolated from the combat renderer.  These
+// detailed silhouettes are used by Loadouts, Weapon Info and between-round
+// reference cards; the live match renderer below owns a separate top-down set.
+export class SideViewWeaponRenderer {
   constructor(ctx) {
     this.ctx = ctx;
   }
@@ -285,12 +288,14 @@ export class WeaponRenderer {
     grip(ctx, 1, 5, 8.3, 14, 0.13, BROWN_POLYMER);
     ctx.strokeStyle = OUTLINE; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(7, -7); ctx.lineTo(7, -10); ctx.moveTo(27, -7); ctx.lineTo(27, -10); ctx.stroke();
-    roundedPanel(ctx, 3, -13.2, 31, 7.2, 3.4, '#142831', OUTLINE, 1.5);
+    // The scope is shown in true side profile.  Previous end-on ellipses read
+    // as a cyan selection halo once this model was reduced into a menu tile.
+    roundedPanel(ctx, 3, -13.2, 31, 7.2, 2.2, '#142831', OUTLINE, 1.5);
     ctx.fillStyle = '#29434e';
-    ctx.beginPath(); ctx.ellipse(4, -9.6, 3.4, 4.7, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(34, -9.6, 4.1, 5.2, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillRect(3.8, -12.2, 3.2, 5.2);
+    ctx.fillRect(30.4, -12.35, 3.6, 5.5);
     ctx.fillStyle = SIGHT; ctx.globalAlpha = 0.72;
-    ctx.beginPath(); ctx.ellipse(34.7, -9.6, 2.2, 3.2, 0, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
+    ctx.fillRect(33.2, -11.7, 1.2, 4.2); ctx.globalAlpha = 1;
     roundedPanel(ctx, 17, -16.5, 5, 4, 1.2, '#233a44', OUTLINE, 1);
     ctx.fillStyle = EDGE_METAL; ctx.fillRect(25 - boltTravel, 5.6, 9, 1.8);
     ctx.beginPath(); ctx.arc(34 - boltTravel, 6.5, 2.2, 0, Math.PI * 2); ctx.fill();
@@ -541,4 +546,201 @@ export class WeaponRenderer {
     }
     ctx.restore();
   }
+}
+
+export const TOP_DOWN_WEAPON_PRESENTATION = Object.freeze({
+  version: '2.5.0',
+  role: 'gameplay-top-down',
+  sideViewMenus: true,
+  purposeBuilt: true,
+  supports: Object.freeze(['recoil', 'reload', 'swap', 'muzzle-direction']),
+  weaponIds: Object.freeze([
+    'assault-rifle', 'smg', 'sniper', 'shotgun',
+    'lmg', 'pistol', 'launcher', 'melee'
+  ])
+});
+
+// The live match owns this purpose-built overhead presentation set.  It keeps
+// the weapon's longitudinal axis on local +X (the actor's aim direction) and
+// never reuses the side-profile receiver/magazine silhouettes drawn above.
+// Weapon balance, muzzle positions and collision remain owned by combat code.
+export class WeaponRenderer extends SideViewWeaponRenderer {
+  draw(player, manager) {
+    const weapon = manager.currentWeapon();
+    if (!player.health.alive || !weapon) return;
+
+    const state = manager.animationState();
+    const ctx = this.ctx;
+    const visual = weapon.render || {};
+    const recoil = clamp(state.fireKick) * (visual.kick || 0);
+    const switchArc = state.switching ? Math.sin(Math.PI * state.switchProgress) : 0;
+    const swapTier = Number(weapon.swapTier) || 1;
+    const reload = state.reloading ? clamp(state.reloadProgress) : 0;
+    const meleeSwing = weapon.kind === 'melee'
+      ? Math.sin(Math.PI * Math.min(1, Number(state.meleeSwing) || 0)) * 1.08
+      : 0;
+
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.rotate(player.visualAimAngle + meleeSwing + switchArc * (swapTier >= 3 ? 0.42 : 0.28));
+    ctx.translate(4 - recoil, switchArc * (swapTier >= 3 ? 13 : 9));
+    this.drawTopDownArms(ctx, player, weapon, state, reload);
+
+    switch (weapon.id) {
+      case 'assault-rifle': this.drawTopDownAR(ctx, state, reload); break;
+      case 'smg': this.drawTopDownSMG(ctx, state, reload); break;
+      case 'sniper': this.drawTopDownSniper(ctx, state, reload); break;
+      case 'shotgun': this.drawTopDownShotgun(ctx, state, reload); break;
+      case 'lmg': this.drawTopDownLMG(ctx, state, reload); break;
+      case 'pistol': this.drawTopDownPistol(ctx, state, reload); break;
+      case 'launcher': this.drawTopDownLauncher(ctx, state, reload); break;
+      case 'melee': this.drawTopDownMelee(ctx, state); break;
+      default: break;
+    }
+    ctx.restore();
+  }
+
+  drawTopDownArms(ctx, player, weapon, state, reload) {
+    const palette = TEAM_PALETTES[player.team] || TEAM_PALETTES.blue;
+    const recoil = clamp(state.fireKick);
+    const supportX = {
+      sniper: 28, shotgun: 28, lmg: 27, launcher: 25, melee: 21, pistol: 10
+    }[weapon.id] || 22;
+    let rear = { x: 4 - recoil, y: -3.1 };
+    let front = { x: supportX - recoil * 1.6, y: 3.1 };
+    if (weapon.id === 'pistol') front = { x: 9, y: 2.6 };
+    if (state.reloading) {
+      const reach = Math.sin(reload * Math.PI);
+      front = { x: 9 + reach * 4, y: 7 + reach * 7 };
+      if (weapon.id === 'shotgun') front = { x: 20 + reach * 6, y: 7 + reach * 4 };
+      if (weapon.id === 'launcher') front = { x: -4 + reload * 17, y: 10 + reach * 5 };
+    }
+    this.arm(ctx, { x: -5, y: -9 }, { x: 0, y: -8 }, rear, 6.5, palette.uniform, palette.uniformDark);
+    this.arm(ctx, { x: -3, y: 9 }, { x: 7, y: 9 }, front, 6.5, palette.uniformMid, palette.uniformDark);
+  }
+
+  drawTopDownReceiver(ctx, { stock = 19, receiver = 29, receiverWidth = 9, barrel = 26, barrelWidth = 3.4, color = '#405a64' } = {}) {
+    ctx.strokeStyle = OUTLINE;
+    ctx.lineWidth = 1.6;
+    ctx.fillStyle = '#1a2c34';
+    ctx.beginPath();
+    ctx.moveTo(-stock, -4.6); ctx.lineTo(-3, -3.8); ctx.lineTo(1, -2.7);
+    ctx.lineTo(1, 2.7); ctx.lineTo(-3, 3.8); ctx.lineTo(-stock, 4.6);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    roundedPanel(ctx, -2, -receiverWidth / 2, receiver, receiverWidth, 2.2,
+      metalGradient(ctx, -2, -receiverWidth / 2, receiver, receiverWidth, '#718790', color), OUTLINE, 1.6);
+    ctx.fillStyle = DEEP_METAL;
+    ctx.fillRect(receiver - 2, -barrelWidth / 2, barrel, barrelWidth);
+    ctx.fillStyle = EDGE_METAL;
+    ctx.fillRect(receiver + barrel - 4, -0.65, 5, 1.3);
+    ctx.strokeStyle = 'rgba(210,231,237,.32)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(2, -receiverWidth * .28); ctx.lineTo(receiver - 5, -receiverWidth * .28); ctx.stroke();
+  }
+
+  drawTopDownMagazine(ctx, x, reload, { width = 8, depth = 6, color = '#152a33' } = {}) {
+    const release = Math.sin(clamp(reload) * Math.PI);
+    ctx.save();
+    ctx.translate(x, stateReloadOffset(reload, release));
+    ctx.rotate(reload ? reload * 0.2 : 0);
+    roundedPanel(ctx, -width / 2, -depth / 2, width, depth, 1.3, color, OUTLINE, 1.1);
+    ctx.fillStyle = '#667d86';
+    ctx.fillRect(-width / 2 + 1, -depth / 2 + 1, width - 2, 1);
+    ctx.restore();
+  }
+
+  drawTopDownAR(ctx, state = {}, reload = 0) {
+    this.drawTopDownReceiver(ctx, { stock: 21, receiver: 31, receiverWidth: 10, barrel: 27, barrelWidth: 3.3, color: '#263e48' });
+    rail(ctx, 2, -1.1, 23, 7);
+    ctx.fillStyle = SIGHT; ctx.fillRect(10, -2.1, 2, 4.2);
+    this.drawTopDownMagazine(ctx, 15, reload, { width: 9, depth: 7 });
+    ventSlots(ctx, 31, -3, 3, 5.2, 6);
+    fastener(ctx, 4, 2.8); fastener(ctx, 25, 2.8);
+    this.drawCasing(ctx, 18, -7, state, .8);
+  }
+
+  drawTopDownSMG(ctx, state = {}, reload = 0) {
+    this.drawTopDownReceiver(ctx, { stock: 15, receiver: 25, receiverWidth: 10.5, barrel: 17, barrelWidth: 4, color: '#243a44' });
+    ctx.strokeStyle = '#526b75'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(-15, -4); ctx.lineTo(-24, -7); ctx.moveTo(-15, 4); ctx.lineTo(-24, 7); ctx.stroke();
+    roundedPanel(ctx, 4, -6.8, 9, 3, 1, BLACK_POLYMER, OUTLINE, 1);
+    this.drawTopDownMagazine(ctx, 10, reload, { width: 7, depth: 7 });
+    ctx.fillStyle = SIGHT; ctx.fillRect(8, -7.8, 2, 1.3);
+    this.drawCasing(ctx, 15, -7, state, .65);
+  }
+
+  drawTopDownSniper(ctx, state = {}, reload = 0) {
+    this.drawTopDownReceiver(ctx, { stock: 26, receiver: 35, receiverWidth: 9, barrel: 42, barrelWidth: 2.6, color: '#2b414a' });
+    roundedPanel(ctx, 3, -7, 35, 4.4, 1.4, '#142831', OUTLINE, 1.3);
+    ctx.fillStyle = SIGHT; ctx.fillRect(32, -6.3, 2, 3);
+    ctx.fillStyle = EDGE_METAL; ctx.fillRect(25 - clamp(state.fireKick) * 5, 3.7, 10, 1.5);
+    this.drawTopDownMagazine(ctx, 14, reload, { width: 9, depth: 6 });
+    fastener(ctx, 3, 2.4); fastener(ctx, 29, 2.4);
+    this.drawCasing(ctx, 28, -6, state, 1);
+  }
+
+  drawTopDownShotgun(ctx, state = {}, reload = 0) {
+    const pump = clamp(state.fireKick) * 7;
+    this.drawTopDownReceiver(ctx, { stock: 27, receiver: 28, receiverWidth: 9, barrel: 43, barrelWidth: 2.4, color: '#273d45' });
+    ctx.fillStyle = WOOD; ctx.strokeStyle = '#4f341e'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.roundRect(28 - pump, -5.3, 21, 10.6, 2.5); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = 'rgba(49,29,17,.72)';
+    for (let x = 32 - pump; x < 47 - pump; x += 4) { ctx.beginPath(); ctx.moveTo(x, -4); ctx.lineTo(x, 4); ctx.stroke(); }
+    ctx.fillStyle = MID_METAL; ctx.fillRect(47, 1.2, 25, 2.2);
+    if (state.reloading) {
+      const reach = Math.sin(reload * Math.PI);
+      roundedPanel(ctx, 9 + reach * 5, 6 + reach * 7, 10, 4, 2, SHELL_RED, '#5e231f', 1);
+    }
+  }
+
+  drawTopDownLMG(ctx, state = {}, reload = 0) {
+    this.drawTopDownReceiver(ctx, { stock: 24, receiver: 37, receiverWidth: 13, barrel: 34, barrelWidth: 4.5, color: '#263b44' });
+    roundedPanel(ctx, 9, 5.5 + Math.sin(reload * Math.PI) * 10, 24, 15, 2.5, '#223740', OUTLINE, 1.5);
+    rail(ctx, -1, -8.1, 30, 8);
+    ctx.strokeStyle = BRASS; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(29, 6); ctx.quadraticCurveTo(35, 8, 37, 3); ctx.stroke();
+    ventSlots(ctx, 39, -4, 4, 5, 8);
+    this.drawCasing(ctx, 27, -9, state, 1);
+  }
+
+  drawTopDownPistol(ctx, state = {}, reload = 0) {
+    const slide = clamp(state.fireKick) * 4;
+    roundedPanel(ctx, -4 - slide, -4.6, 34, 9.2, 2, metalGradient(ctx, -4, -4.6, 34, 9.2, '#82959c', '#263b44'), OUTLINE, 1.5);
+    ctx.fillStyle = '#0b1b22'; ctx.fillRect(29 - slide, -1.6, 13 + slide, 3.2);
+    ctx.fillStyle = SIGHT; ctx.fillRect(21 - slide, -6, 1.7, 1.8);
+    this.drawTopDownMagazine(ctx, 4, reload, { width: 6, depth: 5 });
+    this.drawCasing(ctx, 12, -6, state, .65);
+  }
+
+  drawTopDownLauncher(ctx, state = {}, reload = 0) {
+    roundedPanel(ctx, -19, -8, 60, 16, 6.5, metalGradient(ctx, -19, -8, 60, 16, '#687e76', '#253a3a'), OUTLINE, 1.8);
+    ctx.fillStyle = '#172a2e'; ctx.beginPath(); ctx.ellipse(41, 0, 8, 8.6, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#071619'; ctx.beginPath(); ctx.ellipse(42, 0, 4.7, 5.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#243839'; ctx.fillRect(-8, -7, 5, 14);
+    roundedPanel(ctx, -1, -13, 17, 4.8, 1.5, '#1b3034', OUTLINE, 1.1);
+    ctx.fillStyle = SIGHT; ctx.fillRect(11, -12.3, 2, 3.2);
+    if (state.reloading) {
+      const p = smooth(reload);
+      ctx.fillStyle = BRASS; ctx.strokeStyle = '#6e4e25'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.roundRect(-36 + p * 28, -3.8, 25, 7.6, 3.8); ctx.fill(); ctx.stroke();
+    }
+  }
+
+  drawTopDownMelee(ctx, state = {}) {
+    roundedPanel(ctx, -13, -4.6, 31, 9.2, 3.6, '#243a43', OUTLINE, 1.5);
+    ctx.fillStyle = '#718790'; ctx.fillRect(16, -6.5, 5, 13);
+    ctx.fillStyle = metalGradient(ctx, 21, -5, 35, 10, '#d9e5e8', '#607983');
+    ctx.strokeStyle = '#405862'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(21, -5); ctx.lineTo(48, -3); ctx.lineTo(57, 0); ctx.lineTo(48, 3); ctx.lineTo(21, 5); ctx.closePath(); ctx.fill(); ctx.stroke();
+    if (clamp(state.meleeSwing) > .05) {
+      ctx.globalAlpha = clamp(state.meleeSwing) * .28;
+      ctx.strokeStyle = '#bfeefa'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(3, 0, 56, -.48, .48); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
+}
+
+function stateReloadOffset(reload, release) {
+  return reload ? 6 + release * 10 : 0;
 }

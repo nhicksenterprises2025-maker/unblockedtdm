@@ -117,7 +117,9 @@ const liveMap = new TileMap(MAP_02);
 const renderer = new WorldRenderer(fake.ctx, liveMap);
 assert.equal(renderer.presentationMetrics.sourceCount, sourceCount);
 assert.equal(renderer.presentationMetrics.particleSlots, particleSlots);
-assert.equal(renderer.presentationMetrics.fixtureCount, 40);
+const fixtureCount = Object.values(presentation.fixtures).reduce((sum, entries) => sum + entries.length, 0);
+assert.equal(renderer.presentationMetrics.fixtureCount, fixtureCount);
+assert.ok(fixtureCount <= presentation.limits.maxStaticFixtures);
 assert.equal(renderer.presentationMetrics.revision, liveMap.revision);
 
 const centerCamera = { visibleBounds:() => ({ left:760, top:150, right:1290, bottom:1260 }) };

@@ -38,6 +38,14 @@ const OUTLINE = '#0c222c';
 const WEBBING = '#172d37';
 const HELMET = '#253e49';
 
+export const CHARACTER_PRESENTATION = Object.freeze({
+  version:'2.5.0',
+  role:'gameplay-top-down-operator',
+  authored:true,
+  features:Object.freeze(['directional-helmet', 'layered-armor', 'team-shoulders', 'locomotion-legs', 'weapon-support-arms', 'unit-identifier']),
+  teamPalettes:Object.freeze(['blue', 'red'])
+});
+
 const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, Number(value) || 0));
 
 export class PlayerRenderer {
@@ -57,6 +65,7 @@ export class PlayerRenderer {
     this.drawShadowAndRing(player);
     this.drawLegs(player);
     this.drawUpperBody(player, weaponManager);
+    this.drawUnitIdentifier(player);
     this.drawSpawnProtection(player);
     this.drawLowAmmoIndicator(player, weaponManager);
   }
@@ -175,6 +184,28 @@ export class PlayerRenderer {
         ctx.beginPath();
         ctx.moveTo(-4, side * radius); ctx.lineTo(0, side * (radius - 5)); ctx.lineTo(4, side * radius); ctx.closePath(); ctx.fill();
       }
+    }
+    ctx.restore();
+  }
+
+  drawUnitIdentifier(player) {
+    const ctx = this.ctx;
+    const palette = TEAM_PALETTES[player.team] || TEAM_PALETTES.blue;
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.rotate(player.visualAimAngle);
+    ctx.fillStyle = 'rgba(5,17,23,.88)';
+    ctx.strokeStyle = palette.armorLight;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(-11.5, -5.2, 7.5, 10.4, 1.6);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = palette.marker;
+    for (const y of [-2.8, 0, 2.8]) ctx.fillRect(-9.7, y - .55, 4.2, 1.1);
+    if (player.isLocal) {
+      ctx.fillStyle = palette.ring;
+      ctx.beginPath();ctx.arc(-7.6, 0, 1.2, 0, Math.PI * 2);ctx.fill();
     }
     ctx.restore();
   }

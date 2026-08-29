@@ -57,7 +57,7 @@ export class WorldRenderer {
     this.syncPresentation();
     this.presentationVisibleBounds = visible;
     this.presentationTime = this.resolvePresentationTime(timestampMs);
-    this.presentationAnimationsEnabled = !globalThis.document?.hidden;
+    this.presentationAnimationsEnabled = !globalThis.document?.hidden && globalThis.document?.body?.dataset?.presentationQuality !== 'reduced';
     this.drawGround(visible);
     if (this.presentationCache) this.drawFoundryFloorPresentation(visible);
     this.drawLaneBorders();
@@ -134,7 +134,8 @@ export class WorldRenderer {
       floorPlates:takeFixtures(fixtureDefinition.floorPlates),
       warningBands:takeFixtures(fixtureDefinition.warningBands),
       pipes:takeFixtures(fixtureDefinition.pipes),
-      scorchMarks:takeFixtures(fixtureDefinition.scorchMarks)
+      scorchMarks:takeFixtures(fixtureDefinition.scorchMarks),
+      burnerHousings:takeFixtures(fixtureDefinition.burnerHousings)
     };
     const sources = {
       warmLights:takeSources(ambienceDefinition.warmLights),
@@ -336,6 +337,33 @@ export class WorldRenderer {
         ctx.lineWidth = 1.5;
         ctx.stroke();
       }
+    }
+
+    for (const housing of fixtures.burnerHousings) {
+      if (!this.isRectVisible(housing, visible, 12)) continue;
+      const furnace = housing.type === 'furnaceThroat';
+      ctx.fillStyle = 'rgba(20,27,28,.96)';
+      ctx.strokeStyle = furnace ? 'rgba(205,116,51,.72)' : 'rgba(135,151,148,.48)';
+      ctx.lineWidth = furnace ? 3 : 2;
+      ctx.beginPath();
+      ctx.roundRect(housing.x, housing.y, housing.w, housing.h, 3);
+      ctx.fill();
+      ctx.stroke();
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(housing.x + 6, housing.y + 4, housing.w - 12, housing.h - 8);
+      ctx.clip();
+      ctx.strokeStyle = 'rgba(236,126,50,.62)';
+      ctx.lineWidth = 2;
+      for (let x = housing.x + 8; x < housing.x + housing.w; x += 12) {
+        ctx.beginPath();
+        ctx.moveTo(x, housing.y + housing.h - 4);
+        ctx.lineTo(x + 8, housing.y + 4);
+        ctx.stroke();
+      }
+      ctx.restore();
+      ctx.fillStyle = 'rgba(235,95,27,.72)';
+      ctx.fillRect(housing.x + 8, housing.y + housing.h - 6, housing.w - 16, 2);
     }
 
     for (const band of fixtures.warningBands) {

@@ -1,5 +1,5 @@
 import { CombatFeedbackRenderer } from '../render/CombatFeedbackRenderer.js';
-import { WeaponRenderer } from '../render/WeaponRenderer.js';
+import { SideViewWeaponRenderer } from '../render/WeaponRenderer.js';
 
 const PREVIEW_METHODS = Object.freeze({
   'assault-rifle': 'drawAR',
@@ -12,10 +12,18 @@ const PREVIEW_METHODS = Object.freeze({
   melee: 'drawMelee'
 });
 
+export const MENU_WEAPON_PRESENTATION = Object.freeze({
+  version:'2.5.0',
+  role:'menu-side-view-reference',
+  authored:true,
+  halo:false,
+  weaponIds:Object.freeze(Object.keys(PREVIEW_METHODS))
+});
+
 export function weaponModelSvg(weapon, className = '') {
   const safeId = String(weapon?.id || 'assault-rifle').replace(/[^a-z0-9-]/gi, '');
   const safeName = String(weapon?.name || 'Weapon').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-  return `<canvas class="phase2-weapon-svg phase2011-weapon-canvas ${className}" width="660" height="220" data-game-weapon-model="${safeId}" role="img" aria-label="${safeName} in-game model"></canvas>`;
+  return `<canvas class="phase2-weapon-svg phase2011-weapon-canvas ${className}" width="660" height="220" data-game-weapon-model="${safeId}" data-weapon-presentation="side-view" data-weapon-halo="none" role="img" aria-label="${safeName} side-view reference model"></canvas>`;
 }
 
 export function paintGameplayWeaponModel(canvas) {
@@ -27,19 +35,26 @@ export function paintGameplayWeaponModel(canvas) {
   const ctx = canvas.getContext('2d', { alpha: true });
   if (!ctx) return false;
 
-  const renderer = new WeaponRenderer(ctx);
+  const renderer = new SideViewWeaponRenderer(ctx);
   const state = { firing: false, reloading: false };
   const scale = Math.min(canvas.width / 142, canvas.height / 58);
   const centerX = weaponId === 'sniper' ? 33 : weaponId === 'melee' ? 21 : 25;
   const centerY = weaponId === 'lmg' ? 5 : weaponId === 'launcher' ? 5 : 2;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.save();
+  ctx.setTransform?.(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.filter = 'none';
+  ctx.shadowBlur = 0;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.translate(canvas.width / 2 - centerX * scale, canvas.height / 2 - centerY * scale);
   ctx.scale(scale, scale);
   renderer[method](ctx, state, 0);
   ctx.restore();
   canvas.dataset.weaponHydrated = 'true';
+  canvas.dataset.weaponPresentation = 'side-view';
+  canvas.dataset.weaponHalo = 'none';
   return true;
 }
 

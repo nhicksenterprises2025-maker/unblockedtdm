@@ -2,6 +2,7 @@ import { TILE_SIZE } from './engine/constants.js';
 import { WeaponManager } from './combat/WeaponManager.js';
 import { castHitscan } from './combat/Hitscan.js';
 import { hydrateWeaponModelCanvases } from './ui/WeaponPresentation.js';
+import { quitCommandIcon, settingsCommandIcon, weaponInfoCommandIcon } from './ui/HomeCommandArt.js';
 
 const DEG_TO_RAD = Math.PI / 180;
 
@@ -112,8 +113,9 @@ function silverGearIcon() {
 const ICONS = Object.freeze({
   play: silverPlayIcon,
   loadouts: loadoutIcon,
-  'weapon-info': weaponInfoIcon,
-  settings: silverGearIcon
+  'weapon-info': weaponInfoCommandIcon,
+  settings: settingsCommandIcon,
+  quit: quitCommandIcon
 });
 
 function installMenuArt() {
