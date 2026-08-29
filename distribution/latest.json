@@ -1,14 +1,14 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.4.3.2",
+  "gameVersion": "2.4.3.3",
   "build": 1,
-  "sequence": 55,
-  "phase": "2.4.3.2 — Arena Phase 2",
-  "tag": "build-2.4.3.2-v1",
-  "title": "Skirmish Arena 2.4.3.2 — Build 1",
-  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.3.2-v1/UnblockedTDM-2.4.3.2-v1.exe",
-  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.3.2-v1/SkirmishArena-Setup-2.4.3.2-v1.exe",
-  "sha256": "673fc230983f77fd7f7b86986455525f92e44f9224a29b3766bdc48dcfc8358b",
-  "installerSha256": "aa09242f8e67b167c20a8abd111913615c30280a7d8cca26b214ef90254bcf6a",
-  "publishedAt": "2026-08-28T17:47:28.764Z"
+  "sequence": 56,
+  "phase": "2.4.3.3 — Arena Phase 3",
+  "tag": "build-2.4.3.3-v1",
+  "title": "Skirmish Arena 2.4.3.3 — Build 1",
+  "gameUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.3.3-v1/UnblockedTDM-2.4.3.3-v1.exe",
+  "installerUrl": "https://github.com/nhicksenterprises2025-maker/unblockedtdm/releases/download/build-2.4.3.3-v1/SkirmishArena-Setup-2.4.3.3-v1.exe",
+  "sha256": "928963d907f5da9c20bde4f4d34541796b0acd4ed952e4671bbc36f4bd670ac7",
+  "installerSha256": "107df8b708e94937f28fdd06f3388e0ab55640005d941f7ab56ac13c933a92f7",
+  "publishedAt": "2026-08-29T05:37:53.126Z"
 }
