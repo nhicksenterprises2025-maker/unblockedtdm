@@ -37,37 +37,45 @@ jobs:
           $stdout = Join-Path $env:RUNNER_TEMP 'skirmish-ui-smoke.stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'skirmish-ui-smoke.stderr.log'
           Remove-Item $sentinel,$stdout,$stderr -Force -ErrorAction SilentlyContinue
-          $env:SKIRMISH_SMOKE_SENTINEL = $sentinel
+          # The portable wrapper does not reliably forward CLI arguments. Use
+          # the same inherited environment contract as the release-equivalent
+          # scripts/smoke-packaged-game.mjs gate.
+          $env:SKIRMISH_SMOKE_TEST = '1'
+          $env:SKIRMISH_SMOKE_RESULT_PATH = $sentinel
 
-          $process = Start-Process -FilePath $exe -ArgumentList '--smoke-test' -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
-          $deadline = (Get-Date).AddSeconds(45)
-          while ((Get-Date) -lt $deadline -and -not (Test-Path $sentinel)) {
+          $process = Start-Process -FilePath $exe -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          $deadline = (Get-Date).AddSeconds(55)
+          $result = $null
+          while ((Get-Date) -lt $deadline) {
+            if (Test-Path $sentinel) {
+              try { $result = Get-Content $sentinel -Raw | ConvertFrom-Json } catch { $result = $null }
+              if ($null -ne $result -and $null -ne $result.exitCode) { break }
+            }
             Start-Sleep -Milliseconds 500
           }
 
-          if (-not (Test-Path $sentinel)) {
+          if ($null -eq $result -or $null -eq $result.exitCode) {
             Write-Host '===== packaged stdout ====='
             if (Test-Path $stdout) { Get-Content $stdout }
             Write-Host '===== packaged stderr ====='
             if (Test-Path $stderr) { Get-Content $stderr }
             Get-Process | Where-Object { $_.ProcessName -like 'UnblockedTDM*' } | Stop-Process -Force -ErrorAction SilentlyContinue
-            throw 'Packaged Skirmish Arena emitted no smoke result. The executable did not reach either UI-ready or the instrumented startup-failure path.'
+            throw 'Packaged Skirmish Arena emitted no terminal smoke result.'
           }
 
-          $result = Get-Content $sentinel -Raw | ConvertFrom-Json
-          if (-not $result.uiReady) {
+          if ($result.stage -ne 'pass' -or [int]$result.exitCode -ne 0) {
             Write-Host '===== packaged stdout ====='
             if (Test-Path $stdout) { Get-Content $stdout }
             Write-Host '===== packaged stderr ====='
             if (Test-Path $stderr) { Get-Content $stderr }
-            throw "Packaged modern UI boot failed: $($result.error)"
+            throw "Packaged modern UI boot failed at stage '$($result.stage)' with exit code $($result.exitCode)."
           }
           if ($result.gameVersion -ne $plan.gameVersion) { throw "Smoke gameVersion mismatch: $($result.gameVersion)" }
           if ([int]$result.build -ne [int]$plan.build) { throw "Smoke build mismatch: $($result.build)" }
           if ([int]$result.sequence -ne [int]$plan.sequence) { throw "Smoke sequence mismatch: $($result.sequence)" }
           if ($result.tag -ne $plan.tag) { throw "Smoke tag mismatch: $($result.tag)" }
 
-          Write-Host "Packaged UI smoke passed: $($result.gameVersion) Build $($result.build), sequence $($result.sequence), modern UI ready."
+          Write-Host "Packaged UI smoke passed: $($result.gameVersion) Build $($result.build), sequence $($result.sequence), stage $($result.stage)."
           Get-Process | Where-Object { $_.ProcessName -like 'UnblockedTDM*' } | Stop-Process -Force -ErrorAction SilentlyContinue
 
       - name: Upload smoke diagnostics

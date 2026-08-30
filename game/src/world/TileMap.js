@@ -1,9 +1,7 @@
-import { TILE_SIZE, WORLD_HEIGHT, WORLD_WIDTH } from '../engine/constants.js';
+import { TILE_SIZE } from '../engine/constants.js';
 
 export class TileMap {
   constructor(definition) {
-    this.width = WORLD_WIDTH;
-    this.height = WORLD_HEIGHT;
     this.tileSize = TILE_SIZE;
     this.revision = 0;
     this.setDefinition(definition);
@@ -11,7 +9,16 @@ export class TileMap {
 
   setDefinition(definition) {
     if (!definition?.structures || !definition?.spawns) throw new Error('Invalid map definition');
+    const cols = Number(definition.cols);
+    const rows = Number(definition.rows);
+    const tileSize = Number(definition.tileSize || TILE_SIZE);
+    if (!Number.isInteger(cols) || cols < 8 || !Number.isInteger(rows) || rows < 8 || !Number.isFinite(tileSize) || tileSize <= 0) {
+      throw new Error('Map definitions require valid cols, rows and tileSize values.');
+    }
     this.definition = definition;
+    this.tileSize = tileSize;
+    this.width = cols * tileSize;
+    this.height = rows * tileSize;
     this.structures = definition.structures;
     this.blockers = this.structures.filter((item) => ['wall', 'low', 'tall'].includes(item.kind));
     this.revision += 1;

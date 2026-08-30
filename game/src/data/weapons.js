@@ -52,7 +52,10 @@ export const WEAPONS = {
   pistol: {
     ...common,
     id: 'pistol', name: 'Pistol', shortName: 'PISTOL', slot: 'secondary', kind: 'hitscan', fireMode: 'semi',
-    damage: 15, critChance: 0.05, critDamage: 30, fireInterval: 0, magazineSize: 10, reloadTime: 1.7,
+    // Seven discrete trigger pulls per second is the authored semi-auto ceiling
+    // that older presentation code already used. Keeping it in canonical
+    // weapon data gives both combat and Weapon Info one real source of truth.
+    damage: 15, critChance: 0.05, critDamage: 30, fireInterval: 1 / 7, magazineSize: 10, reloadTime: 1.7,
     fullDamageRangeTiles: 8, falloffDamage: 10, baseSpreadDegrees: 3, movingSpreadDegrees: 6,
     adsTime: 0.2, movementMultiplier: 1, swapTier: 1, swapTime: 0.45,
     render: { muzzleForward: 42, shoulderSide: 7.5, adsForwardShift: 5, adsSideShift: 2.5, kick: 3.0 }
@@ -89,10 +92,62 @@ export function canEquipInSlot(weapon, slot) {
   return weapon.slot === slot || weapon.slot === 'both';
 }
 
+const roundedStat = (value) => {
+  const numeric = Number(value) || 0;
+  return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(1).replace(/\.0$/, '');
+};
+
+/**
+ * Theoretical non-critical direct DPS derived only from live weapon balance
+ * values. It intentionally excludes reload time: this is the weapon's active
+ * damage rate, not a guessed long-form encounter average.
+ */
+export function deriveWeaponDps(weapon) {
+  const damage = Math.max(0, Number(weapon?.damage) || 0);
+  const interval = Math.max(0, Number(weapon?.fireInterval) || 0);
+  const shotsPerSecond = interval > 0 ? 1 / interval : 0;
+  const pellets = weapon?.kind === 'shotgun' ? Math.max(1, Math.floor(Number(weapon?.pelletCount) || 1)) : 1;
+  const directDamage = damage * pellets;
+  const directDps = directDamage * shotsPerSecond;
+  const falloffDamage = Math.max(0, Number(weapon?.falloffDamage) || 0) * pellets;
+  const falloffDps = falloffDamage * shotsPerSecond;
+
+  return Object.freeze({
+    weaponId:String(weapon?.id || ''),
+    interval,
+    shotsPerSecond,
+    directDamage,
+    directDps,
+    falloffDps,
+    pellets,
+    semantics:weapon?.kind === 'shotgun'
+      ? 'maximum-close-range-pellet'
+      : weapon?.projectileType === 'launcher'
+        ? 'splash-per-exposed-target'
+        : weapon?.kind === 'melee'
+          ? 'melee-swing'
+          : 'direct-base'
+  });
+}
+
+export function formatWeaponDps(weapon) {
+  const dps = deriveWeaponDps(weapon);
+  if (dps.interval <= 0) return 'N/A';
+  if (dps.semantics === 'maximum-close-range-pellet') {
+    return `${roundedStat(dps.directDps)} max · ${roundedStat(dps.falloffDps)} falloff · pellet hits/range vary`;
+  }
+  if (dps.semantics === 'splash-per-exposed-target') {
+    return `${roundedStat(dps.directDps)} splash / exposed target · direct impact adds no bonus`;
+  }
+  if (dps.semantics === 'melee-swing') return `${roundedStat(dps.directDps)} · ${roundedStat(dps.directDamage)} per swing`;
+  return `${roundedStat(dps.directDps)} direct`;
+}
+
 export function formatWeaponStats(weapon) {
   const rows = [];
   if (weapon.kind === 'shotgun') rows.push(['Damage', `${weapon.damage} × ${weapon.pelletCount} pellets`]);
   else rows.push(['Damage', `${weapon.damage}`]);
+  rows.push(['DPS', formatWeaponDps(weapon)]);
   if (weapon.critChance > 0) rows.push(['Critical', `${(weapon.critChance * 100).toFixed(1)}% → ${weapon.critDamage}`]);
   else rows.push(['Critical', 'None']);
   rows.push(['Fire', weapon.fireMode === 'semi' ? (weapon.kind === 'melee' ? `${weapon.fireInterval.toFixed(1)}s swing` : weapon.fireInterval > 0 ? `${weapon.fireInterval.toFixed(2).replace(/0+$/,'').replace(/\.$/,'')}s / shot` : 'Semi-auto') : `${weapon.fireInterval.toFixed(2).replace(/0+$/,'').replace(/\.$/,'')}s / shot`]);

@@ -16,3 +16,63 @@ body.ui-v18 .postgame-rounds>span{font-family:var(--ut-mono);color:var(--ut-mute
 body.ui-v18 .postgame-rounds b{border:1px solid var(--ut-border);border-radius:2px;background:#0b1118}
 body.ui-v18 .postgame-actions{padding:16px 26px 22px;border-top:1px solid var(--ut-border)}
 body.postgame-open .round-overlay{opacity:0!important;pointer-events:none!important}
+
+/* 2.6 result-room scale: the structure remains the proven tactical panel, but
+   its hierarchy now reads comfortably at 1080p instead of clustering at the
+   center of the screen. */
+body.ui-v18 .postgame-shell{width:min(1480px,96vw)!important;max-height:94vh!important}
+body.ui-v18 .postgame-titlebar{padding:28px 32px 24px;align-items:center}
+body.ui-v18 .postgame-titlebar h1{margin:7px 0 0;font-size:clamp(42px,4vw,64px);line-height:.92;letter-spacing:-.045em}
+body.ui-v18 .postgame-titlebar p{margin:9px 0 0;color:#9eb2bd;font:850 13px/1.2 var(--ut-mono);letter-spacing:.14em}
+body.ui-v18 .postgame-titlebar>div:first-child>span{font-size:10px;letter-spacing:.18em}
+body.ui-v18 .postgame-final small{font-size:9px;letter-spacing:.18em}
+body.ui-v18 .postgame-final strong{gap:14px;margin-top:9px;font-size:24px}
+body.ui-v18 .postgame-final em{color:#607985;font-style:normal}
+body.ui-v18 .postgame-summary{grid-template-columns:repeat(6,minmax(0,1fr))}
+body.ui-v18 .postgame-summary div{min-height:82px;padding:18px 20px}
+body.ui-v18 .postgame-summary span{font-size:9px;letter-spacing:.14em}
+body.ui-v18 .postgame-summary strong{margin-top:8px;font-size:23px}
+body.ui-v18 .postgame-summary .postgame-mvp{box-shadow:inset 0 -2px #d7b765}
+body.ui-v18 .postgame-summary .postgame-mvp strong{color:#e5c96f;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.ui-v18 .postgame-summary .postgame-mvp small{display:block;margin-top:6px;color:#829aa6;font:800 8px/1 var(--ut-mono);letter-spacing:.08em}
+body.ui-v18 .postgame-scoreboards{gap:18px;padding:22px 32px}
+body.ui-v18 .postgame-team-title{padding:14px 15px 12px}
+body.ui-v18 .postgame-team-title span,body.ui-v18 .postgame-team-title b{font-size:10px;letter-spacing:.12em}
+body.ui-v18 .postgame-row{min-height:44px;padding:11px 13px;font-size:11px}
+body.ui-v18 .postgame-row strong{font-size:13px}
+body.ui-v18 .postgame-row span{font-size:12px;font-variant-numeric:tabular-nums}
+body.ui-v18 .postgame-row .postgame-key-stat{color:#eef9ff;font-size:14px;font-weight:950}
+body.ui-v18 .postgame-team.blue .postgame-key-stat{color:#76ddff}
+body.ui-v18 .postgame-team.red .postgame-key-stat{color:#ff8593}
+body.ui-v18 .postgame-row.local{background:#102531;box-shadow:inset 4px 0 var(--ut-accent)}
+body.ui-v18 .postgame-rounds{padding:2px 32px 22px}
+body.ui-v18 .postgame-rounds>span{font-size:9px;letter-spacing:.15em}
+body.ui-v18 .postgame-rounds b{padding:9px 11px;font-size:9px}
+body.ui-v18 .postgame-actions{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;padding:18px 32px 24px}
+body.ui-v18 .postgame-actions button{min-width:190px;padding:15px 20px;font-size:11px}
+body.ui-v18 .postgame-actions .primary{min-width:260px}
+body.ui-v18 .postgame-actions .postgame-skip{min-width:170px;border-style:dashed;color:#8fa8b4}
+body.ui-v18 .postgame-actions .postgame-skip[hidden]{display:none!important}
+
+body.ui-v18 [data-progression-result],body.ui-v18 [data-arena-result]{margin:18px 32px!important}
+body.ui-v18 [data-career-progress-fill],body.ui-v18 [data-arena-progress-fill]{transition:none!important;will-change:width}
+body.ui-v18 .progression-step{animation:postgame-step-pulse .28s ease-out}
+@keyframes postgame-step-pulse{0%{box-shadow:inset 0 0 0 1px rgba(89,216,255,.75)}100%{box-shadow:inset 0 0 0 1px rgba(89,216,255,0)}}
+
+@media(max-width:1120px){
+  body.ui-v18 .postgame-summary{grid-template-columns:repeat(3,1fr)}
+  body.ui-v18 .postgame-scoreboards{grid-template-columns:1fr}
+}
+@media(max-width:720px){
+  body.ui-v18 .postgame-screen{padding:12px}
+  body.ui-v18 .postgame-titlebar{align-items:flex-start;padding:22px}
+  body.ui-v18 .postgame-titlebar h1{font-size:40px}
+  body.ui-v18 .postgame-summary{grid-template-columns:repeat(2,1fr)}
+  body.ui-v18 .postgame-scoreboards{padding:18px 20px}
+  body.ui-v18 .postgame-actions{grid-template-columns:1fr 1fr;padding:16px 20px}
+  body.ui-v18 .postgame-actions>span{display:none}
+  body.ui-v18 .postgame-actions button,body.ui-v18 .postgame-actions .primary{min-width:0}
+}
+@media(prefers-reduced-motion:reduce){
+  body.ui-v18 .progression-step{animation:none!important}
+}

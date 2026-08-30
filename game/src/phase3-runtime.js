@@ -6,7 +6,7 @@ import { assignBotGamertags } from './data/Gamertags.js';
 let matchRef = null;
 let tacticalHud = null;
 let tacticalMapRenderer = null;
-let wasActive = false;
+let wasMatchSessionActive = false;
 const eliminationMeta = new Map();
 
 function ensureHud(match) {
@@ -54,20 +54,22 @@ window.addEventListener('unblockedtdm:damage-applied', (event) => {
   if (matchRef) matchRef.recordDamage(detail);
 });
 
-setInterval(() => {
+const tacticalHudTimer = window.setInterval(() => {
   if (!matchRef || !tacticalHud) return;
   const matchStarted = document.body.classList.contains('match-started');
   const paused = document.getElementById('pausePanel')?.classList.contains('visible');
-  const active = matchStarted && !paused && matchRef.state !== 'match-over';
+  const matchSessionActive = matchStarted && matchRef.state !== 'match-over';
+  const visible = matchSessionActive && !paused && !document.hidden;
 
-  if (active && !wasActive) tacticalHud.reset();
-  tacticalHud.setActive(active);
-  wasActive = active;
+  if (matchSessionActive && !wasMatchSessionActive) tacticalHud.reset();
+  tacticalHud.setActive(visible);
+  wasMatchSessionActive = matchSessionActive;
 
-  if (!matchStarted) return;
+  if (!visible) return;
   const localPlayer = matchRef.players.find((player) => player.isLocal) || matchRef.players[0] || null;
   if (tacticalMapRenderer && localPlayer) {
     tacticalMapRenderer.observeEnemyFire(matchRef.players, localPlayer, performance.now() / 1000);
   }
   tacticalHud.update(matchRef.snapshot(), matchRef.statsSnapshot());
 }, 100);
+window.addEventListener('beforeunload', () => window.clearInterval(tacticalHudTimer), { once:true });

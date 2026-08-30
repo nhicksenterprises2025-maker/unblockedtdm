@@ -53,7 +53,11 @@ function syncPhase4Controls() {
 
 function installPhase4Settings() {
   for (const grid of document.querySelectorAll('.settings-panel .settings-grid')) {
-    if (grid.closest('[data-settings-version="2.5"]')) continue;
+    // SettingsPanel owns every versioned settings surface. The Phase 4 cards
+    // are only a compatibility fallback for the unversioned legacy shell;
+    // matching one historical version here caused duplicate audio/sprint cards
+    // as soon as the real panel advanced to 2.6.
+    if (grid.closest('[data-settings-version]')) continue;
     if (grid.querySelector('[data-phase4-settings]')) continue;
     grid.insertAdjacentHTML('beforeend', phase4Cards());
   }

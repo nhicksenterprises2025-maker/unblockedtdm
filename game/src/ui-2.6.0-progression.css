@@ -1,0 +1,413 @@
+/* Skirmish Arena 2.6 — progression readability and the shared command mark.
+   This layer intentionally leaves Career/Arena persistence and thresholds alone. */
+body.ui-260-progression{
+  --sa26-surface:#09131a;
+  --sa26-surface-strong:#071017;
+  --sa26-line:#2b414d;
+  --sa26-line-soft:#1d3039;
+  --sa26-text:#edf3f6;
+  --sa26-muted:#8ba1ac;
+  --sa26-dim:#667e8a;
+  --sa26-cyan:#51c9ef;
+  --sa26-green:#7ac7a1;
+  --sa26-mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+
+/* One authored emblem asset owns both small brand locations. */
+body.ui-260-progression #mainMenu .menu-brand .menu-mark,
+body.ui-260-progression .build-hud .brand .mark{
+  flex:0 0 auto!important;
+  border:0!important;
+  border-radius:0!important;
+  background-color:transparent!important;
+  background-image:url("assets/skirmish-arena-emblem.svg")!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  background-size:contain!important;
+  box-shadow:none!important;
+  color:transparent!important;
+  font-size:0!important;
+  line-height:0!important;
+  overflow:hidden!important;
+}
+body.ui-260-progression #mainMenu .menu-brand .menu-mark{width:64px!important;height:64px!important}
+body.ui-260-progression #mainMenu .menu-brand .menu-mark>img{display:none!important}
+body.ui-260-progression .build-hud .brand .mark{width:42px!important;height:42px!important}
+
+/* The retired 01–05 command-card counters are not navigation information. */
+body.ui-260-progression.ui-phase6 #mainMenu .main-nav button.phase2-nav-button::after{
+  content:none!important;
+  display:none!important;
+}
+
+/* Shared page scale. Important text never falls back to the old 6–8 px microcopy. */
+body.ui-260-progression #mainMenu .career-view,
+body.ui-260-progression #mainMenu .arena-view{
+  box-sizing:border-box;
+  width:100%;
+  max-width:none!important;
+  min-height:100%;
+  padding-bottom:36px!important;
+}
+body.ui-260-progression #mainMenu .career-page-head,
+body.ui-260-progression #mainMenu .arena-page-head{
+  min-height:104px;
+  padding:24px 30px 20px!important;
+  align-items:flex-end;
+  border-bottom:1px solid var(--sa26-line)!important;
+}
+body.ui-260-progression #mainMenu .career-page-head>div>span,
+body.ui-260-progression #mainMenu .arena-page-head>div>span,
+body.ui-260-progression #mainMenu .career-section-intro>span,
+body.ui-260-progression #mainMenu .arena-section-label{
+  font:850 10px/1.2 var(--sa26-mono)!important;
+  letter-spacing:.15em!important;
+}
+body.ui-260-progression #mainMenu .career-page-head h2,
+body.ui-260-progression #mainMenu .arena-page-head h2{
+  margin:7px 0 5px!important;
+  font-size:clamp(46px,4.5vw,72px)!important;
+  line-height:.88!important;
+  letter-spacing:-.05em!important;
+}
+body.ui-260-progression #mainMenu .career-page-head p,
+body.ui-260-progression #mainMenu .arena-page-head p{
+  max-width:850px;
+  margin:0!important;
+  color:var(--sa26-muted)!important;
+  font-size:14px!important;
+  line-height:1.5!important;
+}
+body.ui-260-progression #mainMenu .career-page-head button,
+body.ui-260-progression #mainMenu .arena-page-head button{
+  min-width:158px!important;
+  min-height:42px!important;
+  padding:12px 16px!important;
+  border-color:#38515e!important;
+  background:#0a151c!important;
+  font:850 9px/1 var(--sa26-mono)!important;
+}
+body.ui-260-progression #mainMenu .career-tabs,
+body.ui-260-progression #mainMenu .arena-tabs{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  padding:0!important;
+  border-bottom:1px solid var(--sa26-line)!important;
+}
+body.ui-260-progression #mainMenu .career-tabs button,
+body.ui-260-progression #mainMenu .arena-tabs button{
+  min-width:0!important;
+  min-height:55px!important;
+  padding:17px 15px!important;
+  border:0!important;
+  border-right:1px solid var(--sa26-line)!important;
+  background:#081118!important;
+  color:#8196a1!important;
+  font:850 10px/1 var(--sa26-mono)!important;
+  letter-spacing:.13em!important;
+}
+body.ui-260-progression #mainMenu .career-tabs button:last-child,
+body.ui-260-progression #mainMenu .arena-tabs button:last-child{border-right:0!important}
+body.ui-260-progression #mainMenu .career-tabs button.active,
+body.ui-260-progression #mainMenu .arena-tabs button.active{
+  color:var(--sa26-text)!important;
+  background:#0c1921!important;
+  box-shadow:inset 0 -3px var(--sa26-cyan)!important;
+}
+body.ui-260-progression #mainMenu .career-page-body,
+body.ui-260-progression #mainMenu .arena-page-body{
+  box-sizing:border-box;
+  min-height:0!important;
+  padding:24px 30px 40px!important;
+}
+
+/* Career overview: use real account data and recent form to occupy the canvas. */
+body.ui-260-progression #mainMenu .career-overview-composition{display:grid;gap:14px}
+body.ui-260-progression #mainMenu .career-overview-hero{
+  grid-template-columns:240px minmax(0,1fr)!important;
+  min-height:292px!important;
+  border-color:var(--sa26-line)!important;
+  background:linear-gradient(112deg,#091218,#0b1921)!important;
+}
+body.ui-260-progression #mainMenu .career-overview-badge{border-color:var(--sa26-line)!important}
+body.ui-260-progression #mainMenu .career-badge-hero{width:174px!important;height:198px!important}
+body.ui-260-progression #mainMenu .career-overview-identity{padding:32px 40px!important}
+body.ui-260-progression #mainMenu .career-overview-identity>span{font-size:10px!important;letter-spacing:.16em!important}
+body.ui-260-progression #mainMenu .career-overview-identity h1{
+  margin-top:10px!important;
+  font-size:clamp(58px,5vw,82px)!important;
+  line-height:.88!important;
+}
+body.ui-260-progression #mainMenu .career-overview-identity h3{
+  margin:13px 0 28px!important;
+  font-size:16px!important;
+  line-height:1.15!important;
+}
+body.ui-260-progression #mainMenu .career-level-line{font-size:11px!important;letter-spacing:.07em!important}
+body.ui-260-progression #mainMenu .career-xp-track-large{height:10px!important;margin-top:12px!important}
+body.ui-260-progression #mainMenu .career-account-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  margin-top:0!important;
+  border-color:var(--sa26-line)!important;
+}
+body.ui-260-progression #mainMenu .career-account-grid>div{
+  min-height:102px;
+  box-sizing:border-box;
+  padding:19px 21px!important;
+  border-color:var(--sa26-line)!important;
+  background:var(--sa26-surface)!important;
+}
+body.ui-260-progression #mainMenu .career-account-grid span,
+body.ui-260-progression #mainMenu .career-account-grid small{font-size:9px!important;line-height:1.3!important}
+body.ui-260-progression #mainMenu .career-account-grid strong{margin:9px 0 7px!important;font-size:28px!important}
+body.ui-260-progression #mainMenu .career-overview-support{
+  display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(430px,.9fr);
+  gap:14px;
+}
+body.ui-260-progression #mainMenu .career-next-rank{
+  min-height:142px;
+  box-sizing:border-box;
+  margin-top:0!important;
+  padding:22px!important;
+  border-color:var(--sa26-line)!important;
+  background:var(--sa26-surface)!important;
+}
+body.ui-260-progression #mainMenu .career-next-rank-head span,
+body.ui-260-progression #mainMenu .career-rank-track-foot{font-size:9px!important}
+body.ui-260-progression #mainMenu .career-next-rank-head strong{margin-top:8px!important;font-size:20px!important}
+body.ui-260-progression #mainMenu .career-next-rank-head>b{font-size:10px!important}
+body.ui-260-progression #mainMenu .career-rank-track{height:10px!important;margin-top:20px!important}
+body.ui-260-progression #mainMenu .career-rank-track-foot{margin-top:9px!important}
+body.ui-260-progression #mainMenu .career-overview-recent{
+  min-width:0;
+  border:1px solid var(--sa26-line);
+  background:var(--sa26-surface);
+}
+body.ui-260-progression #mainMenu .career-overview-recent>header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:42px;
+  padding:0 14px;
+  border-bottom:1px solid var(--sa26-line);
+}
+body.ui-260-progression #mainMenu .career-overview-recent>header span{color:var(--sa26-cyan);font:850 9px/1 var(--sa26-mono);letter-spacing:.13em}
+body.ui-260-progression #mainMenu .career-overview-recent>header strong{color:#8298a3;font:800 9px/1 var(--sa26-mono)}
+body.ui-260-progression #mainMenu .career-overview-recent>div{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));min-height:99px}
+body.ui-260-progression #mainMenu .career-overview-result{
+  display:grid;
+  align-content:center;
+  gap:5px;
+  min-width:0;
+  padding:12px;
+  border-right:1px solid var(--sa26-line-soft);
+}
+body.ui-260-progression #mainMenu .career-overview-result:last-child{border-right:0}
+body.ui-260-progression #mainMenu .career-overview-result b{font:950 14px/1 var(--sa26-mono);color:#ff7989}
+body.ui-260-progression #mainMenu .career-overview-result.win b{color:#70d2a2}
+body.ui-260-progression #mainMenu .career-overview-result span{font:800 8px/1 var(--sa26-mono);color:var(--sa26-dim)}
+body.ui-260-progression #mainMenu .career-overview-result strong{font:850 11px/1 var(--sa26-mono);white-space:nowrap}
+body.ui-260-progression #mainMenu .career-overview-result em{font:800 9px/1 var(--sa26-mono);font-style:normal;color:#79bdda}
+body.ui-260-progression #mainMenu .career-overview-empty{display:grid;place-items:center;grid-column:1/-1;padding:20px;color:var(--sa26-muted);font:800 10px/1.4 var(--sa26-mono);letter-spacing:.08em}
+body.ui-260-progression #mainMenu .career-economy-note{
+  min-height:48px;
+  box-sizing:border-box;
+  margin-top:0!important;
+  padding:13px 16px!important;
+}
+body.ui-260-progression #mainMenu .career-economy-note span{font-size:8px!important}
+body.ui-260-progression #mainMenu .career-economy-note p{font-size:10px!important;line-height:1.45!important}
+
+/* Career rank catalog becomes a compact horizontal service-record grid. */
+body.ui-260-progression #mainMenu .career-rank-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+body.ui-260-progression #mainMenu .career-rank-card{
+  display:grid!important;
+  grid-template-columns:96px minmax(0,1fr)!important;
+  grid-template-rows:minmax(82px,1fr) auto!important;
+  min-height:124px!important;
+  border-color:var(--sa26-line)!important;
+  background:var(--sa26-surface)!important;
+}
+body.ui-260-progression #mainMenu .career-rank-card-badge{
+  grid-column:1;
+  grid-row:1/3;
+  border-right:1px solid var(--sa26-line)!important;
+  border-bottom:0!important;
+}
+body.ui-260-progression #mainMenu .career-rank-card-badge .career-rank-badge{width:72px!important;height:84px!important}
+body.ui-260-progression #mainMenu .career-rank-card-copy{grid-column:2;grid-row:1;padding:18px 16px 10px!important}
+body.ui-260-progression #mainMenu .career-rank-card-copy span,
+body.ui-260-progression #mainMenu .career-rank-card-copy small{font-size:9px!important;line-height:1.35!important}
+body.ui-260-progression #mainMenu .career-rank-card-copy strong{margin:7px 0 6px!important;font-size:17px!important;line-height:1!important}
+body.ui-260-progression #mainMenu .career-rank-card-copy small{min-height:0!important;color:#718792!important}
+body.ui-260-progression #mainMenu .career-rank-card>b{
+  grid-column:2;
+  grid-row:2;
+  padding:10px 16px!important;
+  border-color:var(--sa26-line-soft)!important;
+  font-size:8px!important;
+}
+
+/* Milestones keep five useful rows and use the available width. */
+body.ui-260-progression #mainMenu .career-section-intro{padding:4px 0 20px!important}
+body.ui-260-progression #mainMenu .career-section-intro h3{margin:9px 0 7px!important;font-size:32px!important}
+body.ui-260-progression #mainMenu .career-section-intro p{font-size:12px!important;line-height:1.5!important}
+body.ui-260-progression #mainMenu .career-milestone-row{
+  grid-template-columns:minmax(220px,.85fr) minmax(360px,1.7fr) minmax(160px,.6fr)!important;
+  min-height:104px!important;
+  border-color:var(--sa26-line)!important;
+  background:var(--sa26-surface)!important;
+}
+body.ui-260-progression #mainMenu .career-milestone-row>div{padding:19px 22px!important}
+body.ui-260-progression #mainMenu .career-milestone-name span,
+body.ui-260-progression #mainMenu .career-milestone-reward span{font-size:9px!important}
+body.ui-260-progression #mainMenu .career-milestone-name strong,
+body.ui-260-progression #mainMenu .career-milestone-reward strong{margin-top:9px!important;font-size:16px!important}
+body.ui-260-progression #mainMenu .career-milestone-progress>div:first-child{font-size:11px!important}
+body.ui-260-progression #mainMenu .career-milestone-track{height:9px!important;margin-top:14px!important}
+
+/* 2.2.1 deliberately carried a high-specificity compatibility clamp for the
+   old Career microscale. The 2.6 type system supersedes that clamp. */
+body.ui-260-progression.ui-211 #mainMenu [data-menu-view="career"] .career-page-head h2{font-size:clamp(46px,4.5vw,72px)!important}
+body.ui-260-progression.ui-211 #mainMenu [data-menu-view="career"] .career-page-head p{font-size:14px!important}
+body.ui-260-progression.ui-211 #mainMenu [data-menu-view="career"] .career-tabs button{font-size:10px!important}
+body.ui-260-progression.ui-211 #mainMenu [data-menu-view="career"] .career-account-grid strong{font-size:28px!important}
+body.ui-260-progression.ui-211 #mainMenu [data-menu-view="career"] .career-rank-card-copy strong{font-size:17px!important}
+body.ui-260-progression.ui-211 #mainMenu [data-menu-view="career"] .career-milestone-name strong,
+body.ui-260-progression.ui-211 #mainMenu [data-menu-view="career"] .career-milestone-reward strong{font-size:16px!important}
+
+/* Arena overview and rank catalog. */
+body.ui-260-progression #mainMenu .arena-overview-composition{display:grid;gap:14px}
+body.ui-260-progression #mainMenu .arena-overview-hero{
+  grid-template-columns:200px minmax(0,1fr)!important;
+  min-height:270px;
+  gap:32px!important;
+  padding:28px 32px!important;
+  border-color:var(--sa26-line)!important;
+}
+body.ui-260-progression #mainMenu .arena-overview-badge .arena-rank-badge{width:146px!important;height:170px!important}
+body.ui-260-progression #mainMenu .arena-overview-copy>span{font-size:10px!important}
+body.ui-260-progression #mainMenu .arena-overview-copy h1{margin:10px 0 6px!important;font-size:clamp(48px,4.6vw,74px)!important}
+body.ui-260-progression #mainMenu .arena-overview-copy h3{font-size:15px!important}
+body.ui-260-progression #mainMenu .arena-ap-line{margin-top:25px!important;font-size:11px!important}
+body.ui-260-progression #mainMenu .arena-ap-track{height:10px!important;margin-top:11px!important}
+body.ui-260-progression #mainMenu .arena-next-line{display:flex;justify-content:space-between;gap:20px;margin-top:12px;color:#78909b;font:800 9px/1.3 var(--sa26-mono);letter-spacing:.06em}
+body.ui-260-progression #mainMenu .arena-next-line span{color:var(--sa26-cyan)}
+body.ui-260-progression #mainMenu .arena-stat-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  margin-top:0!important;
+  border-color:var(--sa26-line)!important;
+}
+body.ui-260-progression #mainMenu .arena-stat-grid>div{
+  min-height:105px;
+  box-sizing:border-box;
+  padding:20px!important;
+  border-color:var(--sa26-line)!important;
+  background:var(--sa26-surface)!important;
+}
+body.ui-260-progression #mainMenu .arena-stat-grid span{font-size:9px!important}
+body.ui-260-progression #mainMenu .arena-stat-grid strong{margin-top:10px!important;font-size:28px!important}
+body.ui-260-progression #mainMenu .arena-stat-grid small{margin-top:7px!important;font-size:9px!important}
+body.ui-260-progression #mainMenu .arena-economy{
+  margin-top:0!important;
+  padding:18px 20px!important;
+  border-color:var(--sa26-line)!important;
+  background:var(--sa26-surface)!important;
+}
+body.ui-260-progression #mainMenu .arena-economy p{margin-top:9px!important;font-size:12px!important;line-height:1.55!important}
+
+body.ui-260-progression #mainMenu .arena-rank-grid{gap:11px!important}
+body.ui-260-progression #mainMenu .arena-rank-card{
+  grid-template-columns:78px minmax(0,1fr) auto!important;
+  gap:17px!important;
+  min-height:118px!important;
+  padding:14px 18px!important;
+  border-color:var(--sa26-line)!important;
+  background:var(--sa26-surface)!important;
+}
+body.ui-260-progression #mainMenu .arena-rank-card .arena-rank-badge{width:68px!important;height:80px!important}
+body.ui-260-progression #mainMenu .arena-rank-copy{min-width:0}
+body.ui-260-progression #mainMenu .arena-rank-copy .arena-rank-threshold{font-size:10px!important;line-height:1.25!important;color:#7b939f!important}
+body.ui-260-progression #mainMenu .arena-rank-copy strong{margin-top:8px!important;font-size:21px!important;line-height:1!important}
+body.ui-260-progression #mainMenu .arena-rank-copy small{display:block;margin-top:9px;color:#76909c;font:800 9px/1.2 var(--sa26-mono);letter-spacing:.08em}
+body.ui-260-progression #mainMenu .arena-rank-card.current .arena-rank-copy small{color:var(--sa26-cyan)}
+body.ui-260-progression #mainMenu .arena-rank-card.earned .arena-rank-copy small{color:var(--sa26-green)}
+body.ui-260-progression #mainMenu .arena-rank-card>b{font-size:10px!important;letter-spacing:.08em!important}
+body.ui-260-progression #mainMenu .arena-rank-card.locked>b{color:#718792!important}
+
+body.ui-260-progression #mainMenu .arena-history-summary{
+  display:grid;
+  grid-template-columns:minmax(220px,.55fr) minmax(0,1.45fr);
+  border-top:1px solid var(--sa26-line);
+  border-left:1px solid var(--sa26-line);
+}
+body.ui-260-progression #mainMenu .arena-history-summary>div{min-height:94px;padding:19px 21px;border-right:1px solid var(--sa26-line);border-bottom:1px solid var(--sa26-line);background:var(--sa26-surface)}
+body.ui-260-progression #mainMenu .arena-history-summary span,
+body.ui-260-progression #mainMenu .arena-history-row span{font-size:9px!important}
+body.ui-260-progression #mainMenu .arena-history-summary strong{display:block;margin-top:10px;font-size:24px}
+body.ui-260-progression #mainMenu .arena-history-list{gap:10px!important;margin-top:14px}
+body.ui-260-progression #mainMenu .arena-history-row{min-height:92px;padding:19px 21px!important;border-color:var(--sa26-line)!important;background:var(--sa26-surface)!important}
+body.ui-260-progression #mainMenu .arena-history-row strong{margin-top:7px!important;font-size:18px!important}
+body.ui-260-progression #mainMenu .arena-history-empty{min-height:250px;display:grid;place-items:center;padding:36px!important;font-size:12px!important;line-height:1.8!important}
+
+@media(max-width:1300px){
+  body.ui-260-progression #mainMenu .career-overview-support{grid-template-columns:1fr}
+  body.ui-260-progression #mainMenu .career-rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.ui-260-progression #mainMenu .career-overview-recent>div{min-height:86px}
+}
+
+@media(max-width:980px){
+  body.ui-260-progression #mainMenu .career-page-head,
+  body.ui-260-progression #mainMenu .arena-page-head{align-items:flex-start!important;padding:20px!important}
+  body.ui-260-progression #mainMenu .career-page-body,
+  body.ui-260-progression #mainMenu .arena-page-body{padding:18px 20px 32px!important}
+  body.ui-260-progression #mainMenu .career-overview-hero{grid-template-columns:170px minmax(0,1fr)!important}
+  body.ui-260-progression #mainMenu .career-badge-hero{width:126px!important;height:144px!important}
+  body.ui-260-progression #mainMenu .career-account-grid,
+  body.ui-260-progression #mainMenu .arena-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.ui-260-progression #mainMenu .career-overview-recent>div{grid-template-columns:repeat(3,minmax(0,1fr))}
+  body.ui-260-progression #mainMenu .career-overview-result{border-bottom:1px solid var(--sa26-line-soft)}
+  body.ui-260-progression #mainMenu .career-milestone-row{grid-template-columns:1fr!important}
+  body.ui-260-progression #mainMenu .arena-rank-grid{grid-template-columns:1fr!important}
+  body.ui-260-progression #mainMenu .arena-overview-hero{grid-template-columns:150px minmax(0,1fr)!important}
+  body.ui-260-progression #mainMenu .arena-overview-badge .arena-rank-badge{width:116px!important;height:136px!important}
+}
+
+@media(max-width:700px){
+  body.ui-260-progression #mainMenu .career-page-head,
+  body.ui-260-progression #mainMenu .arena-page-head{display:grid!important}
+  body.ui-260-progression #mainMenu .career-page-head button,
+  body.ui-260-progression #mainMenu .arena-page-head button{width:100%}
+  body.ui-260-progression #mainMenu .career-tabs button,
+  body.ui-260-progression #mainMenu .arena-tabs button{font-size:9px!important;padding-inline:8px!important}
+  body.ui-260-progression #mainMenu .career-overview-hero,
+  body.ui-260-progression #mainMenu .arena-overview-hero{grid-template-columns:1fr!important;text-align:center}
+  body.ui-260-progression #mainMenu .career-overview-badge{min-height:190px;border-right:0!important;border-bottom:1px solid var(--sa26-line)!important}
+  body.ui-260-progression #mainMenu .career-overview-identity{padding:24px!important}
+  body.ui-260-progression #mainMenu .career-account-grid,
+  body.ui-260-progression #mainMenu .arena-stat-grid,
+  body.ui-260-progression #mainMenu .career-rank-grid{grid-template-columns:1fr!important}
+  body.ui-260-progression #mainMenu .career-overview-recent>div{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.ui-260-progression #mainMenu .arena-next-line{display:grid}
+}
+
+@media(max-height:760px) and (min-width:981px){
+  body.ui-260-progression #mainMenu .career-page-head,
+  body.ui-260-progression #mainMenu .arena-page-head{min-height:82px;padding-block:16px 14px!important}
+  body.ui-260-progression #mainMenu .career-page-head h2,
+  body.ui-260-progression #mainMenu .arena-page-head h2{font-size:42px!important}
+  body.ui-260-progression.ui-211 #mainMenu [data-menu-view="career"] .career-page-head h2{font-size:42px!important}
+  body.ui-260-progression #mainMenu .career-tabs button,
+  body.ui-260-progression #mainMenu .arena-tabs button{min-height:46px!important;padding-block:13px!important}
+  body.ui-260-progression #mainMenu .career-page-body,
+  body.ui-260-progression #mainMenu .arena-page-body{padding-block:18px 28px!important}
+  body.ui-260-progression #mainMenu .career-overview-hero{min-height:238px!important}
+  body.ui-260-progression #mainMenu .career-account-grid>div,
+  body.ui-260-progression #mainMenu .arena-stat-grid>div{min-height:88px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.ui-260-progression .career-rank-card,
+  body.ui-260-progression .arena-rank-card{transition:none!important}
+}

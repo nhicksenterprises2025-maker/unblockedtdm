@@ -1,51 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 300" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 270" role="img" aria-labelledby="title description" data-brand-system="sa-command-mark-v2">
   <title id="title">Skirmish Arena</title>
-  <desc id="description">A sharp steel Skirmish Arena wordmark with a compact SA command crest and restrained cyan edge accents.</desc>
+  <desc id="description">The shared Skirmish Arena command emblem beside a crisp steel and cyan tactical wordmark.</desc>
   <defs>
-    <linearGradient id="logo-steel" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f8fbfc"/>
-      <stop offset=".18" stop-color="#cbd3d8"/>
-      <stop offset=".47" stop-color="#65717a"/>
-      <stop offset=".53" stop-color="#eef2f4"/>
-      <stop offset=".78" stop-color="#89949c"/>
-      <stop offset="1" stop-color="#d6dde1"/>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5f8f9"/>
+      <stop offset=".36" stop-color="#c9d1d5"/>
+      <stop offset=".53" stop-color="#6d7981"/>
+      <stop offset=".6" stop-color="#e6ecee"/>
+      <stop offset="1" stop-color="#89959c"/>
     </linearGradient>
-    <linearGradient id="logo-dark-steel" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#53616a"/>
-      <stop offset=".42" stop-color="#11191f"/>
-      <stop offset="1" stop-color="#050a0e"/>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#168fb8"/>
+      <stop offset=".5" stop-color="#55d1ed"/>
+      <stop offset="1" stop-color="#168fb8"/>
     </linearGradient>
-    <linearGradient id="logo-cyan" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#168bb5"/>
-      <stop offset=".5" stop-color="#5cd8f2"/>
-      <stop offset="1" stop-color="#168bb5"/>
+    <linearGradient id="emblemSteel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3f6f7"/>
+      <stop offset=".42" stop-color="#a7b2b8"/>
+      <stop offset="1" stop-color="#66737b"/>
     </linearGradient>
-    <filter id="logo-shadow" x="-8%" y="-18%" width="116%" height="146%">
-      <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#00070b" flood-opacity=".72"/>
+    <linearGradient id="emblemDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#17242c"/>
+      <stop offset="1" stop-color="#050b0f"/>
+    </linearGradient>
+    <filter id="shadow" x="-6%" y="-12%" width="112%" height="132%">
+      <feDropShadow dx="0" dy="7" stdDeviation="4" flood-color="#000509" flood-opacity=".68"/>
     </filter>
   </defs>
 
-  <g filter="url(#logo-shadow)">
-    <!-- Deliberately restrained plate geometry: one wordmark rail, one arena rail. -->
-    <path d="M48 81h327l21-20h328l21 20h327l29 34-29 34H745l-21 20H396l-21-20H48L18 115Z" fill="#050b0f" stroke="#3d4a53" stroke-width="5"/>
-    <path d="M68 91h319l16-16h314l16 16h319l18 24-18 24H733l-16 16H403l-16-16H68l-20-24Z" fill="url(#logo-dark-steel)" stroke="#79858d" stroke-width="2"/>
-    <path d="M372 76h33l14-14h282l14 14h33l-13 9H385Z" fill="url(#logo-cyan)"/>
-    <path d="M372 154h33l14 14h282l14-14h33l-13 10-17 21H402l-17-21Z" fill="#071116" stroke="#159ac4" stroke-width="4"/>
+  <g filter="url(#shadow)">
+    <!-- The crest and wordmark are deliberately separated for edge clarity. -->
+    <!-- Keep the exact command-emblem geometry inline: Chromium intentionally
+         blocks nested external SVG resources when this file itself is loaded
+         through an <img>, which otherwise leaves a blank crest in Electron. -->
+    <g transform="translate(24 25) scale(1.222222)" data-brand-system="sa-command-mark-v2" data-brand-source="skirmish-arena-emblem.svg">
+      <path d="M90 7 163 47v83l-73 43-73-43V47Z" fill="#03080b" stroke="#293942" stroke-width="8"/>
+      <path d="M90 14 156 51v75l-66 39-66-39V51Z" fill="url(#emblemDark)" stroke="url(#emblemSteel)" stroke-width="4"/>
+      <path d="M90 27 144 57v62l-54 32-54-32V57Z" fill="#071117" stroke="#3dc4e8" stroke-width="3"/>
+      <path data-monogram-letter="s" d="M49 54h53l-7 15H66l-7 7 7 7h25l12 13-8 16-11 9H43l7-15h29l7-7-7-7H57L43 78Z" fill="url(#emblemSteel)"/>
+      <path data-monogram-letter="a" d="m88 127 24-76h15l24 76h-17l-6-20h-23l-6 20Zm21-34h15l-7-24Z" fill="#48c8eb"/>
+      <path d="M53 135h74" stroke="#70818a" stroke-width="2"/>
+    </g>
 
-    <!-- Crisp vector text; no bitmap scaling or raster sharpening dependency. -->
-    <text x="560" y="139" text-anchor="middle" fill="url(#logo-steel)" stroke="#071016" stroke-width="8" paint-order="stroke fill" font-family="Arial Black, Impact, sans-serif" font-size="88" font-weight="900" letter-spacing="-4">SKIRMISH</text>
-    <path d="M334 188h452l-24 49H358Z" fill="#070d12" stroke="#64717a" stroke-width="4"/>
-    <path d="M370 231h380" stroke="#1db4df" stroke-width="3" opacity=".8"/>
-    <text x="560" y="225" text-anchor="middle" fill="url(#logo-steel)" font-family="Arial Black, Impact, sans-serif" font-size="45" font-weight="900" letter-spacing="18">ARENA</text>
+    <g aria-hidden="true">
+      <path d="M282 48h623l27 17H282Z" fill="#071016" stroke="#374952" stroke-width="3"/>
+      <path d="M302 61h594" stroke="url(#cyan)" stroke-width="4"/>
+      <path d="M282 166h650l-27 17H282Z" fill="#071016" stroke="#374952" stroke-width="3"/>
+      <path d="M302 168h594" stroke="url(#cyan)" stroke-width="3"/>
+      <path d="M282 224h403l18 18H282Z" fill="#071016" stroke="#3b4d56" stroke-width="3"/>
+      <path d="M302 225h376" stroke="#2bbde2" stroke-width="3"/>
+    </g>
 
-    <!-- Compact SA service crest, kept separate from the lettering for small-scale clarity. -->
-    <path d="M560 8 610 36v51l-50 30-50-30V36Z" fill="#03080c" stroke="#202c33" stroke-width="10"/>
-    <path d="M560 13 604 39v44l-44 27-44-27V39Z" fill="url(#logo-dark-steel)" stroke="url(#logo-steel)" stroke-width="4"/>
-    <path d="M560 23 594 43v36l-34 20-34-20V43Z" fill="#081118" stroke="#2cbbe3" stroke-width="2"/>
-    <path d="M537 72V47l22-13 22 13v27l-10 6V53l-12-7-12 7v7h18v10h-18v10Z" fill="url(#logo-steel)"/>
-    <path d="m548 82 12-7 12 7-12 7Z" fill="#4cd0ef"/>
-
-    <path d="m52 103-31 12 31 12M1068 103l31 12-31 12" fill="none" stroke="#9aa6ad" stroke-width="4"/>
-    <path d="M75 149h290M755 149h290" stroke="#1ba5d1" stroke-width="3"/>
+    <text x="290" y="38" fill="#75ddf4" font-family="Consolas, 'Cascadia Mono', monospace" font-size="16" font-weight="800" letter-spacing="5">3V3 TACTICAL ARENA</text>
+    <text x="282" y="151" fill="url(#steel)" stroke="#050b0f" stroke-width="8" paint-order="stroke fill" font-family="Arial Black, Impact, sans-serif" font-size="102" font-weight="900" letter-spacing="-3">SKIRMISH</text>
+    <text x="292" y="216" fill="#d7e0e4" font-family="Arial Black, Impact, sans-serif" font-size="45" font-weight="900" letter-spacing="19">ARENA</text>
   </g>
 </svg>

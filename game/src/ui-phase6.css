@@ -44,16 +44,6 @@ body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button:before{
   background:linear-gradient(125deg,rgba(255,255,255,.035),transparent 42%);
   opacity:.8;
 }
-body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button:after{
-  content:attr(data-phase6-index);
-  position:absolute;
-  right:14px;
-  bottom:11px;
-  z-index:3;
-  font:800 7px/1 var(--ut-mono);
-  letter-spacing:.14em;
-  color:#5f7283;
-}
 body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button:hover,
 body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button.active{
   transform:translateY(-1px)!important;
@@ -62,7 +52,6 @@ body.ui-phase6 #mainMenu .main-nav button.phase2-nav-button.active{
 body.ui-phase6 #mainMenu .main-nav button.phase2-play{
   grid-column:1/3!important;
 }
-body.ui-phase6 #mainMenu .main-nav button.phase2-play:after{color:#0b668f}
 body.ui-phase6 #mainMenu .phase2-button-copy{
   padding:clamp(20px,1.7vw,30px)!important;
   max-width:calc(100% - 78px);

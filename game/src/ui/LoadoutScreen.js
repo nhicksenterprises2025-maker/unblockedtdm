@@ -1,4 +1,4 @@
-import { PRIMARY_WEAPONS, SECONDARY_WEAPONS } from '../data/weapons.js';
+import { PRIMARY_WEAPONS, SECONDARY_WEAPONS, formatWeaponStats } from '../data/weapons.js';
 import { weaponModelSvg } from './WeaponPresentation.js';
 
 export class LoadoutScreen {
@@ -122,6 +122,7 @@ export class LoadoutScreen {
     const savedSlots = this.store.all();
     const current = savedSlots.find((slot) => slot.index === this.selectedIndex) || this.store.get(this.selectedIndex);
     const esc = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    const weaponFacts = formatWeaponStats(weapon).slice(0, 4);
     const addSlot = this.store.canAddSlot()
       ? `<button type="button" id="addLoadoutSlot" class="loadout-preset loadout-add-slot"><b>+</b><span>ADD SLOT</span><small>${this.store.count()} / ${this.store.capacity()} CREATED</small></button>`
       : `<div class="loadout-preset loadout-add-slot maxed"><b>25</b><span>MAX SLOTS</span><small>CAPACITY REACHED</small></div>`;
@@ -130,9 +131,9 @@ export class LoadoutScreen {
       <div class="loadout-head"><div><span class="eyebrow">ARSENAL // SAVED CONFIGURATIONS</span><h1>${this.mode === 'play' ? 'CHOOSE YOUR LOADOUT' : 'LOADOUTS'}</h1><p>${this.mode === 'play' ? 'Select a saved configuration, inspect each weapon, then deploy.' : 'Build and save primary + secondary combinations. Side-view models are reserved for arsenal presentation.'}</p></div><div class="loadout-head-index"><span>ACTIVE</span><strong>${String(this.selectedIndex + 1).padStart(2, '0')}</strong><small>${esc(current.name)}</small></div></div>
       <div class="loadout-presets">${savedSlots.map((slot) => `<button type="button" data-loadout-index="${slot.index}" class="loadout-preset ${slot.index === this.selectedIndex ? 'active' : ''}"><b>${String(slot.index + 1).padStart(2, '0')}</b><span>${esc(slot.name)}</span><small><em>${slot.primary.name}</em><i>+</i><em>${slot.secondary.name}</em></small></button>`).join('')}${addSlot}</div>
       <div class="loadout-name-row"><label>ACTIVE SLOT <strong>${String(this.selectedIndex + 1).padStart(2, '0')}</strong></label><input id="loadoutName" maxlength="24" value="${esc(current.name)}"><button type="button" id="saveLoadoutName">SAVE NAME</button><button type="button" id="resetLoadoutSlot" class="muted">RESET SLOT</button></div>
-      <div class="slot-tabs"><button type="button" data-slot="primary" class="${this.activeSlot === 'primary' ? 'active' : ''}">1 · PRIMARY</button><button type="button" data-slot="secondary" class="${this.activeSlot === 'secondary' ? 'active' : ''}">2 · SECONDARY</button></div>
-      <div class="loadout-body"><div class="weapon-list">${list.map((item) => { const selected = this.selection[this.activeSlot]?.id === item.id; const blocked = this.selection[otherSlot]?.id === item.id; return `<button type="button" class="weapon-card ui233-weapon-card ${selected ? 'selected' : ''} ${blocked ? 'blocked' : ''}" data-weapon="${item.id}" ${blocked ? 'disabled' : ''}><span class="phase2-card-model">${weaponModelSvg(item)}</span><strong>${item.name}</strong>${selected ? '<i>EQUIPPED</i>' : '<i>CLICK TO EQUIP</i>'}</button>`; }).join('')}</div>
-      <div class="weapon-detail ui233-weapon-detail"><div class="weapon-detail-title"><div><span>${this.activeSlot.toUpperCase()} WEAPON</span><h2>${weapon.name}</h2></div></div><div class="phase2-weapon-stage">${weaponModelSvg(weapon)}</div><button type="button" id="selectWeapon" class="select-weapon" ${blockedPreview ? 'disabled' : ''}>${selectedHere ? `EQUIPPED AS ${this.activeSlot.toUpperCase()}` : `EQUIP ${weapon.name.toUpperCase()}`}</button><div class="loadout-message">${this.message}</div></div></div>
+      <div class="slot-tabs" aria-label="Weapon slot"><button type="button" data-slot="primary" class="${this.activeSlot === 'primary' ? 'active' : ''}"><span>01</span><b>PRIMARY</b><small>${esc(this.selection.primary?.name || 'UNASSIGNED')}</small></button><button type="button" data-slot="secondary" class="${this.activeSlot === 'secondary' ? 'active' : ''}"><span>02</span><b>SECONDARY</b><small>${esc(this.selection.secondary?.name || 'UNASSIGNED')}</small></button></div>
+      <div class="loadout-body"><section class="loadout-arsenal"><header><div><span>${this.activeSlot.toUpperCase()} ARSENAL</span><strong>SELECT A WEAPON</strong></div><small>${list.length} COMPATIBLE MODELS</small></header><div class="weapon-list">${list.map((item) => { const selected = this.selection[this.activeSlot]?.id === item.id; const blocked = this.selection[otherSlot]?.id === item.id; return `<button type="button" class="weapon-card ui233-weapon-card ${selected ? 'selected' : ''} ${blocked ? 'blocked' : ''}" data-weapon="${item.id}" aria-pressed="${selected}" ${blocked ? 'disabled' : ''}><span class="phase2-card-model">${weaponModelSvg(item)}</span><strong>${item.name}</strong><small>${item.kind.toUpperCase()} · ${item.fireMode.toUpperCase()}</small>${selected ? '<i>EQUIPPED</i>' : '<i>EQUIP</i>'}</button>`; }).join('')}</div></section>
+      <section class="weapon-detail ui233-weapon-detail"><div class="weapon-detail-title"><div><span>${this.activeSlot.toUpperCase()} // INSPECTED MODEL</span><h2>${weapon.name}</h2><small>SIDE-VIEW ARSENAL PRESENTATION</small></div></div><div class="phase2-weapon-stage">${weaponModelSvg(weapon)}<span class="weapon-stage-mark start">00</span><span class="weapon-stage-mark end">${String(Math.round(weapon.render?.muzzleForward || 0)).padStart(2, '0')}</span></div><div class="weapon-detail-facts">${weaponFacts.map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('')}</div><div class="weapon-detail-command"><div class="loadout-message" role="status">${esc(this.message)}</div><button type="button" id="selectWeapon" class="select-weapon" ${blockedPreview ? 'disabled' : ''}>${selectedHere ? `EQUIPPED AS ${this.activeSlot.toUpperCase()}` : `EQUIP ${weapon.name.toUpperCase()}`}</button></div></section></div>
       <div class="loadout-foot"><div><span>ACTIVE LOADOUT · SLOT ${String(this.selectedIndex + 1).padStart(2, '0')}</span><strong>${esc(current.name)} · ${this.selection.primary?.name || '—'} + ${this.selection.secondary?.name || '—'}</strong></div><div class="loadout-foot-actions"><button type="button" id="loadoutBackButton" class="select-weapon">BACK TO MAIN MENU</button><button type="button" id="deployButton" class="deploy-button">${this.mode === 'play' ? 'START MATCH' : 'SAVE & BACK'}</button></div></div>
     </div>`;
 
@@ -146,5 +147,9 @@ export class LoadoutScreen {
     this.root.querySelector('#resetLoadoutSlot')?.addEventListener('click', () => this.resetCurrent());
     this.root.querySelector('#loadoutBackButton')?.addEventListener('click', () => this.back());
     this.root.querySelector('#deployButton')?.addEventListener('click', () => this.complete());
+    this.root.dispatchEvent(new CustomEvent('skirmish:loadout-rendered', {
+      bubbles:true,
+      detail:{ mode:this.mode, slotIndex:this.selectedIndex, weaponSlot:this.activeSlot }
+    }));
   }
 }

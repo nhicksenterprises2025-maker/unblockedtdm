@@ -22,11 +22,11 @@ export class SettingsPanel {
   }
 
   installLayout() {
-    if (!this.root || this.root.dataset.settingsVersion === '2.5') return;
+    if (!this.root || this.root.dataset.settingsVersion === '2.6') return;
     const pauseContext = this.root.id === 'pauseSettingsView';
-    this.root.dataset.settingsVersion = '2.5';
+    this.root.dataset.settingsVersion = '2.6';
     this.root.innerHTML = `
-      ${pauseContext ? '' : '<div class="settings-title settings-250-title"><span class="menu-eyebrow">CLIENT CONFIGURATION // 2.5</span><h2>SETTINGS</h2><p>Every control below changes a live game system and persists on this device.</p></div>'}
+      ${pauseContext ? '' : '<div class="settings-title settings-250-title"><span class="menu-eyebrow">CLIENT CONFIGURATION // 2.6</span><h2>SETTINGS</h2><p>Every control below changes a live game system and persists on this device.</p></div>'}
       <div class="settings-250-shell">
         <nav class="settings-250-tabs" aria-label="Settings categories">
           <button type="button" class="active" data-settings-tab="gameplay">GAMEPLAY</button>
@@ -42,6 +42,7 @@ export class SettingsPanel {
               <div class="setting-card setting-wide"><label>AIM SENSITIVITY</label><input data-setting="sensitivity" type="range" min="0.35" max="2.50" step="0.05"><output data-setting-value="sensitivity">1.00×</output><small>Scales pointer input without changing weapon spread.</small></div>
               <div class="setting-card"><label>AI DIFFICULTY</label><select data-setting="aiDifficulty"><option>Beginner</option><option>Average</option><option>Sweat</option><option>Pro</option></select><output data-setting-value="aiDifficulty">AVERAGE · 1.00×</output></div>
               <div class="setting-card"><label class="toggle-line"><span>AUTO SPRINT</span><input data-setting="autoSprint" type="checkbox"></label><output data-setting-value="autoSprint">ON</output><small>Automatically sprints while movement and stamina rules permit.</small></div>
+              <div class="setting-card"><label class="toggle-line"><span>AUTO RELOAD</span><input data-setting="autoReload" type="checkbox"></label><output data-setting-value="autoReload">OFF</output><small>When an empty ranged weapon has reserve ammunition, reload as soon as combat state permits.</small></div>
               <div class="setting-card"><label class="toggle-line"><span>SCREEN SHAKE</span><input data-setting="screenShake" type="checkbox"></label><output data-setting-value="screenShake">ON</output></div>
               <div class="setting-card"><label>SHAKE STRENGTH</label><input data-setting="screenShakeStrength" type="range" min="0" max="1" step="0.05"><output data-setting-value="screenShakeStrength">75%</output></div>
               <div class="setting-card"><label class="toggle-line"><span>DAMAGE VIGNETTE</span><input data-setting="damageVignette" type="checkbox"></label><output data-setting-value="damageVignette">ON</output></div>
@@ -56,7 +57,7 @@ export class SettingsPanel {
             <header><span>03 // DISPLAY</span><h3>Display</h3><p>Window mode and readable HUD presentation.</p></header>
             <div class="settings-grid settings-250-grid">
               <div class="setting-card setting-action"><span>WINDOW MODE</span><button type="button" data-settings-action="fullscreen">TOGGLE FULLSCREEN</button><small>F11 remains the fixed fullscreen shortcut.</small></div>
-              <div class="setting-card"><label>HUD SCALE</label><input data-setting="hudScale" type="range" min="0.8" max="1.2" step="0.05"><output data-setting-value="hudScale">100%</output></div>
+              <div class="setting-card"><label>HUD SCALE</label><input data-setting="hudScale" type="range" min="0.8" max="1.4" step="0.05"><output data-setting-value="hudScale">100%</output><small>Scales match information from 80% to 140% while minimap and kill feed controls remain independent.</small></div>
               <div class="setting-card"><label class="toggle-line"><span>FPS COUNTER</span><input data-setting="showFps" type="checkbox"></label><output data-setting-value="showFps">OFF</output><small>Shows the live renderer frame rate in the lower status rail.</small></div>
             </div>
           </section>
@@ -129,10 +130,7 @@ export class SettingsPanel {
       if (!action) return;
       if (action === 'reset-gameplay') this.settings.resetGameplay();
       if (action === 'reset-bindings') this.settings.resetBindings();
-      if (action === 'reset-all') {
-        this.settings.resetGameplay();
-        this.settings.resetBindings();
-      }
+      if (action === 'reset-all') this.settings.resetAll();
       if (action === 'fullscreen') this.onFullscreen?.();
       if (action?.startsWith('reset')) this.renderBindings();
       this.sync();
@@ -218,6 +216,8 @@ export class SettingsPanel {
     if (vignette) vignette.textContent = boolText(gameplay.damageVignette);
     const autoSprint = this.root.querySelector('[data-setting-value="autoSprint"]');
     if (autoSprint) autoSprint.textContent = boolText(gameplay.autoSprint);
+    const autoReload = this.root.querySelector('[data-setting-value="autoReload"]');
+    if (autoReload) autoReload.textContent = boolText(gameplay.autoReload);
     const audio = this.root.querySelector('[data-setting-value="audioEnabled"]');
     if (audio) audio.textContent = boolText(gameplay.audioEnabled);
     const fps = this.root.querySelector('[data-setting-value="showFps"]');

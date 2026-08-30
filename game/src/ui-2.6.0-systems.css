@@ -1,0 +1,38 @@
+/* Skirmish Arena 2.6 — combat/progression presentation. */
+body.ui-260-progression .career-postgame-211{grid-template-columns:minmax(240px,.9fr) minmax(520px,2fr) minmax(270px,1fr)!important;margin:18px 32px!important}
+body.ui-260-progression .career-postgame-rank{grid-template-columns:92px minmax(0,1fr);gap:16px;padding:18px}
+body.ui-260-progression .career-postgame-rank>[data-career-badge]{display:grid;place-items:center}
+body.ui-260-progression .career-postgame-badge{width:84px;height:96px}
+body.ui-260-progression .career-postgame-rank span{font-size:9px;letter-spacing:.14em}
+body.ui-260-progression .career-postgame-rank strong{font-size:25px;line-height:1}
+body.ui-260-progression .career-postgame-rank b{font-size:9px}
+body.ui-260-progression .career-postgame-earned,body.ui-260-progression .career-postgame-progress{padding:18px}
+body.ui-260-progression .career-postgame-earned>span,body.ui-260-progression .career-postgame-progress span{font-size:9px}
+body.ui-260-progression .career-postgame-breakdown span,body.ui-260-progression .career-postgame-breakdown small{font-size:8px}
+body.ui-260-progression .career-postgame-breakdown strong{font-size:12px}
+body.ui-260-progression .career-match-total strong,body.ui-260-progression .career-postgame-progress>div:first-child strong{font-size:22px}
+body.ui-260-progression .career-postgame-progress small{font-size:9px;line-height:1.45}
+
+body.ui-260-progression .arena-postgame{margin:18px 32px!important;padding:20px 22px}
+body.ui-260-progression .arena-postgame-rank{gap:16px}
+body.ui-260-progression .arena-postgame-rank>[data-arena-badge]{display:grid;place-items:center}
+body.ui-260-progression .arena-postgame-rank .arena-rank-badge{width:62px;height:72px}
+body.ui-260-progression .arena-postgame-rank span,body.ui-260-progression .arena-postgame-total span{font-size:9px}
+body.ui-260-progression .arena-postgame-rank strong{font-size:25px}
+body.ui-260-progression .arena-postgame-total strong{font-size:30px}
+body.ui-260-progression .arena-postgame-breakdown div{min-height:58px;padding:12px 14px}
+body.ui-260-progression .arena-postgame-breakdown span{font-size:8px}
+body.ui-260-progression .arena-postgame-breakdown b{font-size:15px}
+body.ui-260-progression .arena-postgame-progress div:first-child{font-size:10px}
+body.ui-260-progression .arena-postgame-progress .arena-ap-track{height:10px;margin-top:10px}
+body.ui-260-progression .career-result.forfeit b{min-width:48px;font-size:6px;letter-spacing:.03em}
+
+@media(max-width:1180px){
+  body.ui-260-progression .career-postgame-211{grid-template-columns:1fr 2fr!important}
+  body.ui-260-progression .career-postgame-progress{grid-column:1/-1!important}
+}
+@media(max-width:760px){
+  body.ui-260-progression .career-postgame-211{grid-template-columns:1fr!important;margin:14px 20px!important}
+  body.ui-260-progression .arena-postgame{margin:14px 20px!important}
+  body.ui-260-progression .arena-postgame-breakdown{grid-template-columns:repeat(2,1fr)}
+}

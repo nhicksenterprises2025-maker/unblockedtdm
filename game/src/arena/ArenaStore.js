@@ -33,7 +33,10 @@ export const ARENA_AP_REWARDS = Object.freeze({
   teamWipe: 2.5,
   suddenDeathClutch: 2,
   negativeKd: -10,
-  matchLoss: -8
+  matchLoss: -8,
+  // An abandonment is one explicit transaction. It never stacks with normal
+  // match scoring, the loss debit, or negative-K/D adjustment.
+  forfeit: -50
 });
 
 // These are hard match-rule ceilings, not balance changes. Clamping at this
@@ -360,7 +363,22 @@ export function calculateArenaMatch(input = {}) {
   const fiveZero = won && roundWins === 5 && roundLosses === 0;
   const negativeKd = kills < deaths;
 
-  const breakdown = {
+  const breakdown = forfeit ? {
+    kills:0,
+    assists:0,
+    roundWins:0,
+    victory:0,
+    streak5:0,
+    streak10:0,
+    sweep:0,
+    mvp:0,
+    comeback:0,
+    teamWipes:0,
+    suddenDeathClutches:0,
+    negativeKd:0,
+    loss:0,
+    forfeit:ARENA_AP_REWARDS.forfeit
+  } : {
     kills: roundHalf((kills - criticalKills) * ARENA_AP_REWARDS.kill + criticalKills * ARENA_AP_REWARDS.criticalKill),
     assists: roundHalf(assists * ARENA_AP_REWARDS.assist),
     roundWins: roundHalf(roundWins * ARENA_AP_REWARDS.roundWin),
@@ -373,7 +391,8 @@ export function calculateArenaMatch(input = {}) {
     teamWipes: roundHalf(teamWipes * ARENA_AP_REWARDS.teamWipe),
     suddenDeathClutches: roundHalf(suddenDeathClutches * ARENA_AP_REWARDS.suddenDeathClutch),
     negativeKd: negativeKd ? ARENA_AP_REWARDS.negativeKd : 0,
-    loss: won ? 0 : ARENA_AP_REWARDS.matchLoss
+    loss: won ? 0 : ARENA_AP_REWARDS.matchLoss,
+    forfeit:0
   };
   const rawDelta = roundHalf(Object.values(breakdown).reduce((sum, amount) => sum + amount, 0));
   return {

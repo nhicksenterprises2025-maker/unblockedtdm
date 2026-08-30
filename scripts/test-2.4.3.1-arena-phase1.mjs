@@ -35,7 +35,7 @@ assert.equal(arenaSeasonId(new Date(2026, 7, 31, 23, 59)), '2026-08');
 assert.deepEqual(ARENA_AP_REWARDS, {
   kill:1, criticalKill:2, assist:0.5, roundWin:2.5, matchWin:10,
   streak5:2, streak10:5, sweep:10, mvp:5, comeback:8, teamWipe:2.5,
-  suddenDeathClutch:2, negativeKd:-10, matchLoss:-8
+  suddenDeathClutch:2, negativeKd:-10, matchLoss:-8, forfeit:-50
 });
 
 const dominant = calculateArenaMatch({
@@ -73,9 +73,10 @@ assert.equal(store.snapshot().ap, apAfterFirst);
 store.beginMatch({ id:'forfeit-a', team:'blue' });
 store.updateActiveMatch({ kills:1, deaths:2, assists:0, roundWins:0, roundLosses:1, bestStreak:1 });
 const forfeit = store.forfeitActive();
-assert.equal(forfeit.rawDelta, -17, 'Forfeit with negative K/D must stack -8 loss and -10 negative-K/D against earned kill AP.');
-assert.equal(forfeit.breakdown.loss, -8);
-assert.equal(forfeit.breakdown.negativeKd, -10);
+assert.equal(forfeit.rawDelta, -50, '2.6 replaces stacked match scoring with one exact Arena forfeit sanction.');
+assert.equal(forfeit.breakdown.forfeit, -50);
+assert.equal(forfeit.breakdown.loss, 0);
+assert.equal(forfeit.breakdown.negativeKd, 0);
 assert.equal(forfeit.flags.forfeit, true);
 
 const beforeReset = store.snapshot();
@@ -99,8 +100,8 @@ crashed.beginMatch({ id:'abandoned', team:'blue' });
 crashed.updateActiveMatch({ kills:2, deaths:4, roundWins:1, roundLosses:2 });
 const recovered = new ArenaStore({ storage:crashStorage, now:() => crashNow });
 assert.ok(recovered.recoveredForfeit, 'An active Arena match left in storage must recover as a forfeit on next boot.');
-assert.equal(recovered.recoveredForfeit.breakdown.loss, -8);
-assert.equal(recovered.recoveredForfeit.breakdown.negativeKd, -10);
+assert.equal(recovered.recoveredForfeit.breakdown.forfeit, -50);
+assert.equal(recovered.recoveredForfeit.rawDelta, -50);
 assert.equal(recovered.snapshot().activeMatch, null);
 
 const read = (relative) => fs.readFileSync(new URL(`../${relative}`, import.meta.url), 'utf8');

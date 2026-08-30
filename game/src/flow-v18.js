@@ -91,9 +91,20 @@ function installPhase2Menu() {
     nav.appendChild(button);
   }
 
-  const cards = [...document.querySelectorAll('#mainSettingsPanel .setting-card')];
-  if (cards[0]) { cards[0].classList.add('phase2-group-start'); cards[0].dataset.phase2Group = 'GAMEPLAY'; }
-  if (cards[3]) { cards[3].classList.add('phase2-group-start'); cards[3].dataset.phase2Group = 'DISPLAY'; }
+  const settingsPanel = document.querySelector('#mainSettingsPanel');
+  const cards = [...(settingsPanel?.querySelectorAll('.setting-card') || [])];
+  if (settingsPanel?.dataset.settingsVersion) {
+    // Versioned Settings panels own their category navigation. Remove any stale
+    // positional group stamps left by a legacy render rather than painting
+    // GAMEPLAY / DISPLAY labels over the authored tab content.
+    for (const card of cards) {
+      card.classList.remove('phase2-group-start');
+      delete card.dataset.phase2Group;
+    }
+  } else {
+    if (cards[0]) { cards[0].classList.add('phase2-group-start'); cards[0].dataset.phase2Group = 'GAMEPLAY'; }
+    if (cards[3]) { cards[3].classList.add('phase2-group-start'); cards[3].dataset.phase2Group = 'DISPLAY'; }
+  }
 }
 
 function readLastMatch() {

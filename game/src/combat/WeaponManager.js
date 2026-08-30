@@ -53,6 +53,23 @@ export class WeaponManager {
   isADSActive() { return this.adsProgress > 0.01; }
   isFullyADS() { return this.adsProgress >= 0.999; }
 
+  autoReloadEnabled() {
+    try { return Boolean(this.callbacks.autoReloadEnabled?.(this)); } catch { return false; }
+  }
+
+  shouldAutoReload() {
+    const weapon = this.currentWeapon();
+    const ammo = this.currentAmmo();
+    return this.autoReloadEnabled()
+      && Boolean(this.owner.health.alive)
+      && !this.owner.dashing
+      && !this.isReloading()
+      && !this.isSwitching()
+      && weapon?.magazineSize > 0
+      && ammo?.magazine === 0
+      && ammo.reserve > 0;
+  }
+
   setLoadout(primary, secondary) {
     const next = normalizeLoadout({ primary, secondary });
     this.loadout = next;
@@ -118,6 +135,11 @@ export class WeaponManager {
       this.startReload();
       if (this.isReloading()) return;
     }
+
+    // Empty-mag assistance uses the exact same validated reload path as the
+    // manual command. Dashes, swaps, death, melee, missing reserve ammo and
+    // already-active reloads are therefore rejected by one shared guard.
+    if (this.shouldAutoReload() && this.startReload()) return;
 
     weapon = this.currentWeapon();
     const wantsADS = weapon.canADS !== false && input.adsHeld();

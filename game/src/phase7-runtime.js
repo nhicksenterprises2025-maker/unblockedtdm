@@ -121,13 +121,19 @@ function drawStructurePass(renderer, item) {
     const signWidth = Math.min(item.w - 30, 176);
     ctx.fillStyle = 'rgba(4,17,24,.56)';
     ctx.fillRect(item.x + 15, item.y + 16, signWidth, 22);
-    ctx.strokeStyle = 'rgba(93,182,217,.28)';
+    ctx.strokeStyle = 'rgba(188,205,211,.24)';
     ctx.lineWidth = 1;
     ctx.strokeRect(item.x + 15.5, item.y + 16.5, signWidth, 22);
-    ctx.fillStyle = 'rgba(55,184,255,.55)';
-    ctx.fillRect(item.x + 22, item.y + 25, 38, 3);
-    ctx.fillStyle = 'rgba(222,236,242,.28)';
-    ctx.fillRect(item.x + 67, item.y + 25, Math.max(18, signWidth - 75), 3);
+    // A recessed shutter grille replaces the old cyan decorative stripe. The
+    // building now reads as a ventilated range-services bay rather than a
+    // generic team-coloured block.
+    ctx.fillStyle = 'rgba(179,194,199,.30)';
+    const grilleX = item.x + 24;
+    const grilleWidth = Math.max(24, signWidth - 18);
+    for (let x = grilleX; x < grilleX + grilleWidth; x += 13) {
+      ctx.fillRect(x, item.y + 23, Math.min(7, grilleX + grilleWidth - x), 2);
+      ctx.fillRect(x, item.y + 29, Math.min(7, grilleX + grilleWidth - x), 2);
+    }
   }
 
   if (label.includes('Terminal')) {
@@ -147,11 +153,15 @@ function drawStructurePass(renderer, item) {
 
   if (map.definition.id === 'training-complex') {
     if (item.visualRole === 'trainingHall') {
-      const left = item.x < map.width / 2;
       ctx.fillStyle = 'rgba(5,18,25,.70)';
       ctx.fillRect(item.x + 17, item.y + item.h - 48, item.w - 34, 24);
-      ctx.fillStyle = left ? 'rgba(74,190,239,.66)' : 'rgba(255,104,125,.60)';
-      ctx.fillRect(left ? item.x + 25 : item.x + item.w - 70, item.y + item.h - 36, 45, 3);
+      // Training halls are neutral facility architecture. Older builds painted
+      // a cyan/red team bar across this recess, making the buildings read as
+      // arbitrary coloured rectangles. A short segmented steel grille keeps
+      // the bay legible without borrowing either team's HUD colour.
+      ctx.fillStyle = 'rgba(179,194,199,.34)';
+      const grilleX = item.x + item.w / 2 - 27;
+      for (let offset = 0; offset < 54; offset += 12) ctx.fillRect(grilleX + offset, item.y + item.h - 36, 7, 2);
       ctx.strokeStyle = 'rgba(219,234,239,.16)';ctx.strokeRect(item.x + 17.5, item.y + item.h - 47.5, item.w - 35, 23);
     }
     if (item.visualRole === 'controlTerminal') {
@@ -161,7 +171,8 @@ function drawStructurePass(renderer, item) {
     }
     if (item.visualRole === 'coverModule') {
       ctx.strokeStyle = 'rgba(199,222,230,.22)';ctx.lineWidth=2;ctx.strokeRect(item.x + 12, item.y + 12, item.w - 24, item.h - 24);
-      ctx.fillStyle = 'rgba(55,184,255,.24)';ctx.fillRect(item.x + item.w / 2 - 16, item.y + 19, 32, 3);
+      ctx.fillStyle = 'rgba(190,205,208,.24)';
+      for (const offset of [-12, 0, 12]) ctx.fillRect(item.x + item.w / 2 + offset - 3, item.y + 18, 6, 3);
     }
   }
 

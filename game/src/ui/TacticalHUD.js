@@ -59,12 +59,12 @@ export class TacticalHUD {
           <div class="phase3-team-scoreboards">
             <section class="phase3-team-board blue" aria-label="Blue team scoreboard">
               <div class="phase3-team-title"><strong>BLUE TEAM</strong><span id="phase3BlueTeamCount">3 PLAYERS</span></div>
-              <div class="phase3-team-score-head"><span>PLAYER</span><span>K</span><span>D</span><span>A</span><span>K/D</span><span>DMG</span></div>
+              <div class="phase3-team-score-head"><span>PLAYER</span><span data-stat-label="kills">K</span><span data-stat-label="deaths">D</span><span data-stat-label="assists">A</span><span data-stat-label="kd">K/D</span><span data-stat-label="damage">DMG</span></div>
               <div class="phase3-team-score-rows" id="phase3BlueScoreRows"></div>
             </section>
             <section class="phase3-team-board red" aria-label="Red team scoreboard">
               <div class="phase3-team-title"><strong>RED TEAM</strong><span id="phase3RedTeamCount">3 PLAYERS</span></div>
-              <div class="phase3-team-score-head"><span>PLAYER</span><span>K</span><span>D</span><span>A</span><span>K/D</span><span>DMG</span></div>
+              <div class="phase3-team-score-head"><span>PLAYER</span><span data-stat-label="kills">K</span><span data-stat-label="deaths">D</span><span data-stat-label="assists">A</span><span data-stat-label="kd">K/D</span><span data-stat-label="damage">DMG</span></div>
               <div class="phase3-team-score-rows" id="phase3RedScoreRows"></div>
             </section>
           </div>
@@ -199,7 +199,7 @@ export class TacticalHUD {
     return rankRows(rows).map((row, index) => `
       <div class="phase3-team-score-row ${team} ${row.isLocal ? 'local' : ''}">
         <span><i>${index + 1}</i><b class="${teamClass(row.team)}">${safe(playerLabel(row))}</b></span>
-        <strong>${row.kills}</strong><strong>${row.deaths}</strong><strong>${row.assists}</strong><strong>${kdLabel(row)}</strong><strong>${row.damage}</strong>
+        <strong data-stat="kills">${row.kills}</strong><strong data-stat="deaths">${row.deaths}</strong><strong data-stat="assists">${row.assists}</strong><strong data-stat="kd">${kdLabel(row)}</strong><strong data-stat="damage">${row.damage}</strong>
       </div>`).join('');
   }
 

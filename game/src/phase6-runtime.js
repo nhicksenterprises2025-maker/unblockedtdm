@@ -16,7 +16,9 @@ function installPhase6Menu() {
   order.forEach((action, index) => {
     const button = nav?.querySelector(`[data-menu-action="${action}"]`);
     if (!button) return;
-    button.dataset.phase6Index = String(index + 1).padStart(2, '0');
+    button.removeAttribute('data-phase6-index');
+    button.setAttribute('aria-posinset', String(index + 1));
+    button.setAttribute('aria-setsize', String(order.length));
     button.setAttribute('aria-label', button.querySelector('.phase2-button-copy strong')?.textContent || action);
   });
 

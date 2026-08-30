@@ -94,7 +94,7 @@ assert.deepEqual(WEAPON_LIST.map((weapon) => [
   ['sniper','projectile',148,.35,200,1.3,6,3.2,.6],
   ['shotgun','shotgun',16,.007,21,.8,6,1,.8],
   ['lmg','hitscan',24,.025,56,.36,75,4.3,.6],
-  ['pistol','hitscan',15,.05,30,0,10,1.7,1],
+  ['pistol','hitscan',15,.05,30,1 / 7,10,1.7,1],
   ['launcher','projectile',125,0,125,2.5,1,2.5,.6],
   ['melee','melee',75,.1,150,.9,0,0,1.05]
 ]);

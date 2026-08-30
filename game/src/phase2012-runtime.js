@@ -30,12 +30,17 @@ function scheduleRefresh() {
 }
 
 const observer = new MutationObserver(scheduleRefresh);
-observer.observe(document.documentElement, {
-  childList: true,
-  subtree: true,
-  attributes: true,
-  attributeFilter: ['class']
-});
+for (const root of [document.getElementById('mainMenu'), document.getElementById('loadoutScreen')].filter(Boolean)) {
+  observer.observe(root, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class']
+  });
+}
+window.addEventListener('skirmish:menu-view-change', scheduleRefresh);
+window.addEventListener('skirmish:show-menu-home', scheduleRefresh);
 window.addEventListener('resize', scheduleRefresh);
+window.addEventListener('beforeunload', () => observer.disconnect(), { once:true });
 
 scheduleRefresh();

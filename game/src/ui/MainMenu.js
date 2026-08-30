@@ -3,9 +3,9 @@ import { spreadVisualHtml, statBarsHtml, weaponModelSvg } from './WeaponPresenta
 
 function weaponDescription(weapon) {
   if (weapon.id === 'sniper') return 'Physical high-speed projectile with no piercing. Built around long sightlines and high single-target burst.';
-  if (weapon.id === 'shotgun') return 'Eight-pellet close-range blast with shell-by-shell reload. Full damage ends at 2.0 tiles, falls off through 2.5 tiles, then deals no damage.';
-  if (weapon.id === 'launcher') return 'Explosive projectile with a 2.5-tile blast radius, full self-damage, zero friendly fire and no splash falloff.';
-  if (weapon.id === 'melee') return 'Two-tile melee reach with no lunge. Fastest movement modifier and no ammunition requirement.';
+  if (weapon.id === 'shotgun') return `${weapon.pelletCount}-pellet close-range blast with shell-by-shell reload. Full damage ends at ${weapon.fullDamageRangeTiles} tiles; practical DPS falls with range and missed pellets.`;
+  if (weapon.id === 'launcher') return `Explosive projectile with a ${weapon.blastRadiusTiles}-tile blast radius. Listed DPS is per exposed target; a blast can damage multiple enemies and the shooter, but not teammates.`;
+  if (weapon.id === 'melee') return `${weapon.fullDamageRangeTiles}-tile melee reach with no lunge. DPS follows the actual ${weapon.fireInterval}s swing interval and requires no ammunition.`;
   if (weapon.id === 'pistol') return 'Semi-auto sidearm. Every discrete trigger press fires one round with quick handling and neutral movement.';
   if (weapon.id === 'lmg') return 'Heavy 75-round primary with strong damage, long reload and substantial movement cost.';
   if (weapon.id === 'smg') return 'Fast automatic primary for close-range pressure, quick handling and neutral movement.';

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-labelledby="sa-emblem-title sa-emblem-desc" data-brand-system="sa-command-mark-v2">
+  <title id="sa-emblem-title">Skirmish Arena command emblem</title>
+  <desc id="sa-emblem-desc">A compact steel command shield with a legible silver S and cyan A monogram.</desc>
+  <defs>
+    <linearGradient id="sa-emblem-steel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3f6f7"/>
+      <stop offset=".42" stop-color="#a7b2b8"/>
+      <stop offset="1" stop-color="#66737b"/>
+    </linearGradient>
+    <linearGradient id="sa-emblem-dark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#17242c"/>
+      <stop offset="1" stop-color="#050b0f"/>
+    </linearGradient>
+  </defs>
+  <path d="M90 7 163 47v83l-73 43-73-43V47Z" fill="#03080b" stroke="#293942" stroke-width="8"/>
+  <path d="M90 14 156 51v75l-66 39-66-39V51Z" fill="url(#sa-emblem-dark)" stroke="url(#sa-emblem-steel)" stroke-width="4"/>
+  <path d="M90 27 144 57v62l-54 32-54-32V57Z" fill="#071117" stroke="#3dc4e8" stroke-width="3"/>
+  <path data-monogram-letter="s" d="M49 54h53l-7 15H66l-7 7 7 7h25l12 13-8 16-11 9H43l7-15h29l7-7-7-7H57L43 78Z" fill="url(#sa-emblem-steel)"/>
+  <path data-monogram-letter="a" d="m88 127 24-76h15l24 76h-17l-6-20h-23l-6 20Zm21-34h15l-7-24Z" fill="#48c8eb"/>
+  <path d="M53 135h74" stroke="#70818a" stroke-width="2"/>
+</svg>

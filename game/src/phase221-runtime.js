@@ -80,36 +80,6 @@ function loadoutIcon() {
   </span>`;
 }
 
-function manualSvg() {
-  return `<svg class="ui221-manual" viewBox="0 0 100 90" aria-hidden="true">
-    <defs><linearGradient id="ui221BookMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2f6f8"/><stop offset=".45" stop-color="#8996a0"/><stop offset="1" stop-color="#4d5962"/></linearGradient></defs>
-    <path d="M14 12h58c8 0 14 6 14 14v51H29c-8 0-15-6-15-14Z" fill="#111a22" stroke="url(#ui221BookMetal)" stroke-width="4"/>
-    <path d="M29 12v65M39 29h34M39 40h28M39 51h31M39 62h20" fill="none" stroke="#d7e0e6" stroke-width="3" stroke-linecap="round" opacity=".88"/>
-    <path d="M14 63c0-8 7-14 15-14" fill="none" stroke="#53c6ff" stroke-width="3" opacity=".7"/>
-  </svg>`;
-}
-
-function weaponInfoIcon() {
-  return `<span class="ui221-nav-art ui221-info-art" aria-hidden="true">
-    <canvas width="330" height="110" data-game-weapon-model="pistol" class="ui221-info-pistol"></canvas>
-    ${manualSvg()}
-  </span>`;
-}
-
-function silverGearIcon() {
-  return `<span class="ui221-nav-art ui221-settings-art" aria-hidden="true">
-    <svg viewBox="0 0 120 120" focusable="false">
-      <defs>
-        <linearGradient id="ui221GearMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbfdff"/><stop offset=".22" stop-color="#aab5bd"/><stop offset=".47" stop-color="#5d6871"/><stop offset=".72" stop-color="#e1e7eb"/><stop offset="1" stop-color="#77838c"/></linearGradient>
-        <filter id="ui221GearShadow"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000" flood-opacity=".5"/></filter>
-      </defs>
-      <path d="M53 10h14l4 14 10 4 13-7 10 10-7 13 4 10 14 4v14l-14 4-4 10 7 13-10 10-13-7-10 4-4 14H53l-4-14-10-4-13 7-10-10 7-13-4-10-14-4V58l14-4 4-10-7-13 10-10 13 7 10-4Z" fill="url(#ui221GearMetal)" stroke="#dce4e9" stroke-width="2" filter="url(#ui221GearShadow)"/>
-      <circle cx="60" cy="65" r="22" fill="#0c141b" stroke="#cbd5dc" stroke-width="5"/>
-      <circle cx="60" cy="65" r="10" fill="#2b3943" stroke="#54c7ff" stroke-width="2"/>
-    </svg>
-  </span>`;
-}
-
 const ICONS = Object.freeze({
   play: silverPlayIcon,
   loadouts: loadoutIcon,
@@ -188,8 +158,10 @@ document.body.classList.add('ui-221');
 installShotgunRangeCap();
 
 const observer = new MutationObserver(scheduleRefresh);
-observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+const mainMenu = document.getElementById('mainMenu');
+if (mainMenu) observer.observe(mainMenu, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 window.addEventListener('skirmish:menu-view-change', scheduleRefresh);
 window.addEventListener('skirmish:show-menu-home', scheduleRefresh);
 window.addEventListener('resize', scheduleRefresh);
+window.addEventListener('beforeunload', () => observer.disconnect(), { once:true });
 scheduleRefresh();

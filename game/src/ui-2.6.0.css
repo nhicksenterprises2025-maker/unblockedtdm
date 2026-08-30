@@ -1,0 +1,540 @@
+/* Skirmish Arena 2.6.0 — Tactical Intelligence and Interface Refinement.
+   This sheet is intentionally restrained: sharp steel surfaces, a fixed type
+   hierarchy, functional color, and no decorative dashboard-card language. */
+
+body.ui-260{
+  --sa26-ink:#061017;
+  --sa26-panel:#08131a;
+  --sa26-panel-raised:#0b1820;
+  --sa26-line:#2c424d;
+  --sa26-line-strong:#4a6470;
+  --sa26-text:#eef4f6;
+  --sa26-copy:#a5b6be;
+  --sa26-muted:#78909b;
+  --sa26-cyan:#4bc8ef;
+  --sa26-blue:#59c9ff;
+  --sa26-red:#ff6478;
+  --sa26-gold:#d8ba68;
+  --sa26-mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+}
+
+/* Shared readability scale. Micro labels remain secondary, never illegible. */
+body.ui-260 .menu-eyebrow,
+body.ui-260 .settings-250-eyebrow,
+body.ui-260 .weapon-info-eyebrow,
+body.ui-260 .loadout-head>div>span,
+body.ui-260 .arena-page-head>div>span{
+  font-size:9px!important;
+  line-height:1.2!important;
+  letter-spacing:.14em!important;
+}
+body.ui-260 #mainMenu .menu-hero p,
+body.ui-260 .arena-mode-card p,
+body.ui-260 .settings-title p,
+body.ui-260 .weapon-info-title p,
+body.ui-260 .pause-view-head p{
+  color:var(--sa26-copy)!important;
+  font-size:12.5px!important;
+  line-height:1.55!important;
+}
+body.ui-260 .settings-250-tabs button,
+body.ui-260 .arena-tabs button,
+body.ui-260 .career-tabs button{
+  min-height:50px;
+  font-size:9.5px!important;
+  letter-spacing:.12em!important;
+}
+body.ui-260 .settings-250-grid .setting-card label,
+body.ui-260 .settings-250-grid .setting-card>span,
+body.ui-260 .settings-250-bindings h3,
+body.ui-260 .weapon-info-stat span,
+body.ui-260 .weapon-detail-facts span{
+  font-size:9px!important;
+  line-height:1.25!important;
+}
+body.ui-260 .settings-250-grid .setting-card output,
+body.ui-260 .settings-250-grid .setting-card small,
+body.ui-260 .settings-250-bindings p,
+body.ui-260 .settings-250-bindings .binding-row,
+body.ui-260 .weapon-info-stat small{
+  font-size:9px!important;
+  line-height:1.45!important;
+}
+body.ui-260 .settings-250-grid .setting-card select,
+body.ui-260 .settings-250-grid .setting-card button,
+body.ui-260 .settings-250-actions button{
+  min-height:39px;
+  font-size:9px!important;
+}
+body.ui-260 .loadout-preset b,
+body.ui-260 .loadout-preset small,
+body.ui-260 .loadout-name-row label,
+body.ui-260 .slot-tabs button small,
+body.ui-260 .weapon-card small,
+body.ui-260 .loadout-foot{
+  font-size:8px!important;
+  line-height:1.35!important;
+}
+body.ui-260 .loadout-preset>span,
+body.ui-260 .weapon-card strong,
+body.ui-260 .slot-tabs button>span{
+  font-size:12px!important;
+}
+body.ui-260 .arena-mode-card small,
+body.ui-260 .arena-mode-card footer,
+body.ui-260 .arena-map-chip{
+  font-size:9px!important;
+}
+
+/* Real component sizing for HUD Scale. No whole-screen transform is used. */
+body.ui-260.match-started .match-hud,
+body.ui-260.match-started .health-hud,
+body.ui-260.match-started .stamina-hud,
+body.ui-260.match-started .dash-hud,
+body.ui-260.match-started .weapon-hud{
+  scale:1!important;
+}
+body.ui-260.match-started .match-hud{
+  top:var(--sa26-hud-edge)!important;
+  grid-template-columns:
+    var(--sa26-top-round-col)
+    var(--sa26-top-kill-col)
+    var(--sa26-top-clock-col)
+    var(--sa26-top-kill-col)
+    var(--sa26-top-round-col)!important;
+  min-width:0!important;
+  overflow:hidden;
+  border:1px solid rgba(86,121,137,.72)!important;
+  border-radius:2px!important;
+  background:rgba(5,14,20,.91)!important;
+  box-shadow:0 18px 46px rgba(0,0,0,.34)!important;
+}
+body.ui-260.match-started .match-hud>div{
+  min-width:0;
+  padding:var(--sa26-top-pad-y) var(--sa26-top-pad-x)!important;
+}
+body.ui-260.match-started .match-hud span{
+  color:#8ba1ab!important;
+  font:850 var(--sa26-top-label)/1.05 var(--sa26-mono)!important;
+  letter-spacing:.12em!important;
+  white-space:nowrap;
+}
+body.ui-260.match-started .match-hud strong{
+  display:block;
+  margin-top:calc(var(--sa26-top-pad-y) * .42)!important;
+  font-family:var(--sa26-mono)!important;
+  font-weight:950!important;
+}
+body.ui-260.match-started .match-hud>div:nth-child(1) strong,
+body.ui-260.match-started .match-hud>div:nth-child(5) strong{
+  font-size:var(--sa26-round-value)!important;
+}
+body.ui-260.match-started .match-hud>div:nth-child(2) strong{
+  color:var(--sa26-blue)!important;
+  font-size:var(--sa26-kill-value)!important;
+  text-shadow:0 0 16px rgba(89,201,255,.18);
+}
+body.ui-260.match-started .match-hud>div:nth-child(4) strong{
+  color:var(--sa26-red)!important;
+  font-size:var(--sa26-kill-value)!important;
+  text-shadow:0 0 16px rgba(255,100,120,.16);
+}
+body.ui-260.match-started #roundTimer{
+  color:#f7fafb!important;
+  font-size:var(--sa26-timer-value)!important;
+  letter-spacing:.01em!important;
+}
+body.ui-260.match-started #roundLabel{
+  color:#c0cdd2!important;
+  font-size:var(--sa26-top-label)!important;
+}
+body.ui-260.match-started .match-hud .blue{background:rgba(45,139,184,.13)!important}
+body.ui-260.match-started .match-hud .red{background:rgba(168,53,70,.12)!important}
+body.ui-260.match-started .match-hud .clock{
+  background:#071119;
+  box-shadow:inset 1px 0 rgba(255,255,255,.04),inset -1px 0 rgba(255,255,255,.04)!important;
+}
+
+body.ui-260.match-started .minimap-shell{
+  left:var(--sa26-minimap-edge)!important;
+  top:var(--sa26-minimap-edge)!important;
+  width:var(--sa26-minimap-size)!important;
+  height:var(--sa26-minimap-size)!important;
+  opacity:var(--sa26-minimap-opacity)!important;
+  transform:none!important;
+  border-width:3px!important;
+  box-shadow:0 0 0 1px rgba(86,201,240,.42),0 14px 38px rgba(0,0,0,.32)!important;
+}
+body.ui-260.match-started .minimap-shell.player-overlap{opacity:.40!important}
+
+body.ui-260.match-started .health-hud,
+body.ui-260.match-started .stamina-hud{
+  left:var(--sa26-hud-edge)!important;
+  width:var(--sa26-left-panel-width)!important;
+  padding:var(--sa26-panel-pad)!important;
+  border-radius:2px!important;
+}
+body.ui-260.match-started .health-hud{bottom:var(--sa26-health-bottom)!important}
+body.ui-260.match-started .stamina-hud{bottom:var(--sa26-hud-edge)!important}
+body.ui-260.match-started .health-copy span,
+body.ui-260.match-started .stamina-copy span,
+body.ui-260.match-started .dash-copy span,
+body.ui-260.match-started .weapon-title span{
+  font:900 var(--sa26-hud-label)/1 var(--sa26-mono)!important;
+  letter-spacing:.13em!important;
+}
+body.ui-260.match-started .health-copy strong,
+body.ui-260.match-started .stamina-copy strong,
+body.ui-260.match-started .dash-copy strong{
+  font:950 var(--sa26-hud-value)/1 var(--sa26-mono)!important;
+}
+body.ui-260.match-started .health-copy small{
+  margin-top:calc(var(--sa26-hud-micro) * .55)!important;
+  font:750 var(--sa26-hud-micro)/1.25 var(--sa26-mono)!important;
+}
+body.ui-260.match-started .health-track,
+body.ui-260.match-started .stamina-track{
+  height:var(--sa26-hud-track)!important;
+  margin-top:var(--sa26-panel-pad)!important;
+  border-radius:1px!important;
+}
+
+body.ui-260.match-started .weapon-hud{
+  right:var(--sa26-hud-edge)!important;
+  bottom:var(--sa26-hud-edge)!important;
+  width:var(--sa26-weapon-width)!important;
+  min-height:var(--sa26-weapon-min-height)!important;
+  padding:var(--sa26-panel-pad)!important;
+  border-radius:2px!important;
+}
+body.ui-260.match-started .weapon-title strong{
+  margin-top:calc(var(--sa26-hud-micro) * .7)!important;
+  font-size:var(--sa26-weapon-name)!important;
+  line-height:1!important;
+}
+body.ui-260.match-started .weapon-title small{
+  font:850 var(--sa26-hud-micro)/1 var(--sa26-mono)!important;
+}
+body.ui-260.match-started .ammo-line{margin-top:var(--sa26-hud-micro)!important}
+body.ui-260.match-started .ammo-line strong{
+  color:#f7fafb!important;
+  font:950 var(--sa26-ammo-value)/1 var(--sa26-mono)!important;
+}
+body.ui-260.match-started .ammo-line span,
+body.ui-260.match-started .ammo-line b{
+  font:900 var(--sa26-ammo-support)/1 var(--sa26-mono)!important;
+}
+body.ui-260.match-started .weapon-slots{gap:var(--sa26-hud-micro)!important;margin-top:var(--sa26-hud-micro)!important}
+body.ui-260.match-started .weapon-slots span{
+  padding:calc(var(--sa26-hud-micro) * .85) var(--sa26-hud-micro)!important;
+  border-radius:1px!important;
+  font:900 var(--sa26-hud-micro)/1 var(--sa26-mono)!important;
+}
+body.ui-260.match-started .weapon-controls{
+  margin-top:var(--sa26-hud-micro)!important;
+  font:750 var(--sa26-hud-micro)/1.45 var(--sa26-mono)!important;
+}
+
+body.ui-260.match-started .dash-hud{
+  right:var(--sa26-hud-edge)!important;
+  bottom:var(--sa26-dash-bottom)!important;
+  width:var(--sa26-dash-width)!important;
+  padding:var(--sa26-panel-pad)!important;
+  border-radius:2px!important;
+}
+body.ui-260.match-started .dash-pips{
+  gap:calc(var(--sa26-hud-micro) * .7)!important;
+  margin-top:var(--sa26-hud-micro)!important;
+}
+body.ui-260.match-started .dash-pips i{
+  height:var(--sa26-dash-pip)!important;
+  border-radius:1px!important;
+}
+
+body.ui-260 .phase3-kill-feed{
+  top:var(--sa26-feed-top)!important;
+  right:var(--sa26-feed-right)!important;
+  width:min(var(--sa26-feed-width),46vw)!important;
+  gap:var(--sa26-feed-gap)!important;
+  transform:none!important;
+}
+body.ui-260 .phase3-feed-row{
+  min-height:0!important;
+  gap:var(--sa26-feed-gap)!important;
+  padding:var(--sa26-feed-pad-y) var(--sa26-feed-pad-x)!important;
+  border:1px solid rgba(83,109,122,.34)!important;
+  border-left-width:2px!important;
+  background:rgba(5,13,19,.84)!important;
+  font-size:var(--sa26-feed-name)!important;
+  line-height:1.2!important;
+  text-shadow:0 2px 3px rgba(0,0,0,.88);
+}
+body.ui-260 .phase3-feed-row strong,
+body.ui-260 .phase3-feed-row b{
+  font-size:var(--sa26-feed-name)!important;
+  white-space:nowrap;
+}
+body.ui-260 .phase3-feed-row span{
+  padding:calc(var(--sa26-feed-pad-y) * .55) calc(var(--sa26-feed-pad-x) * .7)!important;
+  font-size:var(--sa26-feed-weapon)!important;
+}
+body.ui-260 .phase3-feed-row em{
+  font-size:var(--sa26-feed-critical)!important;
+  letter-spacing:.08em!important;
+}
+body.ui-260 .phase3-feed-row .team-blue{color:var(--sa26-blue)!important}
+body.ui-260 .phase3-feed-row .team-red{color:var(--sa26-red)!important}
+body.ui-260 .phase3-feed-row.critical{
+  border-color:rgba(222,191,104,.72)!important;
+  box-shadow:inset 3px 0 var(--sa26-gold),0 9px 24px rgba(0,0,0,.28)!important;
+}
+body.ui-260 .phase3-tactical-legend{
+  bottom:var(--sa26-hud-edge)!important;
+  padding:calc(var(--sa26-hud-micro) * .9) var(--sa26-panel-pad)!important;
+  border-radius:1px!important;
+  font-size:var(--sa26-legend-font)!important;
+}
+
+/* Approved five-tab Pause console: same composition, deliberately larger. */
+body.ui-260 .pause-panel{
+  padding:clamp(10px,1.5vw,26px)!important;
+}
+body.ui-260 .pause-shell{
+  grid-template-columns:270px minmax(0,1fr)!important;
+  width:min(1520px,97vw)!important;
+  height:min(930px,96vh)!important;
+  max-height:96vh!important;
+}
+body.ui-260 .pause-head{
+  padding:34px 42px 27px!important;
+}
+body.ui-260 .pause-head p{font-size:9.5px!important}
+body.ui-260 .pause-head h1{font-size:clamp(58px,4.6vw,74px)!important}
+body.ui-260 .pause-head small{font-size:10.5px!important}
+body.ui-260 .pause-clock span{font-size:9px!important}
+body.ui-260 .pause-clock strong{font-size:38px!important}
+body.ui-260 .pause-tabs{padding:24px 0!important}
+body.ui-260 .pause-tabs button{
+  grid-template-columns:30px 25px minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  column-gap:11px!important;
+  min-height:94px!important;
+  padding:17px 19px!important;
+}
+body.ui-260 .pause-tabs button>.pause-tab-icon{
+  grid-column:1;
+  grid-row:1/3;
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  color:#718995;
+}
+body.ui-260 .pause-tabs button>.pause-tab-icon svg{
+  display:block;
+  width:24px;
+  height:24px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.55;
+  stroke-linecap:square;
+  stroke-linejoin:miter;
+}
+body.ui-260 .pause-tabs button>span{
+  grid-column:2;
+  grid-row:1/3;
+  font-size:13px!important;
+}
+body.ui-260 .pause-tabs button>strong{
+  grid-column:3;
+  grid-row:1;
+  font-size:12px!important;
+  letter-spacing:.10em!important;
+}
+body.ui-260 .pause-tabs button>small{
+  grid-column:3;
+  grid-row:2;
+  margin-top:8px!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+}
+body.ui-260 .pause-tabs button.active>.pause-tab-icon{color:var(--sa26-cyan)}
+body.ui-260 .pause-view{padding:39px 46px 42px!important}
+body.ui-260 .pause-view-head{max-width:900px;margin-bottom:30px}
+body.ui-260 .pause-view-head>span{font-size:9px!important}
+body.ui-260 .pause-view-head h2{font-size:clamp(42px,3.5vw,56px)!important}
+body.ui-260 .pause-round-state>span,
+body.ui-260 .pause-summary span,
+body.ui-260 .pause-tactical-grid span,
+body.ui-260 .pause-loadout-status span{font-size:9px!important}
+body.ui-260 .pause-round-state>strong{font-size:clamp(52px,4.4vw,68px)!important}
+body.ui-260 .pause-match-line{font-size:8.5px!important}
+body.ui-260 .pause-summary strong{font-size:16px!important}
+body.ui-260 .pause-intel>summary>span,
+body.ui-260 .pause-intel>summary>strong,
+body.ui-260 .pause-intel>summary>i{font-size:9px!important}
+body.ui-260 .pause-tactical-grid strong,
+body.ui-260 .pause-loadout-status strong{font-size:12px!important}
+body.ui-260 .pause-actions button{
+  min-height:48px!important;
+  padding:14px 20px!important;
+  font-size:10px!important;
+}
+body.ui-260 .pause-top-performer span,
+body.ui-260 .pause-top-performer small{font-size:9px!important}
+body.ui-260 .pause-top-performer strong{font-size:15px!important}
+body.ui-260 .pause-team>header{font-size:10px!important}
+body.ui-260 .pause-score-row{
+  min-height:49px!important;
+  font-size:10px!important;
+}
+body.ui-260 .pause-score-row.labels{font-size:8.5px!important}
+body.ui-260 .pause-loadout-detail>div span{font-size:9px!important}
+body.ui-260 .pause-loadout-detail>div strong{font-size:28px!important}
+body.ui-260 .pause-loadout-detail>div small{font-size:9px!important}
+body.ui-260 .pause-loadout-slots b{font-size:9px!important}
+body.ui-260 .pause-loadout-slots span{font-size:12px!important}
+body.ui-260 .pause-loadout-slots small{font-size:8.5px!important}
+body.ui-260 .pause-control-rows span{font-size:11px!important}
+body.ui-260 .pause-control-rows strong{font-size:9.5px!important}
+
+/* Scoreboard: K and K/D read first; the existing tactical structure remains. */
+body.ui-260 .phase3-scoreboard-shell{
+  width:min(1480px,95vw)!important;
+  max-height:92vh!important;
+  border-top:3px solid var(--sa26-cyan)!important;
+  border-radius:1px!important;
+}
+body.ui-260 .phase3-scoreboard-shell>header{
+  padding:28px 32px 24px!important;
+}
+body.ui-260 .phase3-scoreboard-shell header small{font-size:9px!important}
+body.ui-260 .phase3-scoreboard-shell h2{
+  margin-top:8px!important;
+  font-size:46px!important;
+}
+body.ui-260 .phase3-score-summary{font-size:17px!important}
+body.ui-260 .phase3-score-summary b{font-size:34px!important}
+body.ui-260 .phase3-top-three>div{padding:19px 24px!important}
+body.ui-260 .phase3-top-three span{font-size:9px!important}
+body.ui-260 .phase3-top-three strong{margin-top:8px!important;font-size:21px!important}
+body.ui-260 .phase3-top-three small{margin-top:7px!important;font-size:10px!important}
+body.ui-260 .phase3-top-three .rank-1{
+  background:#0d1920;
+  box-shadow:inset 0 3px var(--sa26-gold);
+}
+body.ui-260 .phase3-team-title{
+  min-height:52px!important;
+  padding:0 21px!important;
+}
+body.ui-260 .phase3-team-title strong{font-size:15px!important}
+body.ui-260 .phase3-team-title span{font-size:9px!important}
+body.ui-260 .phase3-team-score-head,
+body.ui-260 .phase3-team-score-row{
+  grid-template-columns:minmax(190px,2.05fr) repeat(5,minmax(58px,.53fr))!important;
+  padding-inline:20px!important;
+}
+body.ui-260 .phase3-team-score-head{
+  min-height:39px!important;
+  font-size:9px!important;
+  color:#879ca6!important;
+}
+body.ui-260 .phase3-team-score-head [data-stat-label="kills"],
+body.ui-260 .phase3-team-score-head [data-stat-label="kd"]{
+  color:#d9e4e8!important;
+  font-weight:950!important;
+}
+body.ui-260 .phase3-team-score-row{min-height:68px!important}
+body.ui-260 .phase3-team-score-row>span i{font-size:10px!important}
+body.ui-260 .phase3-team-score-row>span b{font-size:15px!important}
+body.ui-260 .phase3-team-score-row>strong{
+  color:#c3d0d5!important;
+  font-size:12px!important;
+}
+body.ui-260 .phase3-team-score-row>[data-stat="kills"],
+body.ui-260 .phase3-team-score-row>[data-stat="kd"]{
+  color:#f5f8f9!important;
+  font-size:16px!important;
+  font-weight:950!important;
+}
+body.ui-260 .phase3-team-board.blue .phase3-team-score-row>[data-stat="kills"]{color:#8ddcff!important}
+body.ui-260 .phase3-team-board.red .phase3-team-score-row>[data-stat="kills"]{color:#ff95a2!important}
+body.ui-260 .phase3-team-score-row.local{
+  background:#0d222c!important;
+  box-shadow:inset 5px 0 var(--sa26-cyan)!important;
+}
+body.ui-260 .phase3-scoreboard-shell>footer{
+  padding:14px 20px!important;
+  font-size:9px!important;
+}
+
+/* Postgame and information surfaces share the same readable support scale. */
+body.ui-260 .postgame-titlebar span,
+body.ui-260 .postgame-summary span,
+body.ui-260 .postgame-team header,
+body.ui-260 .postgame-round-history>span,
+body.ui-260 .career-gain-label,
+body.ui-260 .arena-postgame span{
+  font-size:9px!important;
+}
+body.ui-260 .postgame-summary strong{font-size:18px!important}
+body.ui-260 .postgame-row{min-height:45px!important;font-size:10px!important}
+body.ui-260 .postgame-actions button{
+  min-height:50px!important;
+  font-size:11px!important;
+}
+body.ui-260 .ui231-weapon-card small,
+body.ui-260 .ui231-weapon-stat span,
+body.ui-260 .ui231-weapon-note{
+  font-size:9px!important;
+  line-height:1.4!important;
+}
+
+@media(max-width:1199px){
+  body.ui-260 .phase3-scoreboard-shell{width:96vw!important}
+  body.ui-260 .phase3-team-scoreboards{grid-template-columns:1fr!important;overflow:auto;max-height:58vh}
+  body.ui-260 .phase3-team-board.blue{border-right:0!important;border-bottom:1px solid var(--sa26-line)}
+  body.ui-260 .phase3-team-score-row{min-height:54px!important}
+}
+
+@media(max-width:900px){
+  body.ui-260 .pause-shell{
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto auto minmax(0,1fr)!important;
+    width:97vw!important;
+    height:96vh!important;
+  }
+  body.ui-260 .pause-head{padding:22px 25px 18px!important}
+  body.ui-260 .pause-tabs{flex-direction:row!important;padding:0!important}
+  body.ui-260 .pause-tabs button{
+    flex:1 0 150px;
+    grid-template-columns:26px minmax(0,1fr)!important;
+    min-height:66px!important;
+    padding:11px 13px!important;
+  }
+  body.ui-260 .pause-tabs button>.pause-tab-icon{grid-column:1;width:24px;height:24px}
+  body.ui-260 .pause-tabs button>.pause-tab-icon svg{width:20px;height:20px}
+  body.ui-260 .pause-tabs button>span{display:none!important}
+  body.ui-260 .pause-tabs button>strong{grid-column:2;font-size:10px!important}
+  body.ui-260 .pause-tabs button>small{display:none!important}
+  body.ui-260 .pause-view{padding:27px 25px 30px!important}
+}
+
+@media(max-height:800px){
+  body.ui-260 .pause-head{padding-top:21px!important;padding-bottom:18px!important}
+  body.ui-260 .pause-head h1{font-size:48px!important}
+  body.ui-260 .pause-tabs{padding-block:10px!important}
+  body.ui-260 .pause-tabs button{min-height:72px!important;padding-block:11px!important}
+  body.ui-260 .pause-view{padding-block:25px 28px!important}
+  body.ui-260 .pause-view-head{margin-bottom:20px}
+  body.ui-260 .pause-view-head h2{font-size:40px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.ui-260 *,body.ui-260 *::before,body.ui-260 *::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}

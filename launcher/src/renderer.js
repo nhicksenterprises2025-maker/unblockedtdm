@@ -8,6 +8,13 @@ function buildCode(entry = {}) {
   return `${version}.${build}`;
 }
 
+function showArchiveMessage(list, message, { error = false } = {}) {
+  const row = document.createElement('div');
+  row.className = `empty-row${error ? ' error' : ''}`;
+  row.textContent = message;
+  list.replaceChildren(row);
+}
+
 function setView(name) {
   $$('.nav-button').forEach((button) => button.classList.toggle('active', button.dataset.view === name));
   $$('.view').forEach((view) => view.classList.toggle('active', view.id === name));
@@ -117,26 +124,30 @@ async function ensureNewestInstalled() {
 
 async function loadArchive() {
   const list = $('#archiveList');
-  list.innerHTML = '<div class="empty-row">LOADING RELEASES…</div>';
+  showArchiveMessage(list, 'LOADING RELEASES…');
   try {
     const versions = await window.launcherAPI.listVersions();
     if (!versions.length) {
-      list.innerHTML = '<div class="empty-row">NO PUBLISHED BUILDS.</div>';
+      showArchiveMessage(list, 'NO PUBLISHED BUILDS.');
       return;
     }
-    list.innerHTML = '';
+    list.replaceChildren();
     for (const entry of versions) {
       const item = document.createElement('article');
       item.className = 'archive-item';
-      item.innerHTML = `
-        <strong>BUILD ${buildCode(entry)}</strong>
-        <span class="phase">${entry.phase}</span>
-        <span class="tag">${entry.tag}</span>
-        <div class="archive-actions"></div>`;
-      const actions = item.querySelector('.archive-actions');
+      const title = document.createElement('strong');
+      title.textContent = `BUILD ${buildCode(entry)}`;
+      const phase = document.createElement('span');
+      phase.className = 'phase';
+      phase.textContent = entry.phase || 'Skirmish Arena';
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = entry.tag || 'UNPUBLISHED';
+      const actions = document.createElement('div');
+      actions.className = 'archive-actions';
       const action = document.createElement('button');
       action.className = entry.downloaded ? 'primary' : 'secondary';
-      action.textContent = entry.downloaded ? 'PLAY' : 'DOWNLOAD';
+      action.textContent = entry.downloaded ? 'PLAY' : entry.cacheStatus === 'stale' ? 'REPAIR' : 'DOWNLOAD';
       action.addEventListener('click', async () => {
         action.disabled = true;
         try {
@@ -152,10 +163,11 @@ async function loadArchive() {
         }
       });
       actions.appendChild(action);
+      item.append(title, phase, tag, actions);
       list.appendChild(item);
     }
   } catch (error) {
-    list.innerHTML = `<div class="empty-row error">${error.message}</div>`;
+    showArchiveMessage(list, error.message, { error:true });
   }
 }
 
@@ -230,5 +242,8 @@ async function init() {
 }
 
 init().catch((error) => {
-  document.body.innerHTML = `<pre style="padding:30px;color:#ff6878;background:#080c11">Launcher initialization failed:\n${error.stack || error.message}</pre>`;
+  const fatal = document.createElement('pre');
+  fatal.style.cssText = 'padding:30px;color:#ff6878;background:#080c11;white-space:pre-wrap';
+  fatal.textContent = `Launcher initialization failed:\n${error.stack || error.message}`;
+  document.body.replaceChildren(fatal);
 });

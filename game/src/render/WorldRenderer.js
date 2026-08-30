@@ -59,6 +59,7 @@ export class WorldRenderer {
     this.presentationTime = this.resolvePresentationTime(timestampMs);
     this.presentationAnimationsEnabled = !globalThis.document?.hidden && globalThis.document?.body?.dataset?.presentationQuality !== 'reduced';
     this.drawGround(visible);
+    if (this.map.definition?.id === 'training-complex') this.drawTrainingFacilityPresentation(visible);
     if (this.presentationCache) this.drawFoundryFloorPresentation(visible);
     this.drawLaneBorders();
     this.drawDecals();
@@ -613,6 +614,66 @@ export class WorldRenderer {
     }
   }
 
+  drawTrainingFacilityPresentation(visible) {
+    const ctx = this.ctx;
+    const top = Number(this.map.definition?.laneBounds?.top ?? 7) * TILE_SIZE;
+    const bottom = Number(this.map.definition?.laneBounds?.bottom ?? 15) * TILE_SIZE;
+    const left = TILE_SIZE;
+    const right = this.map.width - TILE_SIZE;
+    ctx.save();
+
+    // Recessed drainage channels make the grass/concrete/road transitions read
+    // as constructed facility edges instead of arbitrary tile-color changes.
+    ctx.strokeStyle = 'rgba(31,52,59,.38)';
+    ctx.lineWidth = 8;
+    for (const y of [top - 9, bottom + 9]) {
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(right, y);
+      ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(172,186,184,.22)';
+    ctx.lineWidth = 1.5;
+    for (const y of [top - 9, bottom + 9]) {
+      ctx.beginPath();
+      ctx.moveTo(left, y - 3);
+      ctx.lineTo(right, y - 3);
+      ctx.moveTo(left, y + 3);
+      ctx.lineTo(right, y + 3);
+      ctx.stroke();
+    }
+
+    // Calibrated range ticks are neutral paint, deliberately avoiding the
+    // decorative blue roof bars removed for 2.6.
+    const centerY = Number(this.map.definition?.decals?.find?.((entry) => entry.type === 'lane')?.y || (top + bottom) / 2);
+    ctx.font = '700 9px ui-monospace, SFMono-Regular, Consolas, monospace';
+    ctx.textAlign = 'center';
+    for (let col = 5; col <= this.map.definition.cols - 5; col += 3) {
+      const x = col * TILE_SIZE;
+      if (x < visible.left - 40 || x > visible.right + 40) continue;
+      ctx.fillStyle = 'rgba(221,222,191,.30)';
+      ctx.fillRect(x - 1, centerY - 17, 2, 10);
+      ctx.fillRect(x - 1, centerY + 7, 2, 10);
+      ctx.fillStyle = 'rgba(221,222,191,.34)';
+      ctx.fillText(String(Math.abs(col - this.map.definition.cols / 2)).padStart(2, '0'), x, centerY - 23);
+    }
+
+    // Utility aprons identify equipment access zones without adding collision.
+    ctx.setLineDash([10, 8]);
+    ctx.strokeStyle = 'rgba(207,191,135,.20)';
+    ctx.lineWidth = 2;
+    const apronWidth = 4.9 * TILE_SIZE;
+    for (const x of [4.55 * TILE_SIZE, this.map.width - 4.55 * TILE_SIZE - apronWidth]) {
+      for (const y of [1.72 * TILE_SIZE, 16.48 * TILE_SIZE]) {
+        const rect = { x, y, w:apronWidth, h:3.9 * TILE_SIZE };
+        if (!this.isRectVisible(rect, visible, 12)) continue;
+        ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      }
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
   drawGrassDetail(x, y, seed) {
     const ctx = this.ctx;
     ctx.save();
@@ -677,8 +738,8 @@ export class WorldRenderer {
 
   drawLaneBorders() {
     const ctx = this.ctx;
-    const top = TILE_SIZE * 8;
-    const bottom = TILE_SIZE * 14;
+    const top = TILE_SIZE * Number(this.map.definition?.laneBounds?.top ?? 8);
+    const bottom = TILE_SIZE * Number(this.map.definition?.laneBounds?.bottom ?? 14);
     ctx.save();
     ctx.strokeStyle = 'rgba(211,223,206,.20)';
     ctx.lineWidth = 3;
@@ -865,6 +926,9 @@ export class WorldRenderer {
         (!this.presentationVisibleBounds || this.isRectVisible(item, this.presentationVisibleBounds, 48))) {
       this.drawFoundryStructureDetail(item, p);
     }
+    if (this.map.definition?.id === 'training-complex' && item.visualRole) {
+      this.drawTrainingStructureDetail(item, p);
+    }
 
     if (debug) {
       ctx.fillStyle = 'rgba(255,255,255,.70)';
@@ -917,7 +981,7 @@ export class WorldRenderer {
   drawWarehouseDetail(item, p) {
     const ctx = this.ctx;
     const roofH = Math.max(12, item.h - 20);
-    ctx.strokeStyle = 'rgba(34,72,88,.26)';
+    ctx.strokeStyle = 'rgba(35,52,59,.30)';
     ctx.lineWidth = 2;
     for (let x = item.x + 48; x < item.x + item.w - 12; x += 48) {
       ctx.beginPath();ctx.moveTo(x,item.y+6);ctx.lineTo(x,item.y+roofH-6);ctx.stroke();
@@ -926,9 +990,15 @@ export class WorldRenderer {
     const panels = Math.max(1, Math.floor(item.w / 72));
     for (let i = 0; i < panels; i++) {
       const px = item.x + 18 + i * 70;
-      ctx.fillStyle = 'rgba(202,231,239,.18)';
-      ctx.beginPath();ctx.roundRect(px,item.y+14,38,18,3);ctx.fill();
-      ctx.strokeStyle = 'rgba(38,76,91,.28)';ctx.lineWidth=1.3;ctx.stroke();
+      ctx.fillStyle = 'rgba(35,49,54,.46)';
+      ctx.beginPath();ctx.roundRect(px,item.y+13,40,20,2);ctx.fill();
+      ctx.strokeStyle = 'rgba(191,202,199,.24)';ctx.lineWidth=1.2;ctx.stroke();
+      ctx.strokeStyle = 'rgba(15,28,33,.48)';
+      ctx.lineWidth = 1;
+      for (let slat = 0; slat < 4; slat += 1) {
+        const y = item.y + 17 + slat * 4;
+        ctx.beginPath();ctx.moveTo(px + 5, y);ctx.lineTo(px + 35, y);ctx.stroke();
+      }
     }
 
     // Roof vents break up the large rectangles and give the building a real function.
@@ -937,6 +1007,57 @@ export class WorldRenderer {
       ctx.fillStyle='rgba(31,58,70,.50)';ctx.beginPath();ctx.arc(vx,vy,9,0,Math.PI*2);ctx.fill();
       ctx.strokeStyle=p.detail;ctx.globalAlpha*=0.45;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(vx,vy,5.5,0,Math.PI*2);ctx.stroke();
     }
+  }
+
+  drawTrainingStructureDetail(item) {
+    const ctx = this.ctx;
+    const role = item.visualRole;
+    const topH = Math.max(16, item.h - (item.kind === 'tall' ? 20 : item.kind === 'wall' ? 12 : 7));
+    ctx.save();
+
+    if (role === 'trainingHall') {
+      const south = item.y > this.map.height / 2;
+      const code = south ? 'RANGE HALL S' : 'RANGE HALL N';
+      const plaqueW = Math.min(104, item.w * .38);
+      const plaqueX = item.x + item.w * .5 - plaqueW * .5;
+      const plaqueY = item.y + topH - 38;
+      ctx.fillStyle = 'rgba(25,34,37,.82)';
+      ctx.strokeStyle = 'rgba(213,218,207,.30)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();ctx.roundRect(plaqueX, plaqueY, plaqueW, 22, 2);ctx.fill();ctx.stroke();
+      ctx.fillStyle = 'rgba(222,226,216,.72)';
+      ctx.font = '700 8px ui-monospace, SFMono-Regular, Consolas, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(code, item.x + item.w * .5, plaqueY + 14);
+    } else if (role === 'controlTerminal') {
+      const displayW = Math.min(96, item.w * .42);
+      const x = item.x + item.w * .5 - displayW * .5;
+      const y = item.y + Math.max(12, topH * .30);
+      ctx.fillStyle = 'rgba(14,28,33,.88)';
+      ctx.strokeStyle = 'rgba(179,194,190,.34)';
+      ctx.lineWidth = 1.5;
+      ctx.fillRect(x, y, displayW, 18);
+      ctx.strokeRect(x, y, displayW, 18);
+      ctx.fillStyle = 'rgba(210,169,73,.72)';
+      ctx.fillRect(x + 8, y + 8, displayW * .34, 2);
+      ctx.fillStyle = 'rgba(118,180,132,.72)';
+      ctx.beginPath();ctx.arc(x + displayW - 10, y + 9, 2.2, 0, TAU);ctx.fill();
+    } else if (role === 'coverModule') {
+      ctx.fillStyle = 'rgba(223,225,214,.58)';
+      ctx.font = '800 8px ui-monospace, SFMono-Regular, Consolas, monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(item.y < this.map.height / 2 ? 'COVER N' : 'COVER S', item.x + 12, item.y + topH - 12);
+    } else if (role === 'rangeBarrier' || role === 'spawnRail') {
+      ctx.fillStyle = 'rgba(38,42,38,.70)';
+      const padW = Math.min(20, item.w * .22);
+      ctx.fillRect(item.x + item.w * .5 - padW * .5, item.y + 10, padW, Math.max(8, topH - 20));
+      ctx.fillStyle = 'rgba(213,177,69,.64)';
+      for (let y = item.y + 20; y < item.y + topH - 9; y += 28) {
+        ctx.beginPath();ctx.arc(item.x + item.w * .5, y, 2.3, 0, TAU);ctx.fill();
+      }
+    }
+
+    ctx.restore();
   }
 
   drawSteelDetail(item, p) {

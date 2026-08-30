@@ -67,7 +67,7 @@ for (const [index, rank] of ARENA_RANKS.entries()) {
 assert.deepEqual(ARENA_AP_REWARDS, {
   kill:1, criticalKill:2, assist:0.5, roundWin:2.5, matchWin:10,
   streak5:2, streak10:5, sweep:10, mvp:5, comeback:8, teamWipe:2.5,
-  suddenDeathClutch:2, negativeKd:-10, matchLoss:-8
+  suddenDeathClutch:2, negativeKd:-10, matchLoss:-8, forfeit:-50
 }, 'Phase 3 calibration must not silently change approved AP values.');
 
 const stackedPenalty = calculateArenaMatch({ won:false, kills:0, deaths:1, roundWins:0, roundLosses:5 });

@@ -16,6 +16,9 @@ export const GAMEPLAY_DEFAULTS = Object.freeze({
   damageVignette: true,
   damageVignetteIntensity: 0.8,
   autoSprint: true,
+  // Preserve the pre-2.6 manual-reload behavior until a player explicitly
+  // enables assistance. Manual reload always remains available either way.
+  autoReload: false,
   audioEnabled: true,
   masterVolume: 0.75,
   hudScale: 1,
@@ -121,9 +124,10 @@ export class GameSettings {
       damageVignette: this.readRaw('damageVignette', 'true') !== 'false',
       damageVignetteIntensity: bounded('damageVignetteIntensity', 0, 1),
       autoSprint: this.readRaw('autoSprint', 'true') !== 'false',
+      autoReload: this.readRaw('autoReload', 'false') === 'true',
       audioEnabled: this.readRaw('audioEnabled', 'true') !== 'false',
       masterVolume: clamp(Number.isFinite(storedVolume) ? storedVolume : GAMEPLAY_DEFAULTS.masterVolume, 0, 1),
-      hudScale: bounded('hudScale', 0.8, 1.2),
+      hudScale: bounded('hudScale', 0.8, 1.4),
       killFeedScale: bounded('killFeedScale', 0.8, 1.2),
       showFps: this.readRaw('showFps', 'false') === 'true'
     };
@@ -140,21 +144,25 @@ export class GameSettings {
     if (['minimapScale', 'hudScale', 'killFeedScale'].includes(key)) {
       const numeric = Number(value);
       const lower = key === 'minimapScale' ? 0.75 : 0.8;
-      const upper = key === 'minimapScale' ? 1.25 : 1.2;
+      const upper = key === 'minimapScale' ? 1.25 : key === 'hudScale' ? 1.4 : 1.2;
       normalized = clamp(Number.isFinite(numeric) ? numeric : GAMEPLAY_DEFAULTS[key], lower, upper).toFixed(2);
     }
     if (key === 'aiDifficulty') normalized = AI_MULTIPLIERS[value] ? value : GAMEPLAY_DEFAULTS.aiDifficulty;
     if (key === 'minimapMode') normalized = value === 'rotate' ? 'rotate' : 'north-up';
-    if (['screenShake', 'damageVignette', 'autoSprint', 'audioEnabled', 'showFps'].includes(key)) normalized = Boolean(value);
+    if (['screenShake', 'damageVignette', 'autoSprint', 'autoReload', 'audioEnabled', 'showFps'].includes(key)) normalized = Boolean(value);
     try { this.storage.setItem(`unblockedtdm.${key}`, String(normalized)); } catch {}
     const gameplay = this.gameplay();
     emitChange({ gameplay, bindings: this.bindings() });
     return gameplay;
   }
 
-  resetGameplay() {
-    for (const [key, value] of Object.entries(GAMEPLAY_DEFAULTS)) this.setGameplay(key, value);
-    return this.gameplay();
+  resetGameplay({ emit = true } = {}) {
+    for (const [key, value] of Object.entries(GAMEPLAY_DEFAULTS)) {
+      try { this.storage.setItem(`unblockedtdm.${key}`, String(value)); } catch {}
+    }
+    const gameplay = this.gameplay();
+    if (emit) emitChange({ gameplay, bindings: this.bindings() });
+    return gameplay;
   }
 
   bindings() {
@@ -189,11 +197,18 @@ export class GameSettings {
     return { ok: true, swappedAction: conflict?.[0] || null, bindings: current };
   }
 
-  resetBindings() {
+  resetBindings({ emit = true } = {}) {
     const defaults = { ...DEFAULT_BINDINGS };
     try { this.storage.setItem(BINDINGS_KEY, JSON.stringify(defaults)); } catch {}
-    emitChange({ gameplay: this.gameplay(), bindings: defaults });
+    if (emit) emitChange({ gameplay: this.gameplay(), bindings: defaults });
     return defaults;
+  }
+
+  resetAll() {
+    const gameplay = this.resetGameplay({ emit:false });
+    const bindings = this.resetBindings({ emit:false });
+    emitChange({ gameplay, bindings });
+    return { gameplay, bindings };
   }
 }
 
