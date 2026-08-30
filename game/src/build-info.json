@@ -1,10 +1,10 @@
 {
   "product": "Skirmish Arena",
-  "gameVersion": "2.5.0",
+  "gameVersion": "2.6.0",
   "build": 1,
-  "sequence": 57,
-  "phase": "2.5.0 — Presentation and Map Overhaul",
-  "tag": "build-2.5.0-v1",
-  "title": "Skirmish Arena 2.5.0 — Build 1",
+  "sequence": 58,
+  "phase": "2.6.0 — Tactical Intelligence and Interface Refinement",
+  "tag": "build-2.6.0-v1",
+  "title": "Skirmish Arena 2.6.0 — Build 1",
   "repository": "nhicksenterprises2025-maker/unblockedtdm"
 }
