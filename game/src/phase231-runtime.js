@@ -29,7 +29,7 @@ function installHomeLogo() {
   if (!logo) {
     logo = document.createElement('img');
     logo.className = 'ui231-home-logo';
-    logo.alt = 'Skirmish Arena';
+    logo.alt = 'Skirmish Arena command emblem and wordmark';
     logo.decoding = 'async';
     logo.draggable = false;
     const heading = hero.querySelector('h1');
@@ -40,6 +40,7 @@ function installHomeLogo() {
     logo.src = 'assets/skirmish-arena-main-logo.svg';
   }
   logo.dataset.brandAsset = 'skirmish-arena-main-logo-2.5';
+  logo.dataset.brandSystem = 'sa-command-mark-v2';
 }
 
 let buildInfoPromise = null;

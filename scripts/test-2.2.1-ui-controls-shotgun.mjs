@@ -9,6 +9,7 @@ const css = read('game/src/ui-2.2.1.css');
 const debug = read('game/src/debug-tuning.js');
 const tactical = read('game/src/ui/TacticalHUD.js');
 const flow = read('game/src/flow-v18.js');
+const homeCommandArt = read('game/src/ui/HomeCommandArt.js');
 
 assert.equal(DEFAULT_BINDINGS.map, 'KeyM');
 assert.equal(DEFAULT_BINDINGS.scoreboard, 'Tab');
@@ -52,9 +53,34 @@ assert.ok(runtime.includes('data-game-weapon-model="assault-rifle"'));
 assert.ok(runtime.includes('data-game-weapon-model="shotgun"'));
 assert.ok(runtime.includes('data-game-weapon-model="pistol"'));
 assert.ok(runtime.includes('ui221PlayMetal'));
-assert.ok(runtime.includes('ui221GearMetal'));
-assert.ok(runtime.includes('ui221-manual'));
-assert.equal(runtime.includes("'quit':"), false);
+const homeArtImport = runtime.match(/import\s*\{([^}]*)\}\s*from\s*['"]\.\/ui\/HomeCommandArt\.js['"]/);
+assert.ok(homeArtImport, 'Home command artwork must come from the shared authored icon module.');
+for (const factory of ['weaponInfoCommandIcon', 'settingsCommandIcon', 'quitCommandIcon']) {
+  assert.match(homeArtImport[1], new RegExp(`\\b${factory}\\b`), `Home menu must import ${factory}.`);
+  assert.ok(homeCommandArt.includes(`export function ${factory}()`), `HomeCommandArt must export ${factory}.`);
+}
+for (const token of [
+  "'weapon-info': weaponInfoCommandIcon",
+  'settings: settingsCommandIcon',
+  'quit: quitCommandIcon'
+]) assert.ok(runtime.includes(token), `Home menu icon map missing: ${token}`);
+for (const token of [
+  'data-home-command-icon="${kind}"',
+  'data-home-icon-family="command-metal"',
+  'data-home-icon-version="${HOME_COMMAND_ICON_VERSION}"'
+]) assert.ok(homeCommandArt.includes(token), `Shared Home icon data contract missing: ${token}`);
+const retiredHomeArt = `${runtime}\n${css}`;
+for (const token of [
+  'function manualSvg(',
+  'function weaponInfoIcon(',
+  'function silverGearIcon(',
+  'ui221GearMetal',
+  'ui221-manual',
+  'ui221-info-pistol',
+  'ui221-info-art',
+  'ui221-settings-art'
+]) assert.equal(retiredHomeArt.includes(token), false, `Retired Home icon implementation must stay removed: ${token}`);
+assert.equal(fs.existsSync(new URL('../game/src/weapon-info-hotfix.js', import.meta.url)), false, 'The unreferenced Weapon Info hotfix runtime must stay removed.');
 assert.ok(flow.includes("document.body.classList.add('ui-v18', 'ui-v19');"));
 
 console.log('Skirmish Arena 2.2.1 compatibility checks passed with balance-ready weapon schema.');

@@ -12,6 +12,11 @@ import {
   totalXpAtLevel
 } from './progression/ProgressionStore.js';
 import { rankBadgeMarkup } from './progression/RankBadges.js';
+import {
+  animateProgression,
+  careerProgressionState,
+  careerTransitionLevels
+} from './ui/PostgameProgression.js';
 
 function ensureStyle(href) {
   if ([...document.querySelectorAll('link[rel="stylesheet"]')].some((link) => link.getAttribute('href') === href)) return;
@@ -23,7 +28,9 @@ function ensureStyle(href) {
 
 ensureStyle('ui-2.0.css');
 ensureStyle('ui-2.1.1.css');
-document.body.classList.add('ui-2-0', 'ui-211');
+ensureStyle('ui-2.6.0-progression.css');
+ensureStyle('ui-2.6.0-systems.css');
+document.body.classList.add('ui-2-0', 'ui-211', 'ui-260-progression');
 
 const progression = new ProgressionStore();
 const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
@@ -137,31 +144,40 @@ function ensureCareerView() {
 function overviewHtml(profile) {
   const nextRank = profile.nextRank;
   const completion = profile.totalXp / TOTAL_CAREER_XP;
+  const recent = (profile.recent || []).slice(0, 5);
+  const recentRows = recent.length
+    ? recent.map((match, index) => `<div class="career-overview-result ${match.won ? 'win' : 'loss'}"><b>${match.won ? 'W' : 'L'}</b><span>MATCH ${String(index + 1).padStart(2, '0')}</span><strong>${number(match.kills)} / ${number(match.deaths)} / ${number(match.assists)}</strong><em>+${number(match.xp)} XP</em></div>`).join('')
+    : '<div class="career-overview-empty">COMPLETE A MATCH TO BEGIN YOUR CAREER RECORD.</div>';
   return `
-    <div class="career-overview-hero">
-      <div class="career-overview-badge">${rankBadgeMarkup(profile.rank, 'career-badge-hero')}</div>
-      <div class="career-overview-identity">
-        <span>CURRENT CAREER</span>
-        <h1>LEVEL ${profile.level}</h1>
-        <h3>${profile.rank.title}</h3>
-        <div class="career-level-line"><span>${profile.level >= MAX_CAREER_LEVEL ? 'MAX LEVEL' : `${number(profile.levelXp)} / ${number(profile.levelXpRequired)} XP`}</span><b>${percent(levelProgress(profile))}</b></div>
-        <div class="career-xp-track career-xp-track-large"><i style="width:${percent(levelProgress(profile))}"></i></div>
+    <div class="career-overview-composition">
+      <div class="career-overview-hero">
+        <div class="career-overview-badge">${rankBadgeMarkup(profile.rank, 'career-badge-hero')}</div>
+        <div class="career-overview-identity">
+          <span>CURRENT CAREER</span>
+          <h1>LEVEL ${profile.level}</h1>
+          <h3>${profile.rank.title}</h3>
+          <div class="career-level-line"><span>${profile.level >= MAX_CAREER_LEVEL ? 'MAX LEVEL' : `${number(profile.levelXp)} / ${number(profile.levelXpRequired)} XP`}</span><b>${percent(levelProgress(profile))}</b></div>
+          <div class="career-xp-track career-xp-track-large"><i style="width:${percent(levelProgress(profile))}"></i></div>
+        </div>
       </div>
-    </div>
-    <div class="career-account-grid">
-      <div><span>TOTAL CAREER XP</span><strong>${number(profile.totalXp)}</strong><small>OF ${number(TOTAL_CAREER_XP)}</small></div>
-      <div><span>CAREER COMPLETION</span><strong>${(completion * 100).toFixed(completion >= .1 ? 1 : 2)}%</strong><small>XP-WEIGHTED</small></div>
-      <div><span>TIME PLAYED</span><strong>${formatPlayTime(profile.playSeconds)}</strong><small>MATCH TIME</small></div>
-      <div><span>MATCHES PLAYED</span><strong>${number(profile.matches)}</strong><small>${number(profile.wins)} WINS</small></div>
-      <div><span>LIFETIME K/D</span><strong>${profile.kd.toFixed(2)}</strong><small>${number(profile.kills)} / ${number(profile.deaths)}</small></div>
-      <div><span>ROUND RECORD</span><strong>${number(profile.roundWins)}-${number(profile.roundLosses)}</strong><small>WINS - LOSSES</small></div>
-    </div>
-    <section class="career-next-rank">
-      <div class="career-next-rank-head"><div><span>RANK PROGRESSION</span><strong>${profile.rank.title}</strong></div><b>${nextRank ? `${nextRank.title} · LEVEL ${nextRank.startLevel}` : 'CAREER COMPLETE'}</b></div>
-      <div class="career-rank-track"><i style="width:${percent(rankProgress(profile))}"></i></div>
-      <div class="career-rank-track-foot"><span>LEVEL ${profile.rank.startLevel}</span><span>${nextRank ? `LEVEL ${nextRank.startLevel}` : 'LEVEL 1000'}</span></div>
-    </section>
-    <section class="career-economy-note"><span>CAREER ECONOMY</span><p>${number(TOTAL_CAREER_XP)} XP to Omnipotent · ${number(TOTAL_MILESTONE_XP)} permanent milestone XP available · no daily or weekly challenges.</p></section>`;
+      <div class="career-account-grid">
+        <div><span>TOTAL CAREER XP</span><strong>${number(profile.totalXp)}</strong><small>OF ${number(TOTAL_CAREER_XP)}</small></div>
+        <div><span>CAREER COMPLETION</span><strong>${(completion * 100).toFixed(completion >= .1 ? 1 : 2)}%</strong><small>XP-WEIGHTED</small></div>
+        <div><span>TIME PLAYED</span><strong>${formatPlayTime(profile.playSeconds)}</strong><small>MATCH TIME</small></div>
+        <div><span>MATCHES PLAYED</span><strong>${number(profile.matches)}</strong><small>${number(profile.wins)} WINS</small></div>
+        <div><span>LIFETIME K/D</span><strong>${profile.kd.toFixed(2)}</strong><small>${number(profile.kills)} KILLS · ${number(profile.deaths)} DEATHS</small></div>
+        <div><span>ROUND RECORD</span><strong>${number(profile.roundWins)}-${number(profile.roundLosses)}</strong><small>WINS · LOSSES</small></div>
+      </div>
+      <div class="career-overview-support">
+        <section class="career-next-rank">
+          <div class="career-next-rank-head"><div><span>RANK PROGRESSION</span><strong>${profile.rank.title}</strong></div><b>${nextRank ? `${nextRank.title} · LEVEL ${nextRank.startLevel}` : 'CAREER COMPLETE'}</b></div>
+          <div class="career-rank-track"><i style="width:${percent(rankProgress(profile))}"></i></div>
+          <div class="career-rank-track-foot"><span>LEVEL ${profile.rank.startLevel}</span><span>${nextRank ? `LEVEL ${nextRank.startLevel}` : 'LEVEL 1000'}</span></div>
+        </section>
+        <section class="career-overview-recent"><header><span>RECENT FORM</span><strong>${recent.length ? `LAST ${recent.length} MATCH${recent.length === 1 ? '' : 'ES'}` : 'NO MATCHES YET'}</strong></header><div>${recentRows}</div></section>
+      </div>
+      <section class="career-economy-note"><span>CAREER ECONOMY</span><p>${number(TOTAL_CAREER_XP)} XP to Omnipotent · ${number(TOTAL_MILESTONE_XP)} permanent milestone XP available · no daily or weekly challenges.</p></section>
+    </div>`;
 }
 
 function ranksHtml(profile) {
@@ -170,7 +186,7 @@ function ranksHtml(profile) {
     const earned = profile.level >= rank.startLevel;
     const state = current ? 'current' : earned ? 'earned' : 'locked';
     const range = rank.startLevel === rank.endLevel ? `LEVEL ${rank.startLevel}` : `LEVELS ${rank.startLevel}-${rank.endLevel}`;
-    return `<article class="career-rank-card ${state}">
+    return `<article class="career-rank-card ${state}" data-career-rank="${rank.id}">
       <div class="career-rank-card-badge">${rankBadgeMarkup(rank)}</div>
       <div class="career-rank-card-copy"><span>${range}</span><strong>${rank.title}</strong><small>${rank.material}</small></div>
       <b>${current ? 'CURRENT' : earned ? 'EARNED' : `UNLOCK · ${rank.startLevel}`}</b>
@@ -215,24 +231,57 @@ function postgameBreakdownRows(result) {
 
 function progressionPanel(result) {
   const shell = document.querySelector('#postgameScreen .postgame-shell');
-  if (!shell || !result) return;
+  if (!shell || !result) return Promise.resolve();
   shell.querySelector('[data-progression-result]')?.remove();
+  const before = careerProgressionState(result.before.totalXp);
   const after = result.after;
-  const levelCopy = result.leveledUp ? `LEVEL ${result.before.level} → ${after.level}` : `LEVEL ${after.level}`;
   const milestoneRows = result.milestoneAwards.length
     ? `<div class="career-postgame-milestones"><span>CAREER MILESTONES COMPLETE</span>${result.milestoneAwards.map((award) => `<div><b>${award.label} ${award.tier}</b><small>${number(award.target)} ${award.label}</small><strong>+${number(award.reward)} XP</strong></div>`).join('')}</div>`
     : '';
   const panel = document.createElement('section');
   panel.className = `career-postgame career-postgame-211${result.leveledUp ? ' level-up' : ''}`;
   panel.dataset.progressionResult = '';
+  panel.dataset.finalTotalXp = String(after.totalXp);
   panel.innerHTML = `
-    <div class="career-postgame-rank">${rankBadgeMarkup(after.rank, 'career-postgame-badge')}<div><span>${result.leveledUp ? 'LEVEL UP' : 'ACCOUNT CAREER'}</span><strong>${levelCopy}</strong><b>${after.rank.title}</b></div></div>
+    <div class="career-postgame-rank"><span data-career-badge>${rankBadgeMarkup(before.rank, 'career-postgame-badge')}</span><div><span data-career-event>CAREER PROGRESS</span><strong data-career-level>LEVEL ${before.level}</strong><b data-career-rank>${before.rank.title}</b></div></div>
     <div class="career-postgame-earned"><span>MATCH XP</span><div class="career-postgame-breakdown">${postgameBreakdownRows(result)}</div><div class="career-match-total"><span>MATCH TOTAL</span><strong>+${number(result.matchXp)} XP</strong></div></div>
     ${milestoneRows}
-    <div class="career-postgame-progress"><div><span>TOTAL CAREER XP GAINED</span><strong>+${number(result.xpGained)}</strong></div><div class="career-xp-track"><i style="width:${percent(levelProgress(after))}"></i></div><small>${after.level >= MAX_CAREER_LEVEL ? 'OMNIPOTENT · CAREER COMPLETE' : `${number(after.levelXp)} / ${number(after.levelXpRequired)} XP · NEXT RANK ${after.nextRank?.title || 'OMNIPOTENT'}`}</small></div>`;
+    <div class="career-postgame-progress"><div><span data-career-total>TOTAL CAREER XP GAINED · ${number(before.totalXp)} TOTAL</span><strong>+${number(result.xpGained)} XP</strong></div><div class="career-xp-track"><i data-career-progress-fill style="width:${percent(before.progress)}"></i></div><small data-career-progress-copy>${before.level >= MAX_CAREER_LEVEL ? 'OMNIPOTENT · CAREER COMPLETE' : `${number(before.levelXp)} / ${number(before.levelXpRequired)} XP · NEXT RANK ${before.nextRank?.title || 'OMNIPOTENT'}`}</small></div>`;
   const summary = shell.querySelector('.postgame-summary');
   if (summary) summary.insertAdjacentElement('afterend', panel);
   else shell.prepend(panel);
+
+  let shownLevel = before.level;
+  let shownRankId = before.rank.id;
+  const transitions = careerTransitionLevels(result.before.totalXp, after.totalXp);
+  const animation = animateProgression({
+    from:result.before.totalXp,
+    to:after.totalXp,
+    duration:Math.min(2200, 900 + transitions.length * 180),
+    quantize:(value) => Math.floor(value),
+    onFrame:(value) => {
+      const state = careerProgressionState(value);
+      panel.dataset.currentTotalXp = String(state.totalXp);
+      panel.querySelector('[data-career-level]').textContent = `LEVEL ${state.level}`;
+      panel.querySelector('[data-career-rank]').textContent = state.rank.title;
+      panel.querySelector('[data-career-total]').textContent = `TOTAL CAREER XP GAINED · ${number(state.totalXp)} TOTAL`;
+      panel.querySelector('[data-career-progress-fill]').style.width = percent(state.progress);
+      panel.querySelector('[data-career-progress-copy]').textContent = state.level >= MAX_CAREER_LEVEL
+        ? 'OMNIPOTENT · CAREER COMPLETE'
+        : `${number(state.levelXp)} / ${number(state.levelXpRequired)} XP · NEXT RANK ${state.nextRank?.title || 'OMNIPOTENT'}`;
+      if (state.rank.id !== shownRankId) {
+        shownRankId = state.rank.id;
+        panel.querySelector('[data-career-badge]').innerHTML = rankBadgeMarkup(state.rank, 'career-postgame-badge');
+      }
+      if (state.level !== shownLevel) {
+        shownLevel = state.level;
+        panel.querySelector('[data-career-event]').textContent = 'LEVEL UP';
+        panel.classList.remove('progression-step');
+        requestAnimationFrame(() => panel.classList.add('progression-step'));
+      }
+    }
+  });
+  return animation.promise;
 }
 
 let promotionTimer = null;
@@ -246,6 +295,7 @@ function dismissPromotion() {
 
 function showRankPromotion(result) {
   if (!result?.rankPromotions?.length) return;
+  if (!document.body.classList.contains('postgame-open')) return;
   document.querySelector('[data-rank-promotion]')?.remove();
   const rank = result.rankPromotions[result.rankPromotions.length - 1];
   const overlay = document.createElement('div');
@@ -275,10 +325,11 @@ window.addEventListener('unblockedtdm:match-complete', (event) => {
     durationLabel: snapshot.durationLabel
   });
   snapshot.progression = result;
-  progressionPanel(result);
+  const progressionAnimation = progressionPanel(result);
+  snapshot.__careerAnimationPromise211 = progressionAnimation;
   renderCareerStrip();
   renderCareerPage();
-  showRankPromotion(result);
+  Promise.resolve(progressionAnimation).then(() => showRankPromotion(result));
 });
 
 window.addEventListener('storage', (event) => {

@@ -3,13 +3,26 @@ import { CAMERA_LERP, DEFAULT_ZOOM, WORLD_HEIGHT, WORLD_WIDTH } from '../engine/
 export class Camera {
   static active = null;
 
-  constructor() {
-    this.x = WORLD_WIDTH / 2;
-    this.y = WORLD_HEIGHT / 2;
+  constructor(worldWidth = WORLD_WIDTH, worldHeight = WORLD_HEIGHT) {
+    this.worldWidth = Math.max(1, Number(worldWidth) || WORLD_WIDTH);
+    this.worldHeight = Math.max(1, Number(worldHeight) || WORLD_HEIGHT);
+    this.x = this.worldWidth / 2;
+    this.y = this.worldHeight / 2;
     this.width = innerWidth;
     this.height = innerHeight;
     this.zoom = DEFAULT_ZOOM;
     Camera.active = this;
+  }
+
+  setWorldBounds(worldWidth, worldHeight, { preservePosition = true } = {}) {
+    this.worldWidth = Math.max(1, Number(worldWidth) || WORLD_WIDTH);
+    this.worldHeight = Math.max(1, Number(worldHeight) || WORLD_HEIGHT);
+    if (!preservePosition) {
+      this.x = this.worldWidth / 2;
+      this.y = this.worldHeight / 2;
+    }
+    this.clamp();
+    return this;
   }
 
   resize(width, height) {
@@ -26,10 +39,10 @@ export class Camera {
   }
 
   clamp() {
-    const halfW = Math.min(WORLD_WIDTH / 2, this.width / (2 * this.zoom));
-    const halfH = Math.min(WORLD_HEIGHT / 2, this.height / (2 * this.zoom));
-    this.x = Math.max(halfW, Math.min(WORLD_WIDTH - halfW, this.x));
-    this.y = Math.max(halfH, Math.min(WORLD_HEIGHT - halfH, this.y));
+    const halfW = Math.min(this.worldWidth / 2, this.width / (2 * this.zoom));
+    const halfH = Math.min(this.worldHeight / 2, this.height / (2 * this.zoom));
+    this.x = Math.max(halfW, Math.min(this.worldWidth - halfW, this.x));
+    this.y = Math.max(halfH, Math.min(this.worldHeight - halfH, this.y));
   }
 
   begin(ctx) {

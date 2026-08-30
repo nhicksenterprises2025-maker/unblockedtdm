@@ -80,6 +80,7 @@ const WEAPON_BY_NAME = new Map(WEAPON_LIST.map((weapon) => [weapon.name.toUpperC
 function syncLowAmmoHud() {
   const root = document.getElementById('weaponRoot');
   if (!root) return;
+  if (document.hidden) return;
   if (!document.body.classList.contains('match-started')) {
     root.classList.remove('low-ammo');
     return;
@@ -101,6 +102,7 @@ document.body.classList.add('ui-241', 'ui-2412', 'ui-2421');
 hydrateWeaponModelCanvases(document);
 syncLowAmmoHud();
 
-const lowAmmoTimer = window.setInterval(syncLowAmmoHud, 50);
+const lowAmmoTimer = window.setInterval(syncLowAmmoHud, 100);
 window.addEventListener('beforeunload', () => window.clearInterval(lowAmmoTimer), { once:true });
+document.addEventListener('visibilitychange', syncLowAmmoHud);
 window.addEventListener('skirmish:menu-view-change', () => requestAnimationFrame(() => hydrateWeaponModelCanvases(document)));

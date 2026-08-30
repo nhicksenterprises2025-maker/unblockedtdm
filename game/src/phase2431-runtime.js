@@ -10,6 +10,11 @@ import {
 } from './arena/ArenaStore.js';
 import { arenaBadgeMarkup } from './arena/ArenaBadges.js';
 import { arenaOpponentTeam, refreshTeamWipeLatch, resolveTeamWipe } from './arena/ArenaTelemetry.js';
+import {
+  animateProgression,
+  arenaProgressionState,
+  arenaTransitionRanks
+} from './ui/PostgameProgression.js';
 
 function ensureStyle(href) {
   if ([...document.querySelectorAll('link[rel="stylesheet"]')].some((link) => link.getAttribute('href') === href)) return;
@@ -20,7 +25,13 @@ function ensureStyle(href) {
 }
 
 ensureStyle('ui-2.4.3.1.css');
-document.body.classList.add('ui-2431');
+ensureStyle('ui-2.6.0-progression.css');
+ensureStyle('ui-2.6.0-systems.css');
+// Arena loads after Career and its historical sheet. Keep the 2.6 result-room
+// layer last without duplicating a stylesheet or introducing a second UI path.
+const systemsStyle = [...document.querySelectorAll('link[rel="stylesheet"]')].find((link) => link.getAttribute('href') === 'ui-2.6.0-systems.css');
+if (systemsStyle) document.head.appendChild(systemsStyle);
+document.body.classList.add('ui-2431', 'ui-260-progression');
 
 const arena = new ArenaStore();
 const LOCAL_ID = 'local-blue';
@@ -250,9 +261,11 @@ function recentArenaHtml(profile) {
   const recent = (profile.recent || []).slice(0, 5);
   if (!recent.length) return '<span class="career-empty">PLAY ARENA TO START SEASON HISTORY</span>';
   return recent.map((match) => {
-    const delta = Number(match.apDelta || 0);
+    // A floor-limited forfeit may apply fewer than 50 points, but the history
+    // must still communicate the exact abandonment sanction that was issued.
+    const delta = Number(match.forfeit ? match.rawDelta : match.apDelta) || 0;
     const sign = delta > 0 ? '+' : '';
-    return `<span class="career-result ${match.won ? 'win' : 'loss'}"><b>${match.forfeit ? 'F' : match.won ? 'W' : 'L'}</b>${match.kills}/${match.deaths}/${match.assists}<em>${sign}${ap(delta)} AP</em></span>`;
+    return `<span class="career-result ${match.won ? 'win' : 'loss'} ${match.forfeit ? 'forfeit' : ''}"><b>${match.forfeit ? 'FORFEIT' : match.won ? 'W' : 'L'}</b>${match.kills}/${match.deaths}/${match.assists}<em>${sign}${ap(delta)} AP</em></span>`;
   }).join('');
 }
 
@@ -335,44 +348,50 @@ function ensureArenaView() {
 function arenaOverviewHtml(profile) {
   const next = profile.nextRank;
   return `
-    <section class="arena-overview-hero">
-      <div class="arena-overview-badge">${arenaBadgeMarkup(profile.rank)}</div>
-      <div class="arena-overview-copy">
-        <span>CURRENT ARENA RANK · ${safe(profile.seasonLabel)}</span>
-        <h1>${safe(profile.rank.title)}</h1>
-        <h3>${ap(profile.ap)} ARENA POINTS</h3>
-        <div class="arena-ap-line"><span>${next ? `${ap(profile.ap)} / ${ap(next.threshold)} AP` : `${ap(profile.ap)} AP · MAX RANK`}</span><b>${pct(profile.rankProgress)}</b></div>
-        <div class="arena-ap-track"><i style="width:${pct(profile.rankProgress)}"></i></div>
+    <div class="arena-overview-composition">
+      <section class="arena-overview-hero">
+        <div class="arena-overview-badge">${arenaBadgeMarkup(profile.rank)}</div>
+        <div class="arena-overview-copy">
+          <span>CURRENT ARENA RANK · ${safe(profile.seasonLabel)}</span>
+          <h1>${safe(profile.rank.title)}</h1>
+          <h3>${ap(profile.ap)} ARENA POINTS</h3>
+          <div class="arena-ap-line"><span>${next ? `${ap(profile.ap)} / ${ap(next.threshold)} AP` : `${ap(profile.ap)} AP · MAX RANK`}</span><b>${pct(profile.rankProgress)}</b></div>
+          <div class="arena-ap-track"><i style="width:${pct(profile.rankProgress)}"></i></div>
+          <div class="arena-next-line"><span>${next ? `${ap(Math.max(0, next.threshold - profile.ap))} AP TO ${safe(next.title)}` : 'OMNIPOTENT · MAXIMUM ARENA RANK'}</span><b>${profile.matches} MATCH${profile.matches === 1 ? '' : 'ES'} THIS SEASON</b></div>
+        </div>
+      </section>
+      <div class="arena-stat-grid">
+        <div><span>SEASON RECORD</span><strong>${profile.wins}-${profile.losses}</strong><small>${Math.round(profile.winRate * 100)}% WIN RATE</small></div>
+        <div><span>SEASON K/D</span><strong>${profile.kd.toFixed(2)}</strong><small>${profile.kills} KILLS · ${profile.deaths} DEATHS</small></div>
+        <div><span>MVP AWARDS</span><strong>${profile.mvps}</strong><small>${profile.fiveZeroWins} PERFECT WINS</small></div>
+        <div><span>PEAK AP</span><strong>${ap(profile.peakAp)}</strong><small>${safe(arenaRankForPoints(profile.peakAp).title)}</small></div>
+        <div><span>CRITICAL KILLS</span><strong>${profile.criticalKills}</strong><small>2 AP EACH</small></div>
+        <div><span>TEAM WIPES</span><strong>${profile.teamWipes}</strong><small>+2.5 AP EACH</small></div>
+        <div><span>COMEBACK WINS</span><strong>${profile.comebackWins}</strong><small>3+ ROUNDS DOWN</small></div>
+        <div><span>SEASON RESET</span><strong>${resetDateLabel(profile.resetAt)}</strong><small>12:00 AM LOCAL TIME</small></div>
       </div>
-    </section>
-    <div class="arena-stat-grid">
-      <div><span>SEASON RECORD</span><strong>${profile.wins}-${profile.losses}</strong><small>${Math.round(profile.winRate * 100)}% WIN RATE</small></div>
-      <div><span>SEASON K/D</span><strong>${profile.kd.toFixed(2)}</strong><small>${profile.kills} K · ${profile.deaths} D</small></div>
-      <div><span>MVP AWARDS</span><strong>${profile.mvps}</strong><small>${profile.fiveZeroWins} PERFECT WINS</small></div>
-      <div><span>PEAK AP</span><strong>${ap(profile.peakAp)}</strong><small>${safe(arenaRankForPoints(profile.peakAp).title)}</small></div>
-      <div><span>CRITICAL KILLS</span><strong>${profile.criticalKills}</strong><small>2 AP EACH</small></div>
-      <div><span>TEAM WIPES</span><strong>${profile.teamWipes}</strong><small>+2.5 AP EACH</small></div>
-      <div><span>COMEBACK WINS</span><strong>${profile.comebackWins}</strong><small>3+ ROUNDS DOWN</small></div>
-      <div><span>SEASON RESET</span><strong>${resetDateLabel(profile.resetAt)}</strong><small>12:00 AM LOCAL TIME</small></div>
-    </div>
-    <section class="arena-economy"><span class="arena-section-label">ARENA POINT ECONOMY</span><p>Kill +1 · Critical Kill +2 total · Assist +0.5 · Round Win +2.5 · Match Win +10 · MVP +5 · 5-streak +2 · 10-streak +5 · 5–0 +10 · 3-round comeback +8 · Team Wipe +2.5 · Sudden Death Clutch +2 · Negative K/D −10 · Match Loss −8.</p></section>`;
+      <section class="arena-economy"><span class="arena-section-label">ARENA POINT ECONOMY</span><p>Kill +1 · Critical Kill +2 total · Assist +0.5 · Round Win +2.5 · Match Win +10 · MVP +5 · 5-streak +2 · 10-streak +5 · 5–0 +10 · 3-round comeback +8 · Team Wipe +2.5 · Sudden Death Clutch +2 · Negative K/D −10 · Match Loss −8 · Active-match forfeit −50.</p></section>
+    </div>`;
 }
 
 function arenaRanksHtml(profile) {
   const currentIndex = arenaRankIndex(profile.rank);
   return `<div class="arena-rank-grid">${ARENA_RANKS.map((rank, index) => {
     const state = index === currentIndex ? 'current' : index < currentIndex ? 'earned' : 'locked';
-    return `<article class="arena-rank-card ${state}" data-rank="${safe(rank.id)}">
+    const remaining = Math.max(0, rank.threshold - profile.ap);
+    const status = state === 'current' ? 'CURRENT RANK' : state === 'earned' ? 'THRESHOLD REACHED' : `${ap(remaining)} AP TO UNLOCK`;
+    return `<article class="arena-rank-card ${state}" data-rank="${safe(rank.id)}" aria-label="${safe(rank.title)}, ${ap(rank.threshold)} Arena Points, ${safe(status)}">
       ${arenaBadgeMarkup(rank)}
-      <div><span>${ap(rank.threshold)} AP</span><strong>${safe(rank.title)}</strong><span>${safe(rank.material)}</span></div>
-      <b>${state === 'current' ? 'CURRENT' : state === 'earned' ? 'PASSED' : `+${ap(Math.max(0, rank.threshold - profile.ap))} AP`}</b>
+      <div class="arena-rank-copy"><span class="arena-rank-threshold">${ap(rank.threshold)} AP</span><strong>${safe(rank.title)}</strong><small>${safe(status)}</small></div>
+      <b>${state === 'current' ? 'CURRENT' : state === 'earned' ? 'REACHED' : 'LOCKED'}</b>
     </article>`;
   }).join('')}</div>`;
 }
 
 function arenaHistoryHtml(profile) {
   if (!profile.history.length) return '<div class="arena-history-empty">NO COMPLETED ARENA SEASONS YET<br>YOUR FIRST MONTHLY SEASON WILL BE ARCHIVED HERE.</div>';
-  return `<div class="arena-history-list">${profile.history.map((season) => {
+  const peakSeason = profile.history.reduce((best, season) => Number(season.peakAp || 0) > Number(best?.peakAp || 0) ? season : best, profile.history[0]);
+  return `<div class="arena-history-summary"><div><span>COMPLETED SEASONS</span><strong>${profile.history.length}</strong></div><div><span>CAREER PEAK</span><strong>${safe(peakSeason.peakRankTitle || arenaRankForPoints(peakSeason.peakAp).title)} · ${ap(peakSeason.peakAp)} AP</strong></div></div><div class="arena-history-list">${profile.history.map((season) => {
     const kd = season.deaths > 0 ? season.kills / season.deaths : season.kills;
     return `<article class="arena-history-row">
       <div><span>SEASON</span><strong>${safe(season.seasonId)}</strong></div>
@@ -466,7 +485,9 @@ function syncLoadoutMode(mode) {
     pill = document.createElement('span');
     pill.dataset.arenaLoadoutMode = '';
     pill.className = 'loadout-mode-pill';
-    head.appendChild(pill);
+    const eyebrow = head.querySelector('.eyebrow');
+    if (eyebrow) eyebrow.insertAdjacentElement('afterend', pill);
+    else head.prepend(pill);
   }
   if (mode === 'arena') {
     const profile = arena.snapshot();
@@ -477,6 +498,13 @@ function syncLoadoutMode(mode) {
     pill.classList.remove('arena');
   }
 }
+
+// LoadoutScreen owns its root markup and replaces it after every slot, weapon,
+// rename, and reset action. Re-attach the real match-mode indicator after each
+// render so the selected Casual/Arena route cannot silently disappear.
+window.addEventListener('skirmish:loadout-rendered', () => {
+  syncLoadoutMode(window.__SKIRMISH_MATCH_MODE__ === 'arena' ? 'arena' : 'casual');
+});
 
 function chooseMode(value) {
   const mode = value === 'arena' ? 'arena' : 'casual';
@@ -529,7 +557,8 @@ function breakdownRows(result) {
     ['TEAM WIPE', result.breakdown.teamWipes],
     ['SUDDEN DEATH', result.breakdown.suddenDeathClutches],
     ['NEGATIVE K/D', result.breakdown.negativeKd],
-    ['MATCH LOSS', result.breakdown.loss]
+    ['MATCH LOSS', result.breakdown.loss],
+    ['FORFEIT', result.breakdown.forfeit]
   ].filter(([, value]) => Number(value) !== 0);
   return entries.map(([label, value]) => {
     const numeric = Number(value);
@@ -539,22 +568,51 @@ function breakdownRows(result) {
 
 function arenaPostgamePanel(result) {
   const shell = document.querySelector('#postgameScreen .postgame-shell');
-  if (!shell || !result || result.duplicate) return;
+  if (!shell || !result || result.duplicate) return Promise.resolve();
   shell.querySelector('[data-arena-result]')?.remove();
+  const before = arenaProgressionState(result.apBefore);
   const panel = document.createElement('section');
   panel.className = 'arena-postgame';
   panel.dataset.arenaResult = '';
-  const next = result.after.nextRank;
+  panel.dataset.finalAp = String(result.apAfter);
   panel.innerHTML = `
     <div class="arena-postgame-head">
-      <div class="arena-postgame-rank">${arenaBadgeMarkup(result.rankAfter)}<div><span>ARENA RESULTS</span><strong>${safe(result.rankAfter.title)}</strong></div></div>
+      <div class="arena-postgame-rank"><span data-arena-badge>${arenaBadgeMarkup(before.rank)}</span><div><span data-arena-event>ARENA RESULTS</span><strong data-arena-rank>${safe(before.rank.title)}</strong></div></div>
       <div class="arena-postgame-total"><span>ARENA POINTS</span><strong class="${result.apDelta < 0 ? 'negative' : 'positive'}">${result.apDelta > 0 ? '+' : ''}${ap(result.apDelta)} AP</strong></div>
     </div>
     <div class="arena-postgame-breakdown">${breakdownRows(result)}</div>
-    <div class="arena-postgame-progress"><div><span>${ap(result.apBefore)} → ${ap(result.apAfter)} AP</span><strong>${next ? `NEXT · ${safe(next.title)} · ${ap(next.threshold)} AP` : 'OMNIPOTENT · MAX RANK'}</strong></div><div class="arena-ap-track"><i style="width:${pct(result.after.rankProgress)}"></i></div></div>`;
+    <div class="arena-postgame-progress"><div><span data-arena-ap>${ap(before.ap)} AP</span><strong data-arena-next>${before.nextRank ? `NEXT · ${safe(before.nextRank.title)} · ${ap(before.nextRank.threshold)} AP` : 'OMNIPOTENT · MAX RANK'}</strong></div><div class="arena-ap-track"><i data-arena-progress-fill style="width:${pct(before.progress)}"></i></div></div>`;
   const career = shell.querySelector('[data-progression-result]');
   if (career) career.insertAdjacentElement('afterend', panel);
   else shell.querySelector('.postgame-summary')?.insertAdjacentElement('afterend', panel);
+
+  let shownRankId = before.rank.id;
+  const transitions = arenaTransitionRanks(result.apBefore, result.apAfter);
+  const animation = animateProgression({
+    from:result.apBefore,
+    to:result.apAfter,
+    duration:Math.min(2000, 850 + transitions.length * 220),
+    quantize:(value) => Math.round(value * 2) / 2,
+    onFrame:(value) => {
+      const state = arenaProgressionState(value);
+      panel.dataset.currentAp = String(state.ap);
+      panel.querySelector('[data-arena-ap]').textContent = `${ap(state.ap)} AP`;
+      panel.querySelector('[data-arena-rank]').textContent = state.rank.title;
+      panel.querySelector('[data-arena-next]').textContent = state.nextRank
+        ? `NEXT · ${state.nextRank.title} · ${ap(state.nextRank.threshold)} AP`
+        : 'OMNIPOTENT · MAX RANK';
+      panel.querySelector('[data-arena-progress-fill]').style.width = pct(state.progress);
+      if (state.rank.id !== shownRankId) {
+        const promoted = arenaRankIndex(state.rank) > arenaRankIndex(shownRankId);
+        shownRankId = state.rank.id;
+        panel.querySelector('[data-arena-badge]').innerHTML = arenaBadgeMarkup(state.rank);
+        panel.querySelector('[data-arena-event]').textContent = promoted ? 'RANK PROMOTION' : 'RANK DEMOTION';
+        panel.classList.remove('progression-step');
+        requestAnimationFrame(() => panel.classList.add('progression-step'));
+      }
+    }
+  });
+  return animation.promise;
 }
 
 let rankChangeTimer = null;
@@ -616,8 +674,8 @@ window.addEventListener('unblockedtdm:match-complete', (event) => {
   resetTelemetry();
   renderArenaStrip();
   renderArenaPage();
-  arenaPostgamePanel(result);
-  showArenaRankChange(result);
+  const arenaAnimation = arenaPostgamePanel(result);
+  Promise.all([arenaAnimation, snapshot.__careerAnimationPromise211 || Promise.resolve()]).then(() => showArenaRankChange(result));
 });
 
 function settleLiveForfeit() {
@@ -651,6 +709,10 @@ window.addEventListener('storage', (event) => {
 });
 
 window.addEventListener('skirmish:show-menu-home', () => {
+  // Not every route back to Home originates from the pause-menu button. Route
+  // all programmatic/navigation returns through the same match-ID-idempotent
+  // settlement so an active ranked session cannot evade its leave sanction.
+  if (telemetry.active) settleLiveForfeit();
   cancelArenaRankChange();
   resetModeState();
   renderArenaStrip();

@@ -40,6 +40,7 @@ export const MAP_01 = {
   cols: MAP_COLS,
   rows: MAP_ROWS,
   tileSize: TILE_SIZE,
+  laneBounds:Object.freeze({ top:7, bottom:15 }),
   theme: 'Bright Industrial Training Complex',
   description: 'Purpose-built three-lane training range with readable cover modules, protected deployment bays and calibrated center lanes.',
   groundType(col, row) {
@@ -68,11 +69,18 @@ export const MAP_01 = {
   ],
   presentation: {
     id:'training-complex-2.5',
-    schema:1,
+    schema:2,
     nonBlocking:true,
     deterministic:true,
-    systems:['rangeGrid', 'deploymentRails', 'laneCalibration', 'controlPanels', 'coverIdentifiers'],
+    systems:['rangeGrid', 'deploymentRails', 'laneCalibration', 'controlPanels', 'coverIdentifiers', 'utilityAprons', 'drainageChannels', 'neutralVentilation'],
     zones:Object.freeze(['north-training-yard', 'central-live-fire-lane', 'south-training-yard']),
+    architecture:Object.freeze({
+      buildings:'reinforced-range-halls-with-neutral-shutters-and-roof-vents',
+      road:'calibrated-live-fire-lane',
+      drainage:'recessed-material-transition-channels',
+      signage:'functional-range-and-cover-identifiers',
+      decorativeBlueBars:false
+    }),
     budgets:Object.freeze({ maxStaticMarks:72, maxAnimatedSources:0 })
   }
 };

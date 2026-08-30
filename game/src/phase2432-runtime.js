@@ -1,6 +1,7 @@
 import { MatchManager } from './match/MatchManager.js';
 import { TacticalHUD } from './ui/TacticalHUD.js';
 import { ARENA_EMBLEM_IDS } from './arena/ArenaBadges.js';
+import { Camera } from './world/Camera.js';
 import { MAP_01 } from './world/map01.js';
 import { MAP_02 } from './world/map02.js';
 
@@ -47,6 +48,7 @@ if (!MatchManager.prototype.__arena2432MapBridge) {
     const liveMap = this.spawnSystem?.map;
     if (!liveMap?.setDefinition) throw new Error('Arena map switching requires TileMap.setDefinition().');
     if (liveMap.definition?.id !== nextMap.id) liveMap.setDefinition(nextMap);
+    Camera.active?.setWorldBounds?.(liveMap.width, liveMap.height);
     announceMap(nextMap, mode);
     return previousStartMatch.apply(this, args);
   };

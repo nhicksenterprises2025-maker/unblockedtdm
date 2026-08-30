@@ -4,6 +4,24 @@
 
 Skirmish Arena 2.5.0 completes a game-wide presentation pass without replacing the established tactical interface or changing competitive balance. Home progression, emblems, weapons, characters, Settings, Loadouts, match selection, both battlegrounds and in-match control surfaces now follow one restrained metallic visual language with sharper hierarchy, clearer purpose and bounded runtime cost.
 
+### Build 1 refinement and integrity repair
+
+The final Build 1 asset refresh keeps the existing 2.5.0 identity, Build 1 number, `build-2.5.0-v1` tag and live sequence 57. It incorporates the post-release visual review and codebase sweep into the same launcher-visible release instead of inventing a second build or a parallel update route.
+
+- The Home wordmark was rebuilt again around a physically separate command shield and a wider, cleaner typographic lockup. The crest can no longer cover the word “Skirmish,” and the small 3v3 descriptor, steel hierarchy and cyan rules remain legible at the actual Home scale.
+- Pause is now a larger five-section match console with a dedicated navigation rail and more working room for Scoreboard, Loadout, Controls and the full Settings panel. The Match view keeps round score, active loadout and ruleset immediately visible while map, mode, side, weapon and objective move into an intentional Match Intel disclosure, reducing the previous all-at-once density.
+- Loadouts now behaves as a focused arsenal workspace: a horizontal saved-slot rail, one unambiguous Primary/Secondary selector, a scrollable weapon list, larger authored side-view models and an inspection stage with four real weapon-stat facts. Compact-height and narrow-window rules keep naming, selection and save/deploy controls reachable.
+- The selected Casual/Arena route is restored after every Loadout re-render, so changing a slot, weapon, name or reset state can no longer silently remove the real match-mode indicator.
+- User-authored Loadout names and status text are escaped in all rebuilt markup, including the between-round picker, closing the remaining unsafe generated-markup path without changing stored names.
+- Reset Gameplay, Reset Keybinds and Reset All now batch their storage writes and emit one coherent settings update instead of producing a cascade of partially reset intermediate states.
+- Pausing or hiding the game no longer resets the active Tactical HUD session. Scoreboard and kill-feed state survive a normal resume, hidden/paused surfaces stop unnecessary hydration, and the live timer is explicitly released during shutdown.
+- Low-ammunition presentation now suspends while the document is hidden, uses a less aggressive refresh interval and synchronizes immediately when visibility returns.
+- Opaque Home and Pause surfaces reuse a frozen arena frame instead of redrawing the full world, actors and Foundry effects every animation frame. Live play resumes normal rendering immediately, with map, viewport and display scale included in the static-frame key.
+- Dynamic presentation observers are scoped to the menu, Loadout, weapon-list and round-switcher surfaces that they actually own. The global 2.5 observer filters additions to weapon, emblem, logo and mode-selector targets and coalesces overlapping roots, preventing routine HUD and scoreboard changes from triggering document-wide rescans.
+- Launcher archive entries are no longer considered playable merely because a same-tag executable exists on disk. Cached builds are streamed through SHA-256 verification against the current `versions.json` entry; missing, stale and unverifiable copies remain non-playable, stale copies are labeled **Repair**, and Play rechecks integrity before launch.
+- Archive download and launch requests now resolve the canonical live entry by tag instead of trusting renderer-supplied URLs or hashes. Replacements are staged, verified and only then copied over a stale cache, while the managed latest-version updater retains its established equal-sequence hash-repair behavior.
+- Regression coverage now includes the refined logo, progressive Pause layout, authored Loadout inspection surface and the launcher’s missing, valid, stale and unverifiable archive-cache states.
+
 ### Home, progression and brand presentation
 
 - The Home Arena strip now follows the same grid, padding, baseline and progress rhythm as Career while preserving Arena rank, season, record, win rate, seasonal K/D, kills, matches, Arena Points, next-rank/reset data and recent AP results.
@@ -82,10 +100,10 @@ The dedicated 2.5.0 gate and full historical suite cover:
 - deterministic boot ownership, one visible menu view and 2.5 surface integrity
 - the packaged Windows executable boot path and existing launcher/update pipeline
 
-Local release qualification completed with 115 syntax checks and 35 regression suites before packaging, followed by the real packaged executable smoke test.
+The initial Build 1 release qualification completed with 115 syntax checks and 35 regression suites before packaging, followed by the real packaged executable smoke test. The refinement repair adds archive-integrity coverage and reruns the complete syntax, historical regression, Windows packaging and packaged-executable gates before replacing the live assets.
 
 ### Gameplay and launcher compatibility
 
 This release does **not** change weapon balance, hitboxes, player health, movement values, four-charge dash behavior, AI difficulty multipliers, 3v3 team size, 1:30 round timing, the 12-kill round target, first-to-five match rules, sudden death, Career XP, Career levels 1–1000, Arena AP values, Arena thresholds, monthly reset rules or competitive map geometry.
 
-The existing Skirmish Arena launcher, installer, manifest format and GitHub Actions release workflow remain authoritative. No alternate launcher, repository, build system or update route was introduced.
+The existing Skirmish Arena launcher, installer, manifest format and GitHub Actions release workflow remain authoritative. The workflow replaces the three assets on the existing GitHub release, regenerates `latest.json` and the current `versions.json` entry from the packaged files, and publishes their new hashes without changing sequence 57. No alternate launcher, repository, build system or update route was introduced.

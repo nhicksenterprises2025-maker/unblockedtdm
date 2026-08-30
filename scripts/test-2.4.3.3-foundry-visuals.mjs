@@ -12,8 +12,8 @@ const geometry = MAP_02.structures.map(({ x, y, w, h, kind, palette, label }) =>
 const geometryHash = crypto.createHash('sha256').update(JSON.stringify(geometry)).digest('hex');
 const spawnHash = crypto.createHash('sha256').update(JSON.stringify(MAP_02.spawns)).digest('hex');
 
-assert.equal(geometryHash, '59ffbdcbff9b5e033fbfa8d4b161db022c7a6909a092874b97b789def7c4256a', 'Phase 3 must not move or resize any Foundry blocker.');
-assert.equal(spawnHash, '1450a968af44b9db1f1be3baf1812eb1ec1814ce00c31b64b337de158d4c705e', 'Phase 3 must preserve all six Foundry spawns exactly.');
+assert.equal(geometryHash, '0598d6474f3077cd00584d7407b5a8438a5942397b6e73e4b4f2c8ae390b1838', 'The authored 2.6 Foundry blocker layout must remain exact after its approved expansion.');
+assert.equal(spawnHash, '9e86b82ee98e2a8dec04399f813d13d7720eaac76e73515f874771e9f4b30671', 'The authored 2.6 Foundry spawn geometry must preserve all six collision-safe spawns exactly.');
 
 const presentation = MAP_02.presentation;
 assert.equal(presentation.id, 'foundry-zero-phase3');
@@ -35,8 +35,8 @@ const emitters = [
   ...presentation.ambience.steamVents
 ];
 const particleSlots = emitters.reduce((total, emitter) => total + emitter.slots, 0);
-assert.equal(sourceCount, 44, 'The authored ambient source count is intentional and should remain reviewable.');
-assert.equal(particleSlots, 102, 'The authored fixed particle-slot count is intentional and should remain reviewable.');
+assert.equal(sourceCount, 28, 'The performance-bounded 2.6 ambient source count is intentional and should remain reviewable.');
+assert.equal(particleSlots, 52, 'The performance-bounded 2.6 fixed particle-slot count is intentional and should remain reviewable.');
 assert.ok(sourceCount <= presentation.budgets.maxAmbientSources);
 assert.ok(particleSlots <= presentation.budgets.maxParticleSlots);
 assert.ok(emitters.every((emitter) => emitter.slots <= presentation.budgets.maxSlotsPerEmitter));
@@ -160,4 +160,4 @@ assert.ok(!rendererSource.includes('Math.random'), 'Foundry animation must be de
 assert.ok(rendererSource.includes('globalThis.document?.hidden'), 'Foundry animation must explicitly respect tab visibility.');
 assert.ok(rendererSource.includes('this.presentationRevision'), 'Foundry cache must track TileMap revision changes.');
 
-console.log('Skirmish Arena 2.4.3.3 Foundry visual checks passed: unchanged competitive geometry, symmetric nonblocking metadata, 44 culled sources, 102 fixed particle slots, deterministic revision-aware caches, and hidden-tab suspension.');
+console.log('Skirmish Arena Foundry visual checks passed: exact expanded geometry, symmetric nonblocking metadata, 28 culled sources, 52 fixed particle slots, deterministic revision-aware caches, and hidden-tab suspension.');

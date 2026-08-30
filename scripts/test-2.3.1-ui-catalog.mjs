@@ -15,7 +15,10 @@ const settings = read('game/src/engine/GameSettings.js');
 const loadouts = read('game/src/data/LoadoutStore.js');
 const tactical = read('game/src/ui/TacticalHUD.js');
 const career = read('game/src/phase211-runtime.js');
+const menuArtRuntime = read('game/src/phase221-runtime.js');
+const homeCommandArt = read('game/src/ui/HomeCommandArt.js');
 const logoUrl = new URL('../game/src/assets/skirmish-arena-main-logo.svg', import.meta.url);
+const emblemUrl = new URL('../game/src/assets/skirmish-arena-emblem.svg', import.meta.url);
 
 assert.equal(WEAPON_LIST.length, 8);
 assert.ok(menu.includes('WEAPON_LIST.map(weaponCatalogCard)'));
@@ -39,6 +42,18 @@ assert.equal(runtime.includes("button.addEventListener('click', () => queueMicro
 assert.ok(runtime.includes("title.querySelectorAll('[data-ui221-weapon-back], .ui221-page-back')"));
 assert.ok(runtime.includes('modernButtons.slice(1)'));
 
+const homeArtImport = menuArtRuntime.match(/import\s*\{([^}]*)\}\s*from\s*['"]\.\/ui\/HomeCommandArt\.js['"]/);
+assert.ok(homeArtImport, 'The current Home menu must source authored command icons from HomeCommandArt.');
+for (const factory of ['weaponInfoCommandIcon', 'settingsCommandIcon', 'quitCommandIcon']) {
+  assert.match(homeArtImport[1], new RegExp(`\\b${factory}\\b`), `Home menu must import ${factory}.`);
+  assert.ok(homeCommandArt.includes(`export function ${factory}()`), `HomeCommandArt must export ${factory}.`);
+}
+for (const token of [
+  'data-home-command-icon="${kind}"',
+  'data-home-icon-family="command-metal"',
+  'data-home-icon-version="${HOME_COMMAND_ICON_VERSION}"'
+]) assert.ok(homeCommandArt.includes(token), `Shared Home icon data contract missing: ${token}`);
+
 assert.ok(css.includes('body.ui-231:not(.ui231-weapon-page) #mainMenu [data-menu-view="weapon-info"]'));
 assert.ok(css.includes('overflow-y:auto!important'));
 assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'));
@@ -47,15 +62,30 @@ assert.ok(css.includes('.ui231-exact-stats'));
 assert.ok(css.includes('.menu-hero h1{display:none!important}'));
 assert.ok(css.includes('background:linear-gradient(135deg,#e1e6e9'));
 assert.ok(css.includes('phase2-loadouts .ui221-loadout-art'));
-assert.ok(css.includes('phase2-settings .ui221-settings-art'));
+const retiredHomeArt = `${menuArtRuntime}\n${read('game/src/ui-2.2.1.css')}\n${css}`;
+for (const token of [
+  'function manualSvg(',
+  'function weaponInfoIcon(',
+  'function silverGearIcon(',
+  'ui221GearMetal',
+  'ui221-manual',
+  'ui221-info-pistol',
+  'ui221-info-art',
+  'ui221-settings-art'
+]) assert.equal(retiredHomeArt.includes(token), false, `Retired Home icon implementation must stay removed: ${token}`);
+assert.equal(fs.existsSync(new URL('../game/src/weapon-info-hotfix.js', import.meta.url)), false, 'The obsolete Weapon Info hotfix runtime must stay deleted.');
 
 assert.ok(css232.includes('[data-menu-view="home"] .menu-feature-grid'));
 assert.ok(css232.includes('display:none!important'));
 assert.ok(css232.includes('.career-strip-211'));
 assert.ok(css232.includes('.ui232-info-art'));
 
-assert.ok(loadoutScreen.includes("import { PRIMARY_WEAPONS, SECONDARY_WEAPONS }"));
-assert.equal(loadoutScreen.includes('formatWeaponStats'), false);
+const loadoutWeaponImport = loadoutScreen.match(/import\s*\{([^}]*)\}\s*from\s*['"]\.\.\/data\/weapons\.js['"]/);
+assert.ok(loadoutWeaponImport, 'Loadouts must continue sourcing its weapon catalog from the shared weapon data module.');
+for (const catalog of ['PRIMARY_WEAPONS', 'SECONDARY_WEAPONS']) {
+  assert.match(loadoutWeaponImport[1], new RegExp(`\\b${catalog}\\b`), `Loadouts must keep the ${catalog} catalog.`);
+}
+assert.ok(loadoutScreen.includes('formatWeaponStats(weapon)'), 'The refined Loadouts inspection stage may expose exact shared weapon facts.');
 assert.equal(loadoutScreen.includes('statBarsHtml'), false);
 assert.equal(loadoutScreen.includes('spreadVisualHtml'), false);
 assert.ok(loadoutScreen.includes('weaponModelSvg(item)'));
@@ -75,17 +105,29 @@ assert.ok(settings.includes("map: 'KeyM'"));
 assert.ok(settings.includes("scoreboard: 'Tab'"));
 assert.ok(loadouts.includes('LOADOUT_SLOT_COUNT = 25'));
 assert.ok(loadouts.includes('DEFAULT_LOADOUT_SLOT_COUNT = 3'));
-assert.ok(tactical.includes('<span>K</span><span>D</span><span>A</span><span>K/D</span><span>DMG</span>'));
+for (const [stat, label] of [['kills','K'], ['deaths','D'], ['assists','A'], ['kd','K/D'], ['damage','DMG']]) {
+  assert.ok(tactical.includes(`<span data-stat-label="${stat}">${label}</span>`), `The tactical scoreboard must preserve its ${label} column while exposing the 2.6 hierarchy hook.`);
+}
 assert.ok(career.includes('MAX_CAREER_LEVEL'));
 assert.ok(career.includes('LEVEL ${profile.level}'));
 assert.equal(DASH_STAMINA_COST, 0);
 
 assert.ok(fs.existsSync(logoUrl));
 const logo = fs.readFileSync(logoUrl, 'utf8');
-assert.ok(logo.length > 2500);
+assert.ok(logo.length > 1800);
 assert.ok(logo.includes('<svg'));
 assert.ok(logo.includes('>SKIRMISH</text>'));
 assert.ok(logo.includes('>ARENA</text>'));
+assert.ok(fs.existsSync(emblemUrl));
+const emblem = fs.readFileSync(emblemUrl, 'utf8');
+assert.ok(logo.includes('data-brand-system="sa-command-mark-v2"'));
+assert.ok(emblem.includes('data-brand-system="sa-command-mark-v2"'));
+assert.ok(logo.includes('data-brand-source="skirmish-arena-emblem.svg"'));
+assert.equal(logo.includes('<image href="skirmish-arena-emblem.svg"'), false, 'The Home crest must be inline so Chromium renders it when the logo is loaded through an image element.');
+for (const letter of ['s', 'a']) {
+  const geometry = emblem.match(new RegExp(`<path data-monogram-letter="${letter}" d="([^"]+)"`))?.[1];
+  assert.ok(geometry && logo.includes(`data-monogram-letter="${letter}" d="${geometry}"`), `The large Home logo must reuse the exact ${letter.toUpperCase()} geometry from the command emblem.`);
+}
 
 for (const weapon of WEAPON_LIST) {
   assert.ok(weapon.id && weapon.name && weapon.kind && weapon.slot);

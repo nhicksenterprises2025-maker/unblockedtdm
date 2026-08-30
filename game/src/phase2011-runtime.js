@@ -68,8 +68,14 @@ function enhanceRoundLoadoutSwitcher() {
 }
 
 const observer = new MutationObserver(scheduleRefresh);
-observer.observe(document.documentElement, { childList: true, subtree: true });
+for (const root of [
+  document.querySelector('[data-weapon-info-list]'),
+  document.getElementById('roundLoadoutGrid')
+].filter(Boolean)) {
+  observer.observe(root, { childList: true, subtree: true });
+}
 window.addEventListener('unblockedtdm:settings-change', scheduleRefresh);
 window.addEventListener('storage', scheduleRefresh);
+window.addEventListener('beforeunload', () => observer.disconnect(), { once:true });
 
 scheduleRefresh();

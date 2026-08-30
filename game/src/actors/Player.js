@@ -163,7 +163,10 @@ export class Player {
     const beforeX = this.x;
     const beforeY = this.y;
 
-    moveCircle(this, axis.x * speed * dt, axis.y * speed * dt, blockers, { w: WORLD_WIDTH, h: WORLD_HEIGHT });
+    moveCircle(this, axis.x * speed * dt, axis.y * speed * dt, blockers, {
+      w: Number(map?.width) || WORLD_WIDTH,
+      h: Number(map?.height) || WORLD_HEIGHT
+    });
 
     this.velocityX = dt > 0 ? (this.x - beforeX) / dt : 0;
     this.velocityY = dt > 0 ? (this.y - beforeY) / dt : 0;
@@ -204,7 +207,10 @@ export class Player {
     const dy = Math.sin(this.dashDirection) * desired;
     const beforeX = this.x;
     const beforeY = this.y;
-    const result = moveCircleSwept(this, dx, dy, blockers, { w: WORLD_WIDTH, h: WORLD_HEIGHT }, DASH_SWEEP_STEP_PIXELS);
+    const result = moveCircleSwept(this, dx, dy, blockers, {
+      w: Number(map?.width) || WORLD_WIDTH,
+      h: Number(map?.height) || WORLD_HEIGHT
+    }, DASH_SWEEP_STEP_PIXELS);
 
     this.velocityX = dt > 0 ? (this.x - beforeX) / dt : 0;
     this.velocityY = dt > 0 ? (this.y - beforeY) / dt : 0;

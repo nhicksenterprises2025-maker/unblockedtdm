@@ -32,7 +32,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
 const input = new Input(window, settings);
 const map = new TileMap(MAP_01);
-const camera = new Camera();
+const camera = new Camera(map.width, map.height);
 const worldRenderer = new WorldRenderer(ctx, map);
 const playerRenderer = new PlayerRenderer(ctx);
 const weaponRenderer = new WeaponRenderer(ctx);
@@ -64,6 +64,7 @@ let streakBannerTimer = 0;
 let debug = false;
 let paused = false;
 let matchStarted = false;
+let staticRenderKey = null;
 let fps = 0;
 let frames = 0;
 let fpsClock = 0;
@@ -120,7 +121,10 @@ const projectiles = new ProjectileSystem(damageSystem, combatFeedback, {
 
 function attachWeapons(actor, loadout) {
   const manager = new WeaponManager(actor, damageSystem, combatFeedback, projectiles, loadout, {
-    onKill: (victim, result) => handleElimination(actor, victim, result)
+    onKill: (victim, result) => handleElimination(actor, victim, result),
+    // Auto Reload is a local accessibility preference. Bots keep using their
+    // authored combat input and never inherit a client-side player setting.
+    autoReloadEnabled: () => Boolean(actor.isLocal && settings.gameplay().autoReload)
   });
   actor.setWeaponManager(manager);
   return manager;
@@ -157,6 +161,9 @@ function resizeCanvas() {
   canvas.style.width = `${innerWidth}px`;
   canvas.style.height = `${innerHeight}px`;
   camera.resize(innerWidth, innerHeight);
+  // Assigning canvas.width/height clears the bitmap even when the dimensions
+  // are unchanged, so the cached Home/Pause frame must be redrawn.
+  staticRenderKey = null;
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -366,6 +373,20 @@ function drawBotPaths() {
 }
 
 function render(dt, now, isPaused) {
+  // Menu and pause surfaces sit over a visually frozen arena. Redrawing the
+  // complete world (including Foundry particles and every actor layer) on each
+  // RAF behind those opaque UI surfaces wastes GPU time and can heat laptops.
+  // Draw once per static surface/map/viewport, then resume normal rendering as
+  // soon as live play continues.
+  const staticSurface = !matchStarted || isPaused;
+  if (staticSurface) {
+    const nextStaticKey = `${isPaused ? 'pause' : 'menu'}:${map.definition?.id || 'map'}:${innerWidth}x${innerHeight}:${dpr}`;
+    if (staticRenderKey === nextStaticKey) return;
+    staticRenderKey = nextStaticKey;
+  } else {
+    staticRenderKey = null;
+  }
+
   frames += 1;
   fpsClock += dt;
   if (fpsClock >= 0.5) {
@@ -481,7 +502,7 @@ function updateWeaponHud() {
 function renderRoundLoadoutPanel() {
   const active = loadoutStore.get();
   document.getElementById('roundLoadoutCurrent').textContent = `SLOT ${String(active.index + 1).padStart(2, '0')} · ${active.name.toUpperCase()} · ${active.primary.shortName} + ${active.secondary.shortName}`;
-  roundLoadoutGrid.innerHTML = loadoutStore.all().map((slot) => `<button type="button" data-round-loadout="${slot.index}" class="${slot.index === active.index ? 'active' : ''}"><b>${String(slot.index + 1).padStart(2, '0')}</b><span>${slot.name}</span><small>${slot.primary.shortName} + ${slot.secondary.shortName}</small></button>`).join('');
+  roundLoadoutGrid.innerHTML = loadoutStore.all().map((slot) => `<button type="button" data-round-loadout="${slot.index}" class="${slot.index === active.index ? 'active' : ''}"><b>${String(slot.index + 1).padStart(2, '0')}</b><span>${escapeMarkup(slot.name)}</span><small>${slot.primary.shortName} + ${slot.secondary.shortName}</small></button>`).join('');
 }
 
 roundLoadoutGrid.addEventListener('click', (event) => {

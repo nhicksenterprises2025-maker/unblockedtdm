@@ -47,19 +47,36 @@ function polishDynamicSurfaces(root = document) {
   if (selector) selector.dataset.modeLayoutVersion = '2.5';
 }
 
+const POLISH_SELECTOR = [
+  'canvas[data-game-weapon-model]',
+  '.career-rank-badge',
+  '.arena-rank-badge',
+  '[data-arena-strip]',
+  '.ui231-home-logo',
+  '[data-arena-mode-select]'
+].join(',');
+
 let polishFrame = 0;
-let polishRoot = document;
+const polishRoots = new Set();
 
 function schedulePolish(event) {
   const candidate = event?.target instanceof Element ? event.target : document;
-  if (polishRoot !== document && candidate !== polishRoot) polishRoot = document;
-  else if (!polishFrame) polishRoot = candidate;
+  if (candidate === document) {
+    polishRoots.clear();
+    polishRoots.add(document);
+  } else if (!polishRoots.has(document)) {
+    for (const root of polishRoots) {
+      if (root.contains?.(candidate)) return;
+      if (candidate.contains?.(root)) polishRoots.delete(root);
+    }
+    polishRoots.add(candidate);
+  }
   if (polishFrame) return;
   polishFrame = requestAnimationFrame(() => {
-    const root = polishRoot;
+    const roots = [...polishRoots];
     polishFrame = 0;
-    polishRoot = document;
-    polishDynamicSurfaces(root);
+    polishRoots.clear();
+    for (const root of roots) polishDynamicSurfaces(root);
   });
 }
 
@@ -85,7 +102,9 @@ polishDynamicSurfaces();
 const observer = new MutationObserver((records) => {
   for (const record of records) {
     for (const node of record.addedNodes) {
-      if (node instanceof Element) schedulePolish({ target: node });
+      if (!(node instanceof Element)) continue;
+      if (node.matches(POLISH_SELECTOR)) schedulePolish({ target: node.parentElement || node });
+      else if (node.querySelector(POLISH_SELECTOR)) schedulePolish({ target: node });
     }
   }
 });
@@ -99,6 +118,7 @@ document.addEventListener('visibilitychange', syncQuality);
 window.addEventListener('beforeunload', () => {
   observer.disconnect();
   if (polishFrame) cancelAnimationFrame(polishFrame);
+  polishRoots.clear();
 }, { once:true });
 
 window.skirmishArena250 = Object.freeze({

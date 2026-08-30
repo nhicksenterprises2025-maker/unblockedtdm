@@ -64,8 +64,9 @@ for (const id of TOP_DOWN_WEAPON_PRESENTATION.weaponIds) assert.ok(read('game/sr
 assert.equal(CHARACTER_PRESENTATION.authored, true);
 assert.ok(CHARACTER_PRESENTATION.features.includes('unit-identifier'));
 
-// Requirement 4: crisp native vector wordmark keeps the existing identity.
-for (const token of ['<text x="560" y="139"', '>SKIRMISH</text>', '>ARENA</text>', 'logo-steel', 'logo-cyan']) assert.ok(logo.includes(token));
+// Requirement 4: crisp native vector wordmark keeps the existing identity while
+// keeping its command crest physically separate from the readable lettering.
+for (const token of ['viewBox="0 0 980 270"', '<text x="282" y="151"', '>SKIRMISH</text>', '>ARENA</text>', 'id="steel"', 'id="cyan"', 'crest and wordmark are deliberately separated']) assert.ok(logo.includes(token));
 assert.ok(logoRuntime.includes("assets/skirmish-arena-main-logo.svg"));
 assert.ok(logoRuntime.includes('skirmish-arena-main-logo-2.5'));
 
@@ -84,7 +85,7 @@ const restoredSettings = new GameSettings(memory).gameplay();
 for (const [key, value] of Object.entries(expectedSettings)) assert.equal(restoredSettings[key], value, `${key} must persist through a new settings instance.`);
 settings.setGameplay('hudScale', 9);
 settings.setGameplay('minimapOpacity', -4);
-assert.equal(settings.gameplay().hudScale, 1.2);
+assert.equal(settings.gameplay().hudScale, 1.4, '2.6 widens the established HUD scale ceiling without changing the 2.5 persistence path.');
 assert.equal(settings.gameplay().minimapOpacity, .45);
 const rebound = settings.setBinding('fire', 'KeyF');
 assert.equal(rebound.ok, true);
@@ -104,6 +105,7 @@ assert.equal(loadouts.includes('class="selected-summary"'), false);
 assert.ok(loadouts.includes('class="loadout-head-index"'));
 assert.ok(loadouts.includes('${slot.primary.name}'));
 assert.ok(loadouts.includes('${slot.secondary.name}'));
+for (const token of ['class="loadout-arsenal"', 'class="weapon-detail-facts"', 'aria-pressed="${selected}"']) assert.ok(loadouts.includes(token));
 const loadoutMemory = new MemoryStorage();
 const loadoutStore = new LoadoutStore(loadoutMemory);
 while (loadoutStore.canAddSlot()) loadoutStore.addSlot();
@@ -131,6 +133,8 @@ for (const token of ['burnerHousings:takeFixtures', "housing.type === 'furnaceTh
 // Requirement 9: Pause contains five useful live tabs and real match data paths.
 assert.equal((index.match(/data-pause-tab=/g) || []).length, 5);
 for (const view of ['match','scoreboard','loadout','controls','settings']) assert.ok(index.includes(`data-pause-view="${view}"`));
+assert.ok(index.includes('<details class="pause-intel">'));
+assert.ok(index.includes('MAP, MODE, SIDE, WEAPON &amp; OBJECTIVE'));
 for (const token of ['match.statsSnapshot()', 'pauseScoreboardRows', 'pauseLoadoutSlots', 'BINDING_ACTIONS.map', 'pauseTopPerformer', 'pauseObjective', '<span>Cycle Weapon</span><strong>MOUSE WHEEL</strong>', '<span>Pause</span><strong>ESC</strong>', 'if (!paused) return;']) assert.ok(renderer.includes(token));
 for (const token of ["getElementById('resumeButton')", 'setPaused(false)', "getElementById('pauseMainMenuButton')", 'returnToMainMenu()']) assert.ok(renderer.includes(token));
 assert.ok(renderer.includes("map.definition?.name || 'Training Complex'"), 'Pause context must use the active map definition instead of the TileMap wrapper.');

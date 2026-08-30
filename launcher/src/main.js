@@ -2,9 +2,9 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const fsp = fs.promises;
-const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 const buildInfo = require('./build-info.json');
+const { inspectCachedFile, normalizedHash, verifyFile } = require('./file-integrity.js');
 
 const RAW_BASE = 'https://raw.githubusercontent.com/nhicksenterprises2025-maker/unblockedtdm/main/distribution';
 const DEFAULT_SETTINGS = {
@@ -136,10 +136,6 @@ function releaseSequence(entry = {}) {
   return Number.isFinite(value) ? value : 0;
 }
 
-function normalizedHash(value) {
-  return String(value || '').trim().toLowerCase();
-}
-
 function manifestNeedsUpdate(remote = {}, local = {}) {
   const remoteSequence = releaseSequence(remote);
   const localSequence = releaseSequence(local);
@@ -187,22 +183,6 @@ async function downloadFile(url, destination) {
       stream.on('error', reject);
     });
   }
-}
-
-async function sha256(file) {
-  return new Promise((resolve, reject) => {
-    const hash = crypto.createHash('sha256');
-    const input = fs.createReadStream(file);
-    input.on('error', reject);
-    input.on('data', (chunk) => hash.update(chunk));
-    input.on('end', () => resolve(hash.digest('hex')));
-  });
-}
-
-async function verifyFile(file, expected) {
-  if (!expected) return { valid: true, hash: await sha256(file), expected: null };
-  const hash = await sha256(file);
-  return { valid: hash.toLowerCase() === String(expected).toLowerCase(), hash, expected };
 }
 
 async function latestNeedsInstall(latest, installed) {
@@ -320,25 +300,47 @@ async function listVersions() {
   const output = [];
   for (const entry of data.versions || []) {
     const localExe = path.join(archiveRoot(), entry.tag, 'UnblockedTDM.exe');
-    output.push({ ...entry, downloaded: fs.existsSync(localExe) });
+    const cache = await inspectCachedFile(localExe, entry.sha256);
+    output.push({ ...entry, downloaded: cache.downloaded, cacheStatus: cache.status });
   }
   return output;
 }
 
 async function downloadArchiveVersion(entry) {
+  const expected = normalizedHash(entry?.sha256);
+  if (!expected) throw new Error(`No SHA-256 is published for ${entry?.tag || 'this archived build'}.`);
+
   const dir = path.join(archiveRoot(), entry.tag);
   await fsp.mkdir(dir, { recursive: true });
   const partial = path.join(dir, 'UnblockedTDM.exe.part');
   const final = path.join(dir, 'UnblockedTDM.exe');
-  await downloadFile(entry.gameUrl, partial);
-  const verification = await verifyFile(partial, entry.sha256);
-  if (!verification.valid) {
+  try {
+    await downloadFile(entry.gameUrl, partial);
+    const verification = await verifyFile(partial, expected);
+    if (!verification.valid) throw new Error('Archived build failed SHA-256 verification.');
+
+    // copyFile replaces a stale same-tag cache only after the staged download
+    // has passed the current archive manifest's integrity check.
+    await fsp.copyFile(partial, final);
+    await writeJson(path.join(dir, 'version.json'), entry);
+  } finally {
     await fsp.rm(partial, { force: true });
-    throw new Error('Archived build failed SHA-256 verification.');
   }
-  await fsp.rename(partial, final);
-  await writeJson(path.join(dir, 'version.json'), entry);
-  return { ...entry, downloaded: true };
+  return { ...entry, downloaded: true, cacheStatus: 'verified' };
+}
+
+async function remoteArchiveEntry(tag) {
+  const data = await fetchJson(`${RAW_BASE}/versions.json?ts=${Date.now()}`);
+  const entry = (data.versions || []).find((item) => item.tag === tag);
+  if (!entry) throw new Error(`No archive entry exists for ${tag}.`);
+  return entry;
+}
+
+async function ensureArchiveVersion(entry) {
+  const executable = path.join(archiveRoot(), entry.tag, 'UnblockedTDM.exe');
+  const cache = await inspectCachedFile(executable, entry.sha256);
+  if (!cache.downloaded) await downloadArchiveVersion(entry);
+  return executable;
 }
 
 function createWindow() {
@@ -396,9 +398,13 @@ ipcMain.handle('launcher:install-latest', async () => {
 
 ipcMain.handle('launcher:play-current', playCurrent);
 ipcMain.handle('launcher:list-versions', listVersions);
-ipcMain.handle('launcher:download-version', (_event, entry) => downloadArchiveVersion(entry));
+ipcMain.handle('launcher:download-version', async (_event, requested) => {
+  const entry = await remoteArchiveEntry(requested?.tag);
+  return downloadArchiveVersion(entry);
+});
 ipcMain.handle('launcher:play-version', async (_event, tag) => {
-  const executable = path.join(archiveRoot(), tag, 'UnblockedTDM.exe');
+  const entry = await remoteArchiveEntry(tag);
+  const executable = await ensureArchiveVersion(entry);
   spawnGame(executable);
   return true;
 });

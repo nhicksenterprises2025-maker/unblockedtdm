@@ -82,11 +82,6 @@ body.ui-231 #mainMenu .phase2-weapon-info .ui231-info-art{
   filter:drop-shadow(0 8px 12px rgba(17,158,220,.18));
 }
 body.ui-231 #mainMenu .ui231-blueprint-icon{display:block;width:100%;height:100%}
-body.ui-231 #mainMenu .phase2-settings .ui221-settings-art{
-  width:clamp(68px,4.5vw,90px)!important;
-  height:clamp(68px,4.5vw,90px)!important;
-}
-
 /* ---------- Hard isolation: Weapon Info can never leak under Home ---------- */
 body.ui-231:not(.ui231-weapon-page) #mainMenu [data-menu-view="weapon-info"]{
   display:none!important;

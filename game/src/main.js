@@ -27,6 +27,8 @@ function writeSmokeStatus(stage, detail = {}) {
       timestamp: new Date().toISOString(),
       gameVersion: buildInfo.gameVersion,
       build: buildInfo.build,
+      sequence: buildInfo.sequence,
+      tag: buildInfo.tag,
       pid: process.pid,
       ...detail
     }, null, 2)}\n`, 'utf8');
@@ -76,11 +78,23 @@ async function runPackagedSmokeTest(target) {
             window.skirmishArena250?.integrity?.pauseTabs === 5 &&
             window.skirmishArena250?.integrity?.performanceSafeguards
           ),
+          phase260: Boolean(
+            document.body?.dataset?.phase260Ready === 'true' &&
+            document.body?.classList?.contains('ui-260') &&
+            window.skirmishArena260?.version === '2.6.0'
+          ),
+          phase260Integrity: Boolean(
+            window.skirmishArena260?.integrity?.pauseTabs &&
+            window.skirmishArena260?.integrity?.pauseIcons &&
+            window.skirmishArena260?.integrity?.hudScaleRange &&
+            window.skirmishArena260?.integrity?.foundryScale &&
+            window.skirmishArena260?.integrity?.trainingBlueBarsRemoved
+          ),
           phase250Surfaces: Boolean(
             document.querySelector('.ui231-home-logo[data-logo-version="2.5-vector"]') &&
             document.querySelector('[data-arena-strip][data-layout-version="2.5"]') &&
             document.querySelector('[data-loadout-version="2.5"]') &&
-            document.querySelector('#mainSettingsPanel[data-settings-version="2.5"]') &&
+            document.querySelector('#mainSettingsPanel[data-settings-version="2.6"]') &&
             document.querySelectorAll('.settings-250-tabs [data-settings-tab]').length === 10 &&
             document.querySelectorAll('.pause-tabs [data-pause-tab]').length === 5 &&
             !document.querySelector('canvas[data-game-weapon-model][data-weapon-halo]:not([data-weapon-halo="none"])')
@@ -125,6 +139,8 @@ async function runPackagedSmokeTest(target) {
         state.phase3Integrity &&
         state.phase250 &&
         state.phase250Integrity &&
+        state.phase260 &&
+        state.phase260Integrity &&
         state.phase250Surfaces &&
         state.viewIsolation &&
         state.foundryPresentation &&
