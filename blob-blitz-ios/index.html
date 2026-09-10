@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Blob Blitz iOS</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050914}iframe{border:0;width:100%;height:100dvh;display:block;background:#050914}#loading{position:fixed;inset:0;display:grid;place-items:center;color:#fff;font:900 15px system-ui;background:#050914;z-index:5;letter-spacing:.8px}</style></head><body><div id="loading">LOADING BLOB BLITZ iOS…</div><iframe id="gameFrame" src="../blob-blitz-pc-live/index.html?v=6"></iframe><script>
+const f=document.getElementById('gameFrame'),loading=document.getElementById('loading');
+function applyMobile(){
+  let d;try{d=f.contentDocument}catch(e){return false} if(!d||!d.getElementById('game'))return false;
+  if(d.getElementById('iosMobilePatch')){loading.remove();return true}
+  const st=d.createElement('style');st.id='iosMobilePatch';st.textContent=`
+  html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}canvas{touch-action:none}
+  @media(max-width:900px){
+   .app{display:block!important;height:100dvh!important}.stage{height:100dvh!important;width:100vw!important}
+   .side{position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:60!important;height:auto!important;min-height:82px!important;padding:8px 9px calc(8px + env(safe-area-inset-bottom))!important;border-left:0!important;border-top:1px solid #273b5b!important;background:#070e1cf2!important;display:grid!important;grid-template-columns:1.15fr repeat(4,1fr)!important;gap:6px!important;overflow:visible!important;backdrop-filter:blur(14px)!important}
+   .side>*{display:none!important}.side .brand{display:block!important;position:fixed!important;left:10px!important;top:calc(8px + env(safe-area-inset-top))!important;z-index:65!important;font-size:12px!important;line-height:.85!important;padding:7px 8px!important;border-radius:10px!important;background:#081323dd!important;border:1px solid #263c5d!important}
+   #balance,#play,#shopBtn,#collectionBtn,#lockerBtn{display:block!important}.side .row{display:contents!important}
+   #balance{font-size:17px!important;align-self:center!important;text-align:center!important;background:#0b1728!important;border:1px solid #223a5b!important;border-radius:12px!important;padding:10px 4px!important}
+   #play,#shopBtn,#collectionBtn,#lockerBtn{font-size:10px!important;line-height:1!important;padding:12px 4px!important;border-radius:12px!important;min-width:0!important}
+   .hud{top:calc(10px + env(safe-area-inset-top))!important;left:auto!important;right:10px!important;text-align:right!important}.score{font-size:29px!important}.combo{font-size:10px!important}
+   .overlay{padding:calc(8px + env(safe-area-inset-top)) 7px calc(88px + env(safe-area-inset-bottom))!important;align-items:flex-end!important;z-index:70!important}.modal,.modal.small{width:100%!important;max-width:none!important;max-height:84dvh!important;border-radius:22px 22px 13px 13px!important;padding:13px!important}.head h2{font-size:22px!important}
+   .tabs,.collectionTabs{flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;margin:9px 0 8px!important;padding-bottom:2px!important;-webkit-overflow-scrolling:touch}.tab{white-space:nowrap!important;flex:0 0 auto!important;padding:9px 11px!important;font-size:11px!important}
+   .shopWrap{display:block!important;overflow:auto!important;-webkit-overflow-scrolling:touch!important}.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;overflow:visible!important;padding-right:0!important}.item{min-height:186px!important;padding:9px!important}.preview{height:80px!important}.name{font-size:13px!important}.desc{font-size:9px!important;min-height:24px!important}.cart{margin-top:10px!important}.collectionGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;overflow:auto!important;-webkit-overflow-scrolling:touch!important}.lockerGrid{grid-template-columns:1fr!important;overflow:auto!important}.lockerSlot .preview{height:112px!important}
+   .chestGrid{grid-template-columns:1fr!important;gap:9px!important;overflow:auto!important;-webkit-overflow-scrolling:touch!important}.chestHero{grid-template-columns:1fr!important;gap:8px!important}.flow{grid-template-columns:repeat(2,1fr)!important}.chestTop{grid-template-columns:90px 1fr!important}.tapLadder{grid-template-columns:repeat(4,1fr)!important}.rewardOdds{grid-template-columns:repeat(5,1fr)!important}.bigChest{transform:scale(.86)!important;margin:6px auto 0!important}.rewardCard{width:96%!important}.rewardPreview{height:94px!important}.toast{bottom:calc(96px + env(safe-area-inset-bottom))!important;max-width:88vw!important;text-align:center!important;font-size:12px!important}
+  }`;
+  d.head.appendChild(st);
+  const cv=d.getElementById('game');
+  function move(e,down){const t=e.touches&&e.touches[0];if(!t)return;const r=cv.getBoundingClientRect();const ev=new MouseEvent(down?'mousedown':'mousemove',{clientX:t.clientX,clientY:t.clientY,bubbles:true});cv.dispatchEvent(ev);e.preventDefault()}
+  cv.addEventListener('touchstart',e=>move(e,true),{passive:false});cv.addEventListener('touchmove',e=>move(e,false),{passive:false});
+  const tag=[...d.querySelectorAll('.tag')].find(x=>/COLLECTOR|LUCKY|CHEST/.test(x.textContent));if(tag)tag.textContent='iOS COLLECTOR v6';
+  loading.remove();return true;
+}
+f.addEventListener('load',()=>{let n=0;const t=setInterval(()=>{if(applyMobile()||++n>80)clearInterval(t)},100)});
+setTimeout(()=>applyMobile(),600);
+</script></body></html>
